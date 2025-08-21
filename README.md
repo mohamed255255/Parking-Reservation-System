@@ -7,7 +7,7 @@ The upcoming version will introduce **more features, improved architecture, and 
 ---
 
 ## 🔄 Current Status
-- Refactoring existing codebase for cleaner , modular design through Layred architecutre
+- Refactoring existing codebase for cleaner , modular design through Layered architecutre
 - Preparing for **REST API integration** the MVP features then will add more like QR code scaning for receipts etc 
 - I Will apply JUNIT here
 - I will use spring security like JWT , authorization and role authentication , payment gateway
