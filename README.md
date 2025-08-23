@@ -1,10 +1,10 @@
 # Garage System
 
-[![Java](https://img.shields.io/badge/Java-17-orange)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen)](https://spring.io/projects/spring-boot)
+[![Java](https://img.shields.io/badge/Java-21-orange)](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.4-brightgreen)](https://spring.io/projects/spring-boot)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14-blue)](https://www.postgresql.org/)
 [![Security](https://img.shields.io/badge/Security-Spring%20Security%20%2B%20JWT-red)](https://spring.io/projects/spring-security)
-[![Tests](https://img.shields.io/badge/Tests-JUnit5%20%2B%20Mockito-yellow)](https://junit.org/junit5/)
+[![Tests](https://img.shields.io/badge/Tests-Spring%20Boot%20Test%20%2B%20Security%20Test-yellow)](https://junit.org/junit5/)
 
 An application that simulates a **vehicle parking system** by managing a garage with available slots.  
 Vehicles are assigned to slots using one of two strategies:  
