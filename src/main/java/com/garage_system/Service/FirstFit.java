@@ -1,10 +1,19 @@
 package com.garage_system.Service;
 import com.garage_system.Model.Reservation;
+import com.garage_system.Model.Vehicle;
+
 import java.time.LocalTime;
 
-/*
-public class FirstFit implements  configuration {
 
+public class FirstFit implements  ParkingStrategy {
+
+    @Override  
+    public void parkin(Vehicle obj) {
+        // TODO 
+    
+    }
+}
+/*
     public void parkin(vehicle obj) {
         boolean notEntered = true;
         for (int i = 0; i < garage.slotNum; i++) {
