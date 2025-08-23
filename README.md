@@ -60,5 +60,5 @@ The current version is an MVP that focuses on the **core garage system**. later 
 
 - **Containerization & Deployment**  
 - **Payment gateway**  
-
+- **Notifications**  
 
