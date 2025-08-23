@@ -1,4 +1,4 @@
-package com.garage_system.security;
+package com.garage_system.Security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -8,30 +8,30 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.garage_system.Service.CustomUserDetailsService;
 
 @Configuration
-public class ConfigurationSecurity {
+public class SecurityConfiguration {
 
     @Autowired
     private final CustomUserDetailsService customUserDetailsService;
 
-    public ConfigurationSecurity(CustomUserDetailsService customUserDetailsService) {
+    public SecurityConfiguration(CustomUserDetailsService customUserDetailsService) {
         this.customUserDetailsService = customUserDetailsService;
     }
 
     @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             http
-            //  .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                    .anyRequest().authenticated()
-                )
-                .httpBasic(withDefaults()); // use Basic Auth instead of formLogin
+               .csrf(csrf -> csrf.disable())
+              .authorizeHttpRequests(auth -> auth
+                   .requestMatchers("/Register" , "/login").permitAll()  /// white list for guest users
+                   .anyRequest().authenticated()
+              )
+              .httpBasic(withDefaults()); 
 
             return http.build();
         }
@@ -40,7 +40,7 @@ public class ConfigurationSecurity {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(customUserDetailsService); 
-        provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());           
+        provider.setPasswordEncoder(passwordEncoder());       
         return provider;
     }
 
@@ -49,4 +49,6 @@ public class ConfigurationSecurity {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(); 
     }
+
+
 }
