@@ -1,17 +1,13 @@
 package com.garage_system.Service;
 
-import com.garage_system.Model.Reservation;
-import com.garage_system.Model.Garage;
 import com.garage_system.Model.Vehicle;
-
-import java.time.LocalTime;
 public class BestFit implements ParkingStrategy{
         @Override  
     public void parkin(Vehicle obj) {
         // TODO 
     
     }
-}
+
     /*
     public static void parkin(vehicle obj){
         boolean notEntered = true ;
