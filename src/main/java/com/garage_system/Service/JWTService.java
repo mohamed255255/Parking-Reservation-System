@@ -28,14 +28,6 @@ public class JWTService {
     @Value("${JWT_SECRET}")
     private String secretKey; // must be Base64 256 or 32Bit
 
-
-    private final AuthenticationManager authManager;
-
-    public JWTService(AuthenticationManager authManager) {
-        this.authManager = authManager;
-    }
-
-
     // Decode Base64 secret key into SecretKey object
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -85,18 +77,5 @@ public class JWTService {
                    .compact();
     }
 
-    public ResponseEntity<?>verify(@RequestBody User user){
-        Authentication authentication = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
-        ); // delegates to your DaoAuthenticationProvider
 
-        if (authentication.isAuthenticated()) {
-            String token = this.generateToken(user.getEmail());
-            Map<String, String> response = new HashMap<>();
-            response.put("token", token);
-            return ResponseEntity.ok(response);
-        }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-    }
 }
