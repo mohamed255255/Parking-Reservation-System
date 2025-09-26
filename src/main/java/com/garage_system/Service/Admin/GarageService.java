@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.garage_system.Model.ApiResponse;
+import com.garage_system.DTO.ApiResponse;
 import com.garage_system.Model.Garage;
 import com.garage_system.Repository.Admin.GarageRepository;
 
