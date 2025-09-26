@@ -38,8 +38,6 @@ public class Slot {
         this.empty = true;
     }
 
-    // Getters and Setters
-
     public int getId() {
         return id;
     }

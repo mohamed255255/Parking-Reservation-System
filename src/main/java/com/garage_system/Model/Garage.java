@@ -17,14 +17,9 @@ public class Garage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-
     private String name;
     private String location;
-    private int totalSlots;
-    private int availableSlots;
     private boolean isActive;
-    private int TotalIncome;
 
 
     /// we code to interface not to concrete classes to achieve polymorphism
@@ -56,21 +51,6 @@ public class Garage {
         this.location = location;
     }
 
-    public int getTotalSlots() {
-        return totalSlots;
-    }
-
-    public void setTotalSlots(int totalSlots) {
-        this.totalSlots = totalSlots;
-    }
-
-    public int getAvailableSlots() {
-        return availableSlots;
-    }
-
-    public void setAvailableSlots(int availableSlots) {
-        this.availableSlots = availableSlots;
-    }
 
     public boolean isActive() {
         return isActive;

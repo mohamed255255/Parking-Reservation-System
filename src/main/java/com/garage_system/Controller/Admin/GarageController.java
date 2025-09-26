@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.garage_system.Model.ApiResponse;
 import com.garage_system.Model.Garage;
 import com.garage_system.Service.Admin.GarageService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/garages")
+@Tag(name = "Garage", description = "Garage management APIs")
 public class GarageController {
     
     private final GarageService garageService;
@@ -30,9 +32,15 @@ public class GarageController {
     }
 
     @PostMapping
-    public ResponseEntity<Garage> createGarage(@RequestBody Garage garage) {
-        Garage created = garageService.createGarage(garage);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse<Garage>> createGarage(@RequestBody Garage garage) {
+        Garage createdGarage = garageService.createGarage(garage);
+        ApiResponse<Garage> response = new ApiResponse<>(
+            true, 
+            "Garage created successfully", 
+            createdGarage, 
+            null
+            );
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping

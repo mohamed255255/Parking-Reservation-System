@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.garage_system.Model.Slot;
-// Update the import path to the correct location of SlotService
-import com.garage_system.Service.SlotService;
+import com.garage_system.Service.Admin.SlotService;
 
 
 
