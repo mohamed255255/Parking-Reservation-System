@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.garage_system.Model.ApiResponse;
+import com.garage_system.DTO.ApiResponse;
 import com.garage_system.Model.Garage;
 import com.garage_system.Service.Admin.GarageService;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -21,28 +21,28 @@ import com.garage_system.Service.CustomUserDetailsService;
 public class SecurityConfiguration {
 
     private final CustomUserDetailsService customUserDetailsService;
-    
     private final JWTFilter JwtFilter ;
     
-    public SecurityConfiguration(CustomUserDetailsService customUserDetailsService  , JWTFilter JwtFilter) {
+    public SecurityConfiguration( CustomUserDetailsService customUserDetailsService  , JWTFilter JwtFilter) 
+    {
         this.customUserDetailsService = customUserDetailsService;
         this.JwtFilter = JwtFilter ;
     }
 
-        @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            http
-              .csrf(csrf -> csrf.disable())
-              .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-              .authorizeHttpRequests(auth -> auth
-                   .requestMatchers("/Register" , "/login").permitAll()  /// white list for guest users
-                   .anyRequest().authenticated()
-              )
-              .addFilterBefore(JwtFilter, UsernamePasswordAuthenticationFilter.class)
-              .httpBasic(withDefaults());
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+        .csrf(csrf -> csrf.disable())
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/Register" , "/login"  ).permitAll()  /// white list for guest users
+            .anyRequest().authenticated()
+        )
+        .addFilterBefore(JwtFilter, UsernamePasswordAuthenticationFilter.class)
+        .httpBasic(withDefaults());
 
-            return http.build();
-        }
+        return http.build();
+    }
         
     @Bean
     public AuthenticationProvider authenticationProvider() {
