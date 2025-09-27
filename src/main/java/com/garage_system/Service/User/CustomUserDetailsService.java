@@ -1,16 +1,12 @@
-package com.garage_system.Service;
+package com.garage_system.Service.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.garage_system.DTO.UserPrincipal;
-import com.garage_system.Model.User;
 import com.garage_system.Repository.User.UserRepository;
 
 @Service
@@ -24,10 +20,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
+    public UserDetails loadUserByUsername(String email){
+        var optionalUser = userRepository.findByEmail(email);
+        return optionalUser.map(UserPrincipal::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-        return new UserPrincipal(user); /// Adapter pattern here 
+        /// Adapter pattern here 
         // it converts the interface of your User entity into something Spring Security expects.
     }
     

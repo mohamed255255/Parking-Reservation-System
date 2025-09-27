@@ -1,6 +1,5 @@
 package com.garage_system.Security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.garage_system.Service.CustomUserDetailsService;
+import com.garage_system.Service.User.CustomUserDetailsService;
 
 @Configuration
 public class SecurityConfiguration {
@@ -35,7 +34,7 @@ public class SecurityConfiguration {
         .csrf(csrf -> csrf.disable())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/Register" , "/login"  ).permitAll()  /// white list for guest users
+            .requestMatchers("/Register" , "/login").permitAll() 
             .anyRequest().authenticated()
         )
         .addFilterBefore(JwtFilter, UsernamePasswordAuthenticationFilter.class)

@@ -2,6 +2,8 @@ package com.garage_system.DTO;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,16 +12,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.garage_system.Model.User;
 public class UserPrincipal implements UserDetails {
 
-    private final User user; // your entity
+    private final User user; // the User entity
+    private List<GrantedAuthority> roles;
 
     public UserPrincipal(User user) {
         this.user = user;
+        this.roles = user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
     }
-
+ 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Assuming your User entity has a `getRole()` method returning something like "ADMIN" or "USER"
-        return Collections.singleton(new SimpleGrantedAuthority("User" + user.getRole() ));
+        return roles;
     }
    
     @Override
