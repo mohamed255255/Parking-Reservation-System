@@ -13,13 +13,13 @@ import com.garage_system.Service.User.UserService;
 import java.util.Map;
 
 @RestController
-public class UserController {
+public class AuthenticationController {
 
     private final UserService userService;
     private final JWTService jwtService;
     private final AuthenticationManager authManager;
 
-    public UserController(UserService userService,
+    public AuthenticationController(UserService userService,
                           JWTService jwtService,
                           AuthenticationManager authManager) {
         this.userService = userService;

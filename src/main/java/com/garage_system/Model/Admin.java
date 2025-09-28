@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 @Entity
 public class Admin{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id ;
 
     private String username ;

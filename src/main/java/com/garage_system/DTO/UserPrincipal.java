@@ -1,7 +1,6 @@
 package com.garage_system.DTO;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,18 +12,18 @@ import com.garage_system.Model.User;
 public class UserPrincipal implements UserDetails {
 
     private final User user; // the User entity
-    private List<GrantedAuthority> roles;
+    private List<GrantedAuthority> authorities;
 
     public UserPrincipal(User user) {
         this.user = user;
-        this.roles = user.getRoles().stream()
+        this.authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
     }
  
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
+        return authorities;
     }
    
     @Override

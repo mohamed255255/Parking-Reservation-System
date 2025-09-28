@@ -1,7 +1,7 @@
 package com.garage_system.Model;
 
 import java.util.Collection;
-import com.garage_system.Model.Permission;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +19,7 @@ import lombok.Setter;
 @Getter
 public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
     private String name;
     
