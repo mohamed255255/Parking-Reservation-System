@@ -1,16 +1,18 @@
 package com.garage_system.Controller.User;
 
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.garage_system.Model.User;
 import com.garage_system.Service.JWTService;
 import com.garage_system.Service.User.UserService;
-
-import java.util.Map;
 
 @RestController
 public class AuthenticationController {
@@ -27,13 +29,14 @@ public class AuthenticationController {
         this.authManager = authManager;
     }
 
-    @PostMapping("/Register")
+    @PostMapping("/register")
     public void register(@RequestBody User user) {
         userService.RegisterUser(user);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User user) {
+        /// This uses DaoAuthenticationProvider to validate credentials
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
         );
