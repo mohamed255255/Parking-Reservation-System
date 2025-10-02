@@ -1,4 +1,4 @@
-package com.garage_system.Service.User;
+package com.garage_system.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.garage_system.DTO.UserPrincipal;
-import com.garage_system.Repository.User.UserRepository;
+import com.garage_system.Repository.UserRepository;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {

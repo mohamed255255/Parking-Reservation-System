@@ -1,4 +1,4 @@
-package com.garage_system.Repository.Admin;
+package com.garage_system.Repository;
 
 import java.util.List;
 

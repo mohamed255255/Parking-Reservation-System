@@ -1,4 +1,4 @@
-package com.garage_system.Repository.User;
+package com.garage_system.Repository;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,4 +1,4 @@
-package com.garage_system.Controller.User;
+package com.garage_system.Controller;
 
 public class ReservationController {
     

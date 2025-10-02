@@ -1,4 +1,4 @@
-package com.garage_system.Service.Admin;
+package com.garage_system.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.garage_system.DTO.ApiResponse;
 import com.garage_system.Model.Garage;
-import com.garage_system.Repository.Admin.GarageRepository;
+import com.garage_system.Model.Slot;
+import com.garage_system.Repository.GarageRepository;
 
 @Service
 public class GarageService {
@@ -54,4 +55,13 @@ public class GarageService {
     public void deleteGarage(int id) {
         garageRepository.deleteById(id);
     }
+
+   public List<Slot> getSlotsForThatGarage(int garageId){
+        var foundSlots = garageRepository.findAllSlots(garageId);
+        if(foundSlots.isEmpty()){
+            throw new RuntimeException("No slots found for garage with id: " + garageId);
+        }
+        return foundSlots ;
+    }
+ 
 }

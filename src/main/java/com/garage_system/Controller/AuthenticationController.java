@@ -1,4 +1,4 @@
-package com.garage_system.Controller.User;
+package com.garage_system.Controller;
 
 import java.util.Map;
 
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.garage_system.Model.User;
 import com.garage_system.Service.JWTService;
-import com.garage_system.Service.User.UserService;
+import com.garage_system.Service.UserService;
 
 @RestController
 public class AuthenticationController {

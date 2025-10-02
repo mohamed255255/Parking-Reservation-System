@@ -1,5 +1,7 @@
 package com.garage_system.Model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,6 +23,10 @@ public class Slot {
     private double slotDepth;
 
     private boolean empty;
+
+    private LocalDateTime startTime ;
+
+    private LocalDateTime endiingTime ;
 
     @ManyToOne
     @JoinColumn(name = "garage_id")

@@ -1,4 +1,4 @@
-package com.garage_system.Repository.Admin;
+package com.garage_system.Repository;
 
 import java.util.List;
 
@@ -13,4 +13,7 @@ public interface SlotRepository extends JpaRepository<Slot, Integer> {
   
     @Query("select s from Slot s")
     List<Slot> getAllSlots();
+
+
+
 } 

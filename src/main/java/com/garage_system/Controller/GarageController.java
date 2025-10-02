@@ -1,4 +1,4 @@
-package com.garage_system.Controller.Admin;
+package com.garage_system.Controller;
 
 import java.util.List;
 
@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.garage_system.DTO.ApiResponse;
 import com.garage_system.Model.Garage;
-import com.garage_system.Service.Admin.GarageService;
+import com.garage_system.Model.Slot;
+import com.garage_system.Service.GarageService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -46,6 +47,7 @@ public class GarageController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping
     public ResponseEntity<ApiResponse<List<Garage>>> getAllGarages() {
         return garageService.getAllGarages();
@@ -77,4 +79,22 @@ public class GarageController {
         garageService.deleteGarage(id);
         return ResponseEntity.noContent().build();
     }
+
+   @PreAuthorize("hasAnyRole('ADMIN' , 'USER')")
+   @GetMapping("{id}/slots")
+    public ResponseEntity<ApiResponse<List<Slot>>> getSlotsForThatGarage(@PathVariable("id") int garageId){
+       
+        List<Slot> relatedSlots = garageService.getSlotsForThatGarage(garageId);
+      
+        ApiResponse<List<Slot>>  response = new ApiResponse<>(
+        true, 
+            "Slots retrieved successfully", 
+            relatedSlots , 
+            null
+        );
+        return ResponseEntity.ok(response) ;
+    } 
+
+
+
 }
