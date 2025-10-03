@@ -1,12 +1,10 @@
-# Garage System
+# Parking Reservation System  :
 
 [![Java](https://img.shields.io/badge/Java-21-orange)](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.4-brightgreen)](https://spring.io/projects/spring-boot)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14-blue)](https://www.postgresql.org/)
 [![Security](https://img.shields.io/badge/Security-Spring%20Security%20%2B%20JWT-red)](https://spring.io/projects/spring-security)
 [![Tests](https://img.shields.io/badge/Tests-Spring%20Boot%20Test%20%2B%20Security%20Test-yellow)](https://junit.org/junit5/)
-
-# 🚗 Parking Reservation System  :
 
 The application allows users to easily book parking spaces, join a waiting queue when all spots are full, and receive real-time notifications when a suitable slot becomes available. It also manages reservations, tracks booking history, and enables users to pay parking fees securely through digital payments. Admins have full control over garage and slot creation , user details, reservations, and billing.
 ---
