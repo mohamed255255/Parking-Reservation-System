@@ -58,7 +58,7 @@ The application allows users to easily book parking spaces, join a waiting queue
 -  Implemented a **unified response structure** by wrapping all API outputs in a custom `ApiResponse` object, ensuring consistency across success and error responses.
 - Used **DTOs** to decouple persistence models from exposed APIs, improving security, readability, and maintainability of the codebase.  
 - **Observer Pattern** (for notifications & event-driven updates)
-
+-
 ---
 
 ## 📚 What I Learned in this project
@@ -67,7 +67,8 @@ The application allows users to easily book parking spaces, join a waiting queue
   - Built REST APIs with layered architecture   
   - Applied **DTOs, validators, and validation annotations** for clean data handling  
   - Implemented **global exception handling** for consistent error responses  
-  - Designed a **unified API response structure** for all returned objects  
+  - Designed a **unified API response structure** for all returned objects
+  - Learned and applied **Aspect-Oriented Programming** concepts for cross-cutting concerns(e.g., logging, validation, transaction handling)
 
 - **Spring Security & Authentication**  
   - Implemented **JWT authentication & authorization** with role-based access (Admin/User)  
@@ -97,7 +98,7 @@ The application allows users to easily book parking spaces, join a waiting queue
 
 - **Event-Driven & Messaging**  
   - Designed a **queue & notification system** with **RabbitMQ**  
-  - Applied **event-driven programming concepts** to notify users when slots are freed  
+  - learned **event-driven architecture** to notify users when slots are freed  
 
 - **Integration & Deployment**  
   - Integrated a **third-party payment API (PayPal SDK)** for secure payments  
