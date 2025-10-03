@@ -6,8 +6,10 @@
 [![Security](https://img.shields.io/badge/Security-Spring%20Security%20%2B%20JWT-red)](https://spring.io/projects/spring-security)
 [![Tests](https://img.shields.io/badge/Tests-Spring%20Boot%20Test%20%2B%20Security%20Test-yellow)](https://junit.org/junit5/)
 
-The application allows users to easily book parking spaces, join a waiting queue when all spots are full, and receive real-time notifications when a suitable slot becomes available. It also manages reservations, tracks booking history, and enables users to pay parking fees securely through digital payments. Admins have full control over garage and slot creation , user details, reservations, and billing.
 ---
+
+
+The application allows users to easily book parking spaces, join a waiting queue when all spots are full, and receive real-time notifications when a suitable slot becomes available. It also manages reservations, tracks booking history, and enables users to pay parking fees securely through digital payments. Admins have full control over garage and slot creation , user details, reservations, and billing.
 
 ## ✨ Features  
 
