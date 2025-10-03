@@ -67,12 +67,12 @@ Admin have full control over garage and slot creation , user details, reservatio
 - **Spring Boot & Core Concepts**  
   - **DTOs, validators, and validation annotations** for clean data handling and security
   - **global exception handling** for consistent error responses  
-  - Designed a **unified API response structure** for all returned objects
+  - wrapping all the returned objects in unified API Response 
   - Learned and applied **Aspect-Oriented Programming** concepts for cross-cutting concerns(e.g., logging, validation, transaction handling)
 
 - **Spring Security & Authentication**  
   - **JWT authentication & authorization** in spring
-  - Learned how  **filters** , **AuthenticationManager**, and **CustomUserDetailsService** work internally  
+  - Learned how  **filters** , **AuthenticationManager**, and **CustomUserDetailsService** work internally
   - Applied `@PreAuthorize` for fine-grained method-level security  
   - **password reset** and **2FA (Two-Factor Authentication)**  
 
