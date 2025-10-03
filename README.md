@@ -65,9 +65,8 @@ Admin have full control over garage and slot creation , user details, reservatio
 ## 📚 What I Learned in this project
 
 - **Spring Boot & Core Concepts**  
-  - Built REST APIs with layered architecture   
-  - Applied **DTOs, validators, and validation annotations** for clean data handling  
-  - Implemented **global exception handling** for consistent error responses  
+  - **DTOs, validators, and validation annotations** for clean data handling and security
+  - **global exception handling** for consistent error responses  
   - Designed a **unified API response structure** for all returned objects
   - Learned and applied **Aspect-Oriented Programming** concepts for cross-cutting concerns(e.g., logging, validation, transaction handling)
 
