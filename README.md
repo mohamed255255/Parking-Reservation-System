@@ -104,7 +104,7 @@ The application allows users to easily book parking spaces, join a waiting queue
   - Integrated a **third-party payment API (PayPal SDK)** for secure payments  
   - Sent **automated email receipts** post-transaction  
   - **Dockerized** the application for deployment readiness
-  - basic CI / CD concepts
+  - learned basic CI / CD concepts
 
 
 
