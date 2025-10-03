@@ -15,7 +15,7 @@
 
 
 The application allows users to easily book parking spaces, join a waiting queue when all spots are full, and receive real-time notifications when a suitable slot becomes available. It also manages reservations, tracks booking history, and enables users to pay parking fees securely through digital payments. 
-Admins have full control over garage and slot creation , user details, reservations, and billing.
+Admin have full control over garage and slot creation , user details, reservations, and billing.
 
 ## ✨ Features  
 
@@ -72,40 +72,38 @@ Admins have full control over garage and slot creation , user details, reservati
   - Learned and applied **Aspect-Oriented Programming** concepts for cross-cutting concerns(e.g., logging, validation, transaction handling)
 
 - **Spring Security & Authentication**  
-  - Implemented **JWT authentication & authorization** with role-based access (Admin/User)  
+  - **JWT authentication & authorization** in spring
   - Learned how **filters**, **AuthenticationManager**, and **CustomUserDetailsService** work internally  
   - Applied `@PreAuthorize` for fine-grained method-level security  
-  - Added features like **password reset** and **2FA (Two-Factor Authentication)**  
+  - **password reset** and **2FA (Two-Factor Authentication)**  
 
 - **Database & Persistence**  
-  - How **Hibernate/JPA** persist Java objects behind the scenes   
-  - Practiced `@Transactional` and **transaction propagation** scenarios  
-  - Implemented **sorting & pagination**
+  - How **Hibernate/JPA** persist Java objects in EntityManager behind the scenes   
+  - Practiced `@Transactional` and **transaction propagation**   
+  - **sorting & pagination**
   - How to avoid N+1 problems 
 
 - **System Reliability & Monitoring**  
   - Integrated **Spring Boot Actuator** for monitoring  
-  - Structured **logging** to track key application events  
 
 - **Testing & Quality Assurance**  
   - Wrote **unit tests with JUnit5** and **mocking with Mockito** to validate business logic  
 
 - **Extra features**  
-  - Explored `@Qualifier` vs `@Primary` for dependency injection management 
+  - Explored `@Qualifier` vs `@Primary` 
   - Integrated **OpenAPI/Swagger** for API documentation and testing
   - Explored **Lombok** and **Guava** packages in the app
   - database schema migration using **Flyway**
-  - learn how Maven works : POM file , scopes , build lifecycle, profiles
+  - how Maven works : POM file , scopes , build lifecycle, profiles
 
 - **Event-Driven & Messaging**  
-  - Designed a **queue & notification system** with **RabbitMQ**  
+  - **RabbitMQ**  
   - learned **event-driven architecture** to notify users when slots are freed  
 
 - **Integration & Deployment**  
-  - Integrated a **third-party payment API (PayPal SDK)** for secure payments  
-  - Sent **automated email receipts** post-transaction  
-  - **Dockerized** the application for deployment readiness
-  - learned basic CI / CD concepts
+  - Integrating a **third-party payment API (PayPal SDK)** with spring  
+  - basic knowledge in docker 
+  - basic CI / CD concepts
 
 
 
