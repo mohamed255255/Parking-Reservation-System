@@ -72,7 +72,7 @@ Admin have full control over garage and slot creation , user details, reservatio
 
 - **Spring Security & Authentication**  
   - **JWT authentication & authorization** in spring
-  - Learned how **filters**, **AuthenticationManager**, and **CustomUserDetailsService** work internally  
+  - Learned how  **filters** , **AuthenticationManager**, and **CustomUserDetailsService** work internally  
   - Applied `@PreAuthorize` for fine-grained method-level security  
   - **password reset** and **2FA (Two-Factor Authentication)**  
 
