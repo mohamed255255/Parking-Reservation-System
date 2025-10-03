@@ -76,13 +76,13 @@ The application allows users to easily book parking spaces, join a waiting queue
   - Added features like **password reset** and **2FA (Two-Factor Authentication)**  
 
 - **Database & Persistence**  
-  - Used **Hibernate/JPA** to persist Java objects behind the scenes   
+  - How **Hibernate/JPA** persist Java objects behind the scenes   
   - Practiced `@Transactional` and **transaction propagation** scenarios  
   - Implemented **sorting & pagination**
   - How to avoid N+1 problems 
 
 - **System Reliability & Monitoring**  
-  - Integrated **Spring Boot Actuator** for health checks and monitoring  
+  - Integrated **Spring Boot Actuator** for monitoring  
   - Structured **logging** to track key application events  
 
 - **Testing & Quality Assurance**  
@@ -91,6 +91,9 @@ The application allows users to easily book parking spaces, join a waiting queue
 - **Extra features**  
   - Explored `@Qualifier` vs `@Primary` for dependency injection management 
   - Integrated **OpenAPI/Swagger** for API documentation and testing
+  - Explored **Lombok** and **Guava** packages in the app
+  - database schema migration using **Flyway**
+  - learn how Maven works : POM file , scopes , build lifecycle, profiles
 
 - **Event-Driven & Messaging**  
   - Designed a **queue & notification system** with **RabbitMQ**  
