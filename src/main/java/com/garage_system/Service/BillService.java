@@ -1,4 +1,4 @@
-package com.garage_system.Service.Admin;
+package com.garage_system.Service;
 
 import org.springframework.stereotype.Service;
 

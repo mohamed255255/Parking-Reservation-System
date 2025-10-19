@@ -6,6 +6,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
 @Entity
@@ -31,7 +32,7 @@ public class Vehicle {
     @OneToOne(mappedBy = "vehicle")
     private Slot slot;
 
-    @OneToOne(mappedBy = "vehicle")
+    @OneToMany(mappedBy = "vehicle")
     private Reservation reservation ;
     public Vehicle() {
     }
