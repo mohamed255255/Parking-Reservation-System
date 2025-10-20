@@ -16,9 +16,9 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
 
-    private int plateNumber;
+    private String plateNumber;
 
-    private String modelYear;
+    private int modelYear;
 
     private String modelName;
 
@@ -37,7 +37,7 @@ public class Vehicle {
     public Vehicle() {
     }
 
-    public Vehicle(int id, int plateNumber, String modelYear, String modelName,
+    public Vehicle(int id, String plateNumber, int modelYear, String modelName,
                    double vehicleWidth, double vehicleDepth, VehicleType type) {
         this.id = id;
         this.plateNumber = plateNumber;
@@ -56,19 +56,19 @@ public class Vehicle {
         this.id = id;
     }
 
-    public int getPlateNumber() {
+    public String getPlateNumber() {
         return plateNumber;
     }
 
-    public void setPlateNumber(int plateNumber) {
+    public void setPlateNumber(String plateNumber) {
         this.plateNumber = plateNumber;
     }
 
-    public String getModelYear() {
+    public int getModelYear() {
         return modelYear;
     }
 
-    public void setModelYear(String modelYear) {
+    public void setModelYear(int modelYear) {
         this.modelYear = modelYear;
     }
 
