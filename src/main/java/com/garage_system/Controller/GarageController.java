@@ -6,16 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.garage_system.DTO.ApiResponse;
 import com.garage_system.Model.Garage;
 import com.garage_system.Model.Slot;
 import com.garage_system.Service.GarageService;
@@ -36,37 +28,24 @@ public class GarageController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Garage>> createGarage(@RequestBody Garage garage) {
+    public ResponseEntity<Garage> createGarage(@RequestBody Garage garage) {
         Garage createdGarage = garageService.createGarage(garage);
-        ApiResponse<Garage> response = new ApiResponse<>(
-            true, 
-            "Garage created successfully", 
-            createdGarage, 
-            null
-            );
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return new ResponseEntity<>(createdGarage, HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Garage>>> getAllGarages() {
-        return garageService.getAllGarages();
+    public ResponseEntity<List<Garage>> getAllGarages() {
+        List<Garage> garages = garageService.getAllGaragesList();
+        return ResponseEntity.ok(garages);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Garage>> getGarageById(@PathVariable int id) {
-        var garage = garageService.getGarageById(id)
+    public ResponseEntity<Garage> getGarageById(@PathVariable int id) {
+        Garage garage = garageService.getGarageById(id)
                 .orElseThrow(() -> new RuntimeException("Garage not found with id: " + id));
-
-        var response = new ApiResponse<>(
-                true,
-                "Garage with id " + id + " is found",
-                garage,
-                null
-        );
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(garage);
     }
-
 
     @PutMapping("/{id}")
     public ResponseEntity<Garage> updateGarage(@PathVariable int id, @RequestBody Garage garage) {
@@ -80,21 +59,10 @@ public class GarageController {
         return ResponseEntity.noContent().build();
     }
 
-   @PreAuthorize("hasAnyRole('ADMIN' , 'USER')")
-   @GetMapping("{id}/slots")
-    public ResponseEntity<ApiResponse<List<Slot>>> getSlotsForThatGarage(@PathVariable("id") int garageId){
-       
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @GetMapping("/{id}/slots")
+    public ResponseEntity<List<Slot>> getSlotsForThatGarage(@PathVariable("id") int garageId) {
         List<Slot> relatedSlots = garageService.getSlotsForThatGarage(garageId);
-      
-        ApiResponse<List<Slot>>  response = new ApiResponse<>(
-        true, 
-            "Slots retrieved successfully", 
-            relatedSlots , 
-            null
-        );
-        return ResponseEntity.ok(response) ;
-    } 
-
-
-
+        return ResponseEntity.ok(relatedSlots);
+    }
 }

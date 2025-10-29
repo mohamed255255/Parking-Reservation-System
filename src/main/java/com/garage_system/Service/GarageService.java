@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.garage_system.DTO.ApiResponse;
 import com.garage_system.Model.Garage;
 import com.garage_system.Model.Slot;
 import com.garage_system.Repository.GarageRepository;
@@ -26,15 +24,9 @@ public class GarageService {
         return garageRepository.save(garage);
     }
 
-    public ResponseEntity< ApiResponse< List<Garage> >> getAllGarages() {
-        List<Garage> garages = garageRepository.getAllGarages();
-        ApiResponse<List<Garage>> response = new ApiResponse<List<Garage>>(
-            true, 
-            "Garages retrieved successfully", 
-            garages, 
-            null
-            );
-        return ResponseEntity.ok(response);
+    // ✅ Return list directly, not wrapped in ApiResponse or ResponseEntity
+    public List<Garage> getAllGaragesList() {
+        return garageRepository.getAllGarages();
     }
 
     public Optional<Garage> getGarageById(int id) {
@@ -56,12 +48,11 @@ public class GarageService {
         garageRepository.deleteById(id);
     }
 
-   public List<Slot> getSlotsForThatGarage(int garageId){
-        var foundSlots = garageRepository.findAllSlots(garageId);
-        if(foundSlots.isEmpty()){
+    public List<Slot> getSlotsForThatGarage(int garageId) {
+        List<Slot> foundSlots = garageRepository.findAllSlots(garageId);
+        if (foundSlots.isEmpty()) {
             throw new RuntimeException("No slots found for garage with id: " + garageId);
         }
-        return foundSlots ;
+        return foundSlots;
     }
- 
 }
