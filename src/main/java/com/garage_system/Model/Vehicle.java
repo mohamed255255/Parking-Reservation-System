@@ -6,10 +6,17 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Setter
+@Getter
+
 public class Vehicle {
 
     @Id
@@ -32,8 +39,10 @@ public class Vehicle {
     @OneToOne(mappedBy = "vehicle")
     private Slot slot;
 
-    @OneToMany(mappedBy = "vehicle")
+    @ManyToOne
+    @JoinColumn(name = "vehicle_id", nullable = false)
     private Reservation reservation ;
+
     public Vehicle() {
     }
 
@@ -48,67 +57,5 @@ public class Vehicle {
         this.type = type;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getPlateNumber() {
-        return plateNumber;
-    }
-
-    public void setPlateNumber(String plateNumber) {
-        this.plateNumber = plateNumber;
-    }
-
-    public int getModelYear() {
-        return modelYear;
-    }
-
-    public void setModelYear(int modelYear) {
-        this.modelYear = modelYear;
-    }
-
-    public String getModelName() {
-        return modelName;
-    }
-
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
-    }
-
-    public double getVehicleWidth() {
-        return vehicleWidth;
-    }
-
-    public void setVehicleWidth(double vehicleWidth) {
-        this.vehicleWidth = vehicleWidth;
-    }
-
-    public double getVehicleDepth() {
-        return vehicleDepth;
-    }
-
-    public void setVehicleDepth(double vehicleDepth) {
-        this.vehicleDepth = vehicleDepth;
-    }
-
-    public VehicleType getType() {
-        return type;
-    }
-
-    public void setType(VehicleType type) {
-        this.type = type;
-    }
-
-    public Slot getSlot() {
-        return slot;
-    }
-
-    public void setSlot(Slot slot) {
-        this.slot = slot;
-    }
+  
 }

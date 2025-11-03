@@ -2,6 +2,7 @@ package com.garage_system.Security;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,7 +25,8 @@ public class JWTFilter extends  OncePerRequestFilter {
     private final JWTService jwtService;
     private final CustomUserDetailsService userService;
 
-    public JWTFilter(JWTService jwtService, CustomUserDetailsService userService) {
+    @Autowired
+    public JWTFilter(JWTService jwtService,CustomUserDetailsService userService) {
         this.jwtService = jwtService;
         this.userService = userService;
     }

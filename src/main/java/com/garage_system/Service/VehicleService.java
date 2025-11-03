@@ -2,6 +2,8 @@ package com.garage_system.Service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.garage_system.Model.Vehicle;
@@ -19,7 +21,7 @@ public class VehicleService {
         this.vehicleRepository = vehicleRepository ;
      }
      
-    public Vehicle createVehicle(Vehicle vehicle){
+     public Vehicle createVehicle(Vehicle vehicle){
           return vehicleRepository.save(vehicle);
     }
 
@@ -41,8 +43,8 @@ public class VehicleService {
     }
 
     
-    public List<Vehicle> getAllVehicles() {
-        return vehicleRepository.findAll();
+    public Page<Vehicle> getAllVehicles(PageRequest pageRequest) {
+        return vehicleRepository.findAll(pageRequest);
     }
 
     public Vehicle getVehicleById(int id) {

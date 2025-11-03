@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.garage_system.Model.Vehicle;
@@ -41,24 +42,16 @@ public class VehicleController {
         vehicleService.deleteVehicle(id);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
-// Get All Vehicles (with pagination and sorting)
-@GetMapping
-public ResponseEntity<Page<Vehicle>> getAllVehicles(
-        @RequestParam int pageNo,
-        @RequestParam int pageSize,
-        @RequestParam(defaultValue = "id") String columnName,
-        @RequestParam(defaultValue = "true") boolean isAsc) {
 
-    Sort sort = isAsc
-            ? Sort.by(columnName).ascending()
-            : Sort.by(columnName).descending();
+    // Get All Vehicles in the system (with pagination and sorting)
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping
+    public ResponseEntity<Page<Vehicle>> getAllVehicles(@RequestParam int pageNo  ,  @RequestParam int pageSize) {
 
-    PageRequest pageRequest = PageRequest.of(pageNo, pageSize, sort);
-
-    
-    Page<Vehicle> vehicles = vehicleService.getAllVehicles(pageRequest);
-    return ResponseEntity.ok(vehicles);
-}
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize);
+        Page<Vehicle> vehicles = vehicleService.getAllVehicles(pageRequest);
+        return ResponseEntity.ok(vehicles);
+    }
 
 
     // Get Vehicle by ID

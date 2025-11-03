@@ -22,7 +22,6 @@ public class GarageController {
     
     private final GarageService garageService;
 
-    @Autowired
     public GarageController(GarageService garageService) {
         this.garageService = garageService;
     }
