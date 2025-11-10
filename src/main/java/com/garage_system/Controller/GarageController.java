@@ -60,7 +60,7 @@ public class GarageController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/{id}/slots")
-    public ResponseEntity<List<Slot>> getSlotsForThatGarage(@PathVariable("id") int garageId) {
+    public ResponseEntity<List<Slot>> getSlotsForSpecificGarage(@PathVariable("id") int garageId) {
         List<Slot> relatedSlots = garageService.getSlotsForThatGarage(garageId);
         return ResponseEntity.ok(relatedSlots);
     }

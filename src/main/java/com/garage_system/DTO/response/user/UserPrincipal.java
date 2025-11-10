@@ -1,4 +1,4 @@
-package com.garage_system.DTO;
+package com.garage_system.DTO.response.user;
 
 import java.util.Collection;
 import java.util.List;
