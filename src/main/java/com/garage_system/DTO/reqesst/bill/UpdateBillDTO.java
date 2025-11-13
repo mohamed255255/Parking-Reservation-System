@@ -1,4 +1,4 @@
-package com.garage_system.DTO.reqesst.garage;
+package com.garage_system.DTO.reqesst.bill;
 
 public class UpdateBillDTO {
     

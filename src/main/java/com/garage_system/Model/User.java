@@ -17,6 +17,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -44,15 +46,11 @@ public class User {
         this.roles = roles;
     }
 
-
-
     private String name;
     
     @Column(unique = true)
-    @Email(message="Email should be valid")
     private String email;
   
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     private LocalDate createdAt;
