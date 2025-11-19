@@ -1,4 +1,4 @@
-package com.garage_system.DTO.response.user;
+package com.garage_system.Security;
 
 import java.util.Collection;
 import java.util.List;
@@ -36,7 +36,6 @@ public class UserPrincipal implements UserDetails {
         return user.getEmail();
     }
 
-    @Override
     public boolean isAccountNonExpired() { return true; }
     @Override
     public boolean isAccountNonLocked() { return true; }

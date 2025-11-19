@@ -1,4 +1,4 @@
-package com.garage_system.DTO.reqesst.user;
+package com.garage_system.DTO.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -8,32 +8,27 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 
-
-@Setter 
+@Setter
 @Getter
-public class CreateUserDTO {
-    private int id ;
-    
+public class UserDto {
+    private int id;
+
     @NotBlank(message = "empty names are not allowed")
-    private String name ;
+    private String name;
 
     @Email(message="Email should be valid")
     private String email;
 
-
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotEmpty
-    private String password ;
+    private String password;
 
-   
-    public CreateUserDTO(){
+    public UserDto() {}
 
-    } 
-
-    public CreateUserDTO(String name , String email , String password ){
-            this.name = name ;this.email = email ; this.password = password ;
-    } 
-
-
-
-  }
+    public UserDto(int id, String name, String email, String password) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+}

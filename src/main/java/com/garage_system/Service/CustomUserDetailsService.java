@@ -6,8 +6,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.garage_system.DTO.response.user.UserPrincipal;
 import com.garage_system.Repository.UserRepository;
+import com.garage_system.Security.UserPrincipal;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {

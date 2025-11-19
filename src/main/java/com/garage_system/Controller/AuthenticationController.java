@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.garage_system.DTO.request.UserDto;
+import com.garage_system.DTO.request.user.CreateUserDTO;
 import com.garage_system.Model.User;
 import com.garage_system.Service.JWTService;
 import com.garage_system.Service.UserService;
@@ -30,19 +32,19 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public void register(@RequestBody User user) {
+    public void register(@RequestBody UserDto user) {
         userService.RegisterUser(user);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User user) {
+    public ResponseEntity<?> login(@RequestBody UserDto userDto) {
         /// This uses DaoAuthenticationProvider to validate credentials
         Authentication authentication = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
+                new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword())
         );
 
         if (authentication.isAuthenticated()) {
-            String token = jwtService.generateToken(user.getEmail());
+            String token = jwtService.generateToken(userDto.getEmail());
             return ResponseEntity.ok(Map.of("token", token));
         }
         return ResponseEntity.status(401).body("Invalid credentials");
