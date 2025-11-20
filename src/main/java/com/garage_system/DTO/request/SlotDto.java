@@ -1,5 +1,5 @@
 package com.garage_system.DTO.request;
 
-public class CreateSlotDTO {
+public class SlotDto {
     
 }

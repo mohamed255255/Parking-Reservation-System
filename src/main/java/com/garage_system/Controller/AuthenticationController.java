@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.garage_system.DTO.request.UserDto;
-import com.garage_system.DTO.request.user.CreateUserDTO;
+import com.garage_system.DTO.request.UserDto;
 import com.garage_system.Model.User;
 import com.garage_system.Service.JWTService;
 import com.garage_system.Service.UserService;
+
+import jakarta.validation.Valid;
 
 @RestController
 public class AuthenticationController {
@@ -32,12 +34,12 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public void register(@RequestBody UserDto user) {
+    public void register(@Valid @RequestBody UserDto user) {
         userService.RegisterUser(user);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDto userDto) {
+    public ResponseEntity<?> login(@Valid @RequestBody UserDto userDto) {
         /// This uses DaoAuthenticationProvider to validate credentials
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword())
