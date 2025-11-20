@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.garage_system.DTO.request.VehicleDto;
 import com.garage_system.Model.Vehicle;
 import com.garage_system.Repository.VehicleRepository;
+import com.garage_system.mapper.VehicleMapper;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -21,19 +23,20 @@ public class VehicleService {
         this.vehicleRepository = vehicleRepository ;
      }
      
-     public Vehicle createVehicle(Vehicle vehicle){
-          return vehicleRepository.save(vehicle);
+     public Vehicle createVehicle(VehicleDto vehicleDto){
+          Vehicle newVehicle = VehicleMapper.toEntity(vehicleDto) ;
+          return vehicleRepository.save(newVehicle);
     }
 
    
-    public void updateVehicle(Vehicle v , int id){
+    public void updateVehicle(VehicleDto vehicleDto , int id){
       vehicleRepository.updateVehicle(
-            v.getPlateNumber(),
-            v.getModelYear(),
-            v.getModelName(),
-            v.getVehicleWidth(),
-            v.getVehicleDepth(),
-            v.getType().name(),
+            vehicleDto.getPlateNumber(),
+            vehicleDto.getModelYear(),
+            vehicleDto.getModelName(),
+            vehicleDto.getVehicleWidth(),
+            vehicleDto.getVehicleDepth(),
+            vehicleDto.getType().name(),
             id
         );    
     }

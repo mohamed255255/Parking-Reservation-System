@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.garage_system.DTO.request.SlotDto;
 import com.garage_system.Model.Slot;
 import com.garage_system.Service.SlotService;
 
@@ -31,8 +32,8 @@ public class SlotController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addNewSlot(@RequestBody Slot slot) {
-        slotService.addNewSlot(slot);
+    public ResponseEntity<String> addNewSlot(@RequestBody SlotDto slotDto) {
+        slotService.addNewSlot(slotDto);
         return ResponseEntity.ok("Slot is added successfully");
     }
 

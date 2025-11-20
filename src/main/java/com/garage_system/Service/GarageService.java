@@ -6,9 +6,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.garage_system.DTO.request.GarageDto;
 import com.garage_system.Model.Garage;
 import com.garage_system.Model.Slot;
 import com.garage_system.Repository.GarageRepository;
+import com.garage_system.mapper.GarageMapper;
 
 @Service
 public class GarageService {
@@ -20,7 +22,8 @@ public class GarageService {
         this.garageRepository = garageRepository;
     }
 
-    public Garage createGarage(Garage garage) {
+    public Garage createGarage(GarageDto garageDto) {
+        Garage garage = GarageMapper.toEntity(garageDto) ;
         return garageRepository.save(garage);
     }
 
@@ -33,12 +36,12 @@ public class GarageService {
         return garageRepository.findById(id);
     }
 
-    public Garage updateGarage(int id, Garage updatedGarage) {
+    public Garage updateGarage(int id, GarageDto garageDto) {
         return garageRepository.findById(id)
             .map(existing -> {
-                existing.setName(updatedGarage.getName());
-                existing.setLocation(updatedGarage.getLocation());
-                existing.setActive(updatedGarage.isActive());
+                existing.setName(garageDto.getName());
+                existing.setLocation(garageDto.getLocation());
+                existing.setActive(garageDto.isActive());
                 return garageRepository.save(existing);
             })
             .orElseThrow(() -> new IllegalArgumentException("Garage with id " + id + " not found"));

@@ -10,13 +10,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Setter
 @Getter
-
+@NoArgsConstructor
+@AllArgsConstructor
 public class Vehicle {
 
     @Id
@@ -43,19 +46,7 @@ public class Vehicle {
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Reservation reservation ;
 
-    public Vehicle() {
-    }
-
-    public Vehicle(int id, String plateNumber, int modelYear, String modelName,
-                   double vehicleWidth, double vehicleDepth, VehicleType type) {
-        this.id = id;
-        this.plateNumber = plateNumber;
-        this.modelYear = modelYear;
-        this.modelName = modelName;
-        this.vehicleWidth = vehicleWidth;
-        this.vehicleDepth = vehicleDepth;
-        this.type = type;
-    }
+  
 
   
 }

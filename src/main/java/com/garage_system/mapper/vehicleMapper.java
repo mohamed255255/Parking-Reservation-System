@@ -1,5 +1,37 @@
 package com.garage_system.mapper;
 
-public class vehicleMapper {
-    
+import com.garage_system.DTO.request.VehicleDto;
+import com.garage_system.Model.Vehicle;
+
+public class VehicleMapper {
+
+    public static Vehicle toEntity(VehicleDto dto) {
+        if (dto == null) return null;
+
+        Vehicle vehicle = new Vehicle();
+        vehicle.setId(dto.getId() != null ? dto.getId() : 0); 
+        vehicle.setPlateNumber(dto.getPlateNumber());
+        vehicle.setModelYear(dto.getModelYear());
+        vehicle.setModelName(dto.getModelName());
+        vehicle.setVehicleWidth(dto.getVehicleWidth());
+        vehicle.setVehicleDepth(dto.getVehicleDepth());
+        vehicle.setType(dto.getType());
+
+        return vehicle;
+    }
+
+    public static VehicleDto toDto(Vehicle vehicle) {
+        if (vehicle == null) return null;
+
+        VehicleDto dto = new VehicleDto();
+        dto.setId(vehicle.getId());
+        dto.setPlateNumber(vehicle.getPlateNumber());
+        dto.setModelYear(vehicle.getModelYear());
+        dto.setModelName(vehicle.getModelName());
+        dto.setVehicleWidth(vehicle.getVehicleWidth());
+        dto.setVehicleDepth(vehicle.getVehicleDepth());
+        dto.setType(vehicle.getType());
+
+        return dto;
+    }
 }

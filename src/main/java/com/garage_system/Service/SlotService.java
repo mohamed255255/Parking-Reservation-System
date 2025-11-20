@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.garage_system.DTO.request.SlotDto;
 import com.garage_system.Model.Slot;
 import com.garage_system.Repository.SlotRepository;
+import com.garage_system.mapper.SlotMapper;
 
 @Service
 public class SlotService {
@@ -16,8 +18,9 @@ public class SlotService {
         this.slotRepository = slotRepository;
     }
 
-    public void addNewSlot(Slot slot) {
-        slotRepository.save(slot);
+    public void addNewSlot(SlotDto slotDto) {
+        Slot newslot = SlotMapper.toEntity(slotDto) ;
+        slotRepository.save(newslot);
     }
 
     public List<Slot> getAllSlots(){

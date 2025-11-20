@@ -1,5 +1,32 @@
 package com.garage_system.mapper;
 
-public class garageMapper {
-    
+import com.garage_system.DTO.request.GarageDto;
+import com.garage_system.Model.Garage;
+
+public class GarageMapper {
+
+    // Convert GarageDto -> Garage entity
+    public static Garage toEntity(GarageDto dto) {
+        if (dto == null) return null;
+
+        Garage garage = new Garage();
+        garage.setId(dto.getId());
+        garage.setName(dto.getName());
+        garage.setLocation(dto.getLocation());
+        garage.setCapactiy(dto.getCapactiy());
+
+        return garage;
+    }
+
+    public static GarageDto toDto(Garage garage) {
+        if (garage == null) return null;
+
+        GarageDto dto = new GarageDto();
+        dto.setId(garage.getId());
+        dto.setName(garage.getName());
+        dto.setLocation(garage.getLocation());
+        dto.setCapactiy(garage.getCapactiy());
+
+        return dto;
+    }
 }

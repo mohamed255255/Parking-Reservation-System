@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.garage_system.DTO.request.GarageDto;
 import com.garage_system.Model.Garage;
 import com.garage_system.Model.Slot;
 import com.garage_system.Service.GarageService;
@@ -33,8 +34,8 @@ public class GarageController {
     }
 
     @PostMapping
-    public ResponseEntity<Garage> createGarage(@RequestBody Garage garage) {
-        Garage createdGarage = garageService.createGarage(garage);
+    public ResponseEntity<Garage> createGarage(@RequestBody GarageDto garageDto) {
+        Garage createdGarage = garageService.createGarage(garageDto);
         return new ResponseEntity<>(createdGarage, HttpStatus.CREATED);
     }
 
@@ -53,8 +54,8 @@ public class GarageController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Garage> updateGarage(@PathVariable int id, @RequestBody Garage garage) {
-        Garage updated = garageService.updateGarage(id, garage);
+    public ResponseEntity<Garage> updateGarage(@PathVariable int id, @RequestBody GarageDto garageDto) {
+        Garage updated = garageService.updateGarage(id, garageDto);
         return ResponseEntity.ok(updated);
     }
 

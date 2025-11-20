@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import com.garage_system.DTO.request.VehicleDto;
 import com.garage_system.Model.Vehicle;
 import com.garage_system.Service.VehicleService;
 
@@ -24,15 +25,15 @@ public class VehicleController {
 
     // Create Vehicle
     @PostMapping
-    public ResponseEntity<Vehicle> createVehicle(@RequestBody Vehicle vehicle) {
-        Vehicle createdVehicle = vehicleService.createVehicle(vehicle);
+    public ResponseEntity<Vehicle> createVehicle(@RequestBody VehicleDto vehicleDto) {
+        Vehicle createdVehicle = vehicleService.createVehicle(vehicleDto);
         return ResponseEntity.ok(createdVehicle);
     }
 
     // Update Vehicle
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateVehicle(@RequestBody Vehicle vehicle, @PathVariable int id) {
-        vehicleService.updateVehicle(vehicle, id);
+    public ResponseEntity<Void> updateVehicle(@RequestBody VehicleDto vehicleDto , @PathVariable int id) {
+        vehicleService.updateVehicle(vehicleDto , id);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
 
