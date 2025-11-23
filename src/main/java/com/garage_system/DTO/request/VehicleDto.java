@@ -42,3 +42,5 @@ public class VehicleDto {
     private VehicleType type;
 
 }
+
+

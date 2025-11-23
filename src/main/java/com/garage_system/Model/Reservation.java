@@ -41,9 +41,8 @@ public class Reservation {
     private Slot slot;
 
 
-    public Reservation() {
-    }
+    public Reservation() {}
 
-  
+
 
 }

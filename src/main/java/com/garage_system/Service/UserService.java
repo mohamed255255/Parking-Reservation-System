@@ -5,7 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.garage_system.DTO.request.UserDto;
+import com.garage_system.DTO.request.RegisterUserDto;
 import com.garage_system.Model.User;
 import com.garage_system.Repository.UserRepository;
 import com.garage_system.mapper.UserMapper;
@@ -23,7 +23,7 @@ public class UserService {
           this.userRepository = userRepository;
      }
 
-     public void RegisterUser(UserDto userDto) {
+     public void RegisterUser(RegisterUserDto userDto) {
 
           User user = UserMapper.toUser(userDto, passwordEncoder);
           userRepository.save(user);

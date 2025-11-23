@@ -12,12 +12,10 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class UserDto {
+public class LoginUserDto
+ {
     private int id;
-
-    @NotBlank(message = "empty names are not allowed")
-    private String name;
-
+    
     @Email(message = "Email format is invalid")
     private String email;
 
@@ -26,15 +24,10 @@ public class UserDto {
     @Size(min = 6, max = 20, message = "passwords should be greater than 6 and less than 20")
     private String password;
 
-    @PhoneValidation 
-    private String phone ;
+    public LoginUserDto() {}
 
-    public UserDto() {
-    }
-
-    public UserDto(int id, String name, String email, String password) {
+    public LoginUserDto(int id, String name, String email, String password) {
         this.id = id;
-        this.name = name;
         this.email = email;
         this.password = password;
     }
