@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,15 +42,9 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginUserDto userDto) {
-        /// This uses DaoAuthenticationProvider to validate credentials
-        Authentication authentication = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword())
-        );
-
-        if (authentication.isAuthenticated()) {
+            authManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword()));
             String token = jwtService.generateToken(userDto.getEmail());
             return ResponseEntity.ok(Map.of("token", token));
-        }
-        return ResponseEntity.status(401).body("Invalid credentials");
-    }
+    }   
+        
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,7 +27,6 @@ public class GlobalExceptionHandler {
                        String message   = error.getDefaultMessage(); /// get the message we wrote in annotation
                        errorMap.put(fieldName , message) ;
                });
-
                return errorMap ;
        }
 
@@ -36,5 +36,13 @@ public class GlobalExceptionHandler {
                 return ResponseEntity
                         .status(HttpStatus.CONFLICT)
                         .body(Map.of("email error ", "Email is already existed"));
+        }
+
+
+        @ExceptionHandler(BadCredentialsException.class)
+        public ResponseEntity<?> handleWrongCredentials(BadCredentialsException ex) {
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body("wrong email or password");
         }
 }
