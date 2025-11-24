@@ -14,6 +14,7 @@ import com.garage_system.Service.VehicleService;
 
 @RestController
 @RequestMapping("/vehicle")
+@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 public class VehicleController {
 
     private final VehicleService vehicleService;

@@ -46,9 +46,9 @@ public class GlobalExceptionHandler {
                         .status(HttpStatus.UNAUTHORIZED)
                         .body("wrong email or password");
         }
-        // All run time errors 
-        @ExceptionHandler(RuntimeException.class)
-        public ResponseEntity<Object> handleGeneralExceptions(RuntimeException ex) {
+
+        @ExceptionHandler(ResourceNotFoundException.class)
+        public ResponseEntity<Object> handleNotFoundEntities(ResourceNotFoundException ex) {
                 Map<String, Object> body = new HashMap<>();
                 body.put("timestamp", LocalDateTime.now());
                 body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
