@@ -42,9 +42,9 @@ public class Vehicle {
     @OneToOne(mappedBy = "vehicle")
     private Slot slot;
 
-    @ManyToOne
-    @JoinColumn(name = "vehicle_id", nullable = false)
-    private Reservation reservation ;
+@ManyToOne
+@JoinColumn(name = "reservation_id", nullable = true)
+private Reservation reservation;
 
   
 

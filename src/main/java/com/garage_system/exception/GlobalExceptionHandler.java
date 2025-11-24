@@ -31,14 +31,6 @@ public class GlobalExceptionHandler {
                return errorMap ;
        }
 
-           
-        @ExceptionHandler(DataIntegrityViolationException.class)
-        public ResponseEntity<?> handleEmailAlreadyExists(DataIntegrityViolationException ex) {
-                return ResponseEntity
-                        .status(HttpStatus.CONFLICT)
-                        .body(Map.of("email error ", "Email is already existed"));
-        }
-
 
         @ExceptionHandler(BadCredentialsException.class)
         public ResponseEntity<?> handleWrongCredentials(BadCredentialsException ex) {

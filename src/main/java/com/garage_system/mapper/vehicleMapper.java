@@ -9,7 +9,6 @@ public class VehicleMapper {
         if (dto == null) return null;
 
         Vehicle vehicle = new Vehicle();
-        vehicle.setId(dto.getId() != null ? dto.getId() : 0); 
         vehicle.setPlateNumber(dto.getPlateNumber());
         vehicle.setModelYear(dto.getModelYear());
         vehicle.setModelName(dto.getModelName());
@@ -24,7 +23,6 @@ public class VehicleMapper {
         if (vehicle == null) return null;
 
         VehicleDto dto = new VehicleDto();
-        dto.setId(vehicle.getId());
         dto.setPlateNumber(vehicle.getPlateNumber());
         dto.setModelYear(vehicle.getModelYear());
         dto.setModelName(vehicle.getModelName());

@@ -3,6 +3,7 @@ package com.garage_system.Model;
 import java.time.LocalTime;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,7 +32,7 @@ public class Reservation {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "reservation")
+    @OneToMany(mappedBy = "reservation" , cascade = CascadeType.PERSIST) /// storing Resservation will store all related cars
     private List<Vehicle> vehicles;
 
 

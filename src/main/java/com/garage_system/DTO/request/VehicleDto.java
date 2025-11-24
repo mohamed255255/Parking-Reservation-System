@@ -19,8 +19,6 @@ import lombok.Setter;
 @Getter
 public class VehicleDto {
 
-    private Integer id;
-
     @NotBlank(message = "Plate number is required")
     @Size(max = 10, message = "Plate number cannot exceed 10 characters")
     private String plateNumber;
@@ -32,9 +30,11 @@ public class VehicleDto {
     private String modelName;
 
     @Positive(message = "Vehicle width must be positive")
+    @NotNull
     private double vehicleWidth;
 
     @Positive(message = "Vehicle depth must be positive")
+    @NotNull
     private double vehicleDepth;
 
     @NotNull(message = "Vehicle type must be specified")
