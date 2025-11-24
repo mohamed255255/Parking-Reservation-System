@@ -14,6 +14,7 @@ public class GarageMapper {
         garage.setName(dto.getName());
         garage.setLocation(dto.getLocation());
         garage.setCapactiy(dto.getCapactiy());
+        garage.setActive(dto.isActive());
 
         return garage;
     }
@@ -26,7 +27,7 @@ public class GarageMapper {
         dto.setName(garage.getName());
         dto.setLocation(garage.getLocation());
         dto.setCapactiy(garage.getCapactiy());
-
+        dto.setActive(garage.isActive());
         return dto;
     }
 }

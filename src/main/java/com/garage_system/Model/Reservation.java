@@ -17,7 +17,6 @@ import lombok.Setter;
 @Entity
 @Setter
 @Getter
-
 public class Reservation {
 
     @Id

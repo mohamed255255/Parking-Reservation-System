@@ -8,13 +8,11 @@ public class SlotMapper {
     public static Slot toEntity(SlotDto dto) {
 
         Slot slot = new Slot();
-        slot.setId(dto.getId());
         slot.setSlotWidth(dto.getSlotWidth());
         slot.setSlotDepth(dto.getSlotDepth());
         slot.setEmpty(dto.getEmpty());
         slot.setStartTime(dto.getStartTime());
         slot.setEndingTime(dto.getEndingTime());
-
         return slot;
     }
 

@@ -44,4 +44,7 @@ public class SlotDto {
         if (startTime == null || endingTime == null) return true; 
         return endingTime.isAfter(startTime);
     }
+    private int garage_id ;
+    
+    private int vehicle_id ;
 }

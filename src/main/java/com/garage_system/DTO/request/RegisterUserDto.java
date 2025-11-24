@@ -1,17 +1,25 @@
 package com.garage_system.DTO.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.garage_system.validator.PhoneValidation;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.garage_system.Model.Role;
+import com.garage_system.validator.PhoneValidation;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class RegisterUserDto {
     private int id;
 
@@ -29,13 +37,7 @@ public class RegisterUserDto {
     @PhoneValidation 
     private String phone ;
 
-    public RegisterUserDto() {
-    }
-
-    public RegisterUserDto(int id, String name, String email, String password) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-    }
+    @NotNull(message = "a role must be assigned")
+    List<Role>roles ;
+  
 }

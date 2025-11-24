@@ -11,8 +11,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class Bill {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -21,68 +30,13 @@ public class Bill {
     private double price ;
     private int vehicleNumber ;
 
-
     private LocalTime startingTime;
     private LocalTime endingTime;
     private LocalDate date ;
 
-    @OneToMany(mappedBy = "bill" , cascade = CascadeType.PERSIST )
+    @OneToMany(mappedBy = "bill")
     private List<User> users = new ArrayList<>() ;
 
-    public Bill(){}
-
-    ///setters and getters
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-    public double getPrice() {
-        return price;
-    }
-    public void setPrice(double price) {
-        this.price = price;
-    }
-    public int getVehicleNumber() {
-        return vehicleNumber;
-    }
-    public void setVehicleNumber(int vehicleNumber) {
-        this.vehicleNumber = vehicleNumber;
-    }
-    public LocalTime getStartingTime() {
-        return startingTime;
-    }
-    public void setStartingTime(LocalTime startingTime) {
-        this.startingTime = startingTime;
-    }
-    public LocalTime getEndingTime() {
-        return endingTime;
-    }
-    public void setEndingTime(LocalTime endingTime) {
-        this.endingTime = endingTime;
-    }
-    public LocalDate getDate() {
-        return date;
-    }
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-    public List<User> getUsers() {
-        return users;
-    }
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
-    public void addUser(User user) {
-        users.add(user);
-        user.setBill(this);
-    }
-    public void removeUser(User user) {
-        users.remove(user);
-        user.setBill(null);
-    }
-    
 
 
 }

@@ -30,7 +30,7 @@ public class Garage {
     private int Capactiy ;
 
     /// we code to interface not to concrete classes to achieve polymorphism
-    @OneToMany(mappedBy = "garage", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "garage")
     private List<Slot> slots = new ArrayList<>();
 
 

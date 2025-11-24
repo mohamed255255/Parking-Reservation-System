@@ -38,7 +38,7 @@ public class Slot {
     @JoinColumn(name = "garage_id")
     private Garage garage;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 

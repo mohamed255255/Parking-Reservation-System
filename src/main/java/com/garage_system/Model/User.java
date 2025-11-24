@@ -48,6 +48,8 @@ public class User {
   
     private String password;
 
+    private String phone ;
+    
     private LocalDate createdAt;
 
     private LocalDate updatedAt;

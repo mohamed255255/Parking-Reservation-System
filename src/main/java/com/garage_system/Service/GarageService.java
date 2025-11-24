@@ -10,6 +10,7 @@ import com.garage_system.DTO.request.GarageDto;
 import com.garage_system.Model.Garage;
 import com.garage_system.Model.Slot;
 import com.garage_system.Repository.GarageRepository;
+import com.garage_system.exception.ResourceNotFoundException;
 import com.garage_system.mapper.GarageMapper;
 
 @Service
@@ -27,7 +28,6 @@ public class GarageService {
         return garageRepository.save(garage);
     }
 
-    // ✅ Return list directly, not wrapped in ApiResponse or ResponseEntity
     public List<Garage> getAllGaragesList() {
         return garageRepository.getAllGarages();
     }
@@ -44,7 +44,7 @@ public class GarageService {
                 existing.setActive(garageDto.isActive());
                 return garageRepository.save(existing);
             })
-            .orElseThrow(() -> new IllegalArgumentException("Garage with id " + id + " not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Garage with id " + id + " not found"));
     }
 
     public void deleteGarage(int id) {
