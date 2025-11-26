@@ -21,7 +21,6 @@ public class GlobalExceptionHandler {
        @ExceptionHandler(MethodArgumentNotValidException.class)
        @ResponseStatus(HttpStatus.BAD_REQUEST) // cuz the default is 200 even if there is an exception  
        public Map<String , String> handleMethodArgumentNotValidException( MethodArgumentNotValidException e){
-              
                Map<String , String> errorMap = new HashMap<>() ;
                e.getBindingResult().getAllErrors().forEach(error -> {
                        String fieldName = ((FieldError) error).getField();
@@ -31,14 +30,14 @@ public class GlobalExceptionHandler {
                return errorMap ;
        }
 
-
+       // wrong credentialss
         @ExceptionHandler(BadCredentialsException.class)
         public ResponseEntity<?> handleWrongCredentials(BadCredentialsException ex) {
                 return ResponseEntity
                         .status(HttpStatus.UNAUTHORIZED)
                         .body("wrong email or password");
         }
-
+        /// null resouces from DB
         @ExceptionHandler(ResourceNotFoundException.class)
         public ResponseEntity<Object> handleNotFoundEntities(ResourceNotFoundException ex) {
                 Map<String, Object> body = new HashMap<>();
@@ -47,6 +46,16 @@ public class GlobalExceptionHandler {
                 body.put("error", "Internal Server Error");
                 body.put("message", ex.getMessage());
                 return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        /// data integrity violation
+        @ExceptionHandler(DataIntegrityViolationException.class)
+        public ResponseEntity<?> handleDbConstraintViolations(DataIntegrityViolationException ex){
+                Map<String, Object> body = new HashMap<>();
+                body.put("timestamp", LocalDateTime.now());
+                body.put("status", HttpStatus.BAD_REQUEST);
+                body.put("error", "constraint violation while you try to CRUD");
+                body.put("message", ex.getMessage());
+           return new ResponseEntity<>(body , HttpStatus.BAD_REQUEST);
         }
 
 

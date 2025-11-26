@@ -42,7 +42,6 @@ public class Slot {
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 
-
     @OneToOne(mappedBy = "slot")
     private Reservation reservation ;
 

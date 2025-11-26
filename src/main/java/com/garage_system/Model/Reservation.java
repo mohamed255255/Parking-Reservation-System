@@ -32,10 +32,6 @@ public class Reservation {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "reservation" , cascade = CascadeType.PERSIST) /// storing Resservation will store all related cars
-    private List<Vehicle> vehicles;
-
-
     @OneToOne
     @JoinColumn(name = "slot_id", nullable = false)
     private Slot slot;

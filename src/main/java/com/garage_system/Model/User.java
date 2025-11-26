@@ -61,6 +61,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Reservation> reservationList ;
 
+    @OneToMany(mappedBy = "user")
+    private List<Vehicle> vehicles ;
+
     public User(int id, String name, String email, String password) {
         this.id = id;
         this.name = name;
