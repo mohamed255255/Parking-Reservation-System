@@ -12,7 +12,6 @@ import com.garage_system.Model.Slot;
 import com.garage_system.Repository.GarageRepository;
 import com.garage_system.exception.ResourceNotFoundException;
 import com.garage_system.mapper.GarageMapper;
-
 @Service
 public class GarageService {
     

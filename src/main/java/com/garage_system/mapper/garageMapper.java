@@ -10,7 +10,6 @@ public class GarageMapper {
         if (dto == null) return null;
 
         Garage garage = new Garage();
-        garage.setId(dto.getId());
         garage.setName(dto.getName());
         garage.setLocation(dto.getLocation());
         garage.setCapactiy(dto.getCapactiy());

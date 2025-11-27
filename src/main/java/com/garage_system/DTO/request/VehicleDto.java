@@ -19,6 +19,8 @@ import lombok.Setter;
 @Getter
 public class VehicleDto {
 
+    private int id ;
+    
     @NotBlank(message = "Plate number is required")
     @Size(max = 10, message = "Plate number cannot exceed 10 characters")
     private String plateNumber;
@@ -41,6 +43,7 @@ public class VehicleDto {
     @Enumerated(EnumType.STRING)
     private VehicleType type;
 
+    @NotNull(message = "a vehicle should be tied to user")
+    private int user_id ;
+
 }
-
-

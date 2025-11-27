@@ -1,12 +1,16 @@
 package com.garage_system.Service;
+import  com.garage_system.Security.UserPrincipal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.garage_system.DTO.request.VehicleDto;
+import com.garage_system.Model.User;
 import com.garage_system.Model.Vehicle;
 import com.garage_system.Repository.VehicleRepository;
 import com.garage_system.mapper.VehicleMapper;
@@ -23,9 +27,14 @@ public class VehicleService {
         this.vehicleRepository = vehicleRepository ;
      }
      
-     public Vehicle createVehicle(VehicleDto vehicleDto){
-          Vehicle newVehicle = VehicleMapper.toEntity(vehicleDto) ;
-          return vehicleRepository.save(newVehicle);
+    public Vehicle addVehicleToTheSystem(VehicleDto vehicleDto){
+        Vehicle newVehicle = VehicleMapper.toEntity(vehicleDto) ;
+        
+        User currentAuthUser = ((UserPrincipal) SecurityContextHolder.getContext()
+                    .getAuthentication().getPrincipal()).getUser();
+        
+        newVehicle.setUser(currentAuthUser);
+        return vehicleRepository.save(newVehicle);
     }
 
    

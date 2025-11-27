@@ -24,13 +24,13 @@ public class VehicleController {
         this.vehicleService = vehicleService;
     }
 
-    // Create Vehicle
+    // Create Vehicle in the system
     @PostMapping
     public ResponseEntity<Vehicle> createVehicle(@RequestBody VehicleDto vehicleDto) {
-        Vehicle createdVehicle = vehicleService.createVehicle(vehicleDto);
+        Vehicle createdVehicle = vehicleService.addVehicleToTheSystem(vehicleDto);
         return ResponseEntity.ok(createdVehicle);
     }
-
+    
     // Update Vehicle
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateVehicle(@RequestBody VehicleDto vehicleDto , @PathVariable int id) {

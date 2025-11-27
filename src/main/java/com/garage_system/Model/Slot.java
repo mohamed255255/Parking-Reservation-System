@@ -3,6 +3,7 @@ package com.garage_system.Model;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,8 +29,6 @@ public class Slot {
 
     private double slotDepth;
 
-    private boolean isEmpty;
-
     private LocalDateTime startTime ;
 
     private LocalDateTime endingTime ;
@@ -48,10 +47,5 @@ public class Slot {
     public Slot(double slotWidth, double slotDepth) {
         this.slotWidth = slotWidth;
         this.slotDepth = slotDepth;
-        this.isEmpty = true;
-    }
-
-    public boolean getisEmpty(){
-        return isEmpty ;
     }
 }

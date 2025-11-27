@@ -13,6 +13,7 @@ import lombok.Setter;
 @Getter
 public class GarageDto {
     private int id;
+    
     @NotBlank(message =  "name can not be empty")
     private String name;
    

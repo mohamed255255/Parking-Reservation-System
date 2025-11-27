@@ -8,7 +8,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
 @Component
-public class RoleSeeder implements CommandLineRunner {
+class RoleSeeder implements CommandLineRunner {
 
     @PersistenceContext
     private EntityManager em;
@@ -25,6 +25,7 @@ public class RoleSeeder implements CommandLineRunner {
             em.createNativeQuery("INSERT INTO roles (id, name) VALUES (1, 'USER')").executeUpdate();
             em.createNativeQuery("INSERT INTO roles (id, name) VALUES (2, 'ADMIN')").executeUpdate();
             System.out.println("Roles seeded successfully!");
+            System.out.println("USER ---> 1   ,   ADMIN ----> 2");
         }
     }
 }
