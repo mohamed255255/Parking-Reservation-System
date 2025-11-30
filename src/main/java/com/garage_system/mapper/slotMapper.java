@@ -3,7 +3,7 @@ package com.garage_system.mapper;
 import com.garage_system.DTO.request.SlotDto;
 import com.garage_system.Model.Slot;
 
-public class SlotMapper {
+public class slotMapper {
 
     public static Slot toEntity(SlotDto dto) {
 
