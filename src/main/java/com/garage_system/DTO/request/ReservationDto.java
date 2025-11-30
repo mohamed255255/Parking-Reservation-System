@@ -22,4 +22,8 @@ public class ReservationDto {
     @Past(message = "you cant reserve in a previous date")
     private LocalTime startingTime;
 
+    private int slot_id ;
+
+    private int user_id ;
+
 }

@@ -20,6 +20,8 @@ public class ReservationMapper {
         ReservationDto dto = new ReservationDto();
         dto.setId(entity.getId());
         dto.setStartingTime(entity.getStartingTime());
+        dto.setUser_id(entity.getUser().getId());
+        dto.setSlot_id(entity.getSlot().getId());
 
         return dto;
     }

@@ -29,7 +29,7 @@ public class ReservationController {
        public ResponseEntity<?> createRequest(@RequestBody ReservationDto reservationDto) {
               var result = reservationService.createRequest(reservationDto);
               if (result.isEmpty())
-                     return ResponseEntity.status(409).body("conflict");
+                     return ResponseEntity.status(500).body("Failed to save the reservation");
 
               return ResponseEntity
                             .status(201)

@@ -1,16 +1,17 @@
 package com.garage_system.Model;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 
-import jakarta.persistence.CascadeType;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,8 +42,10 @@ public class Reservation {
     @JoinColumn(name = "slot_id", nullable = false)
     private Slot slot;
 
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-
-
-
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+    
 }
