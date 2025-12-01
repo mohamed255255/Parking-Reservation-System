@@ -3,9 +3,8 @@ package com.garage_system.mapper;
 import com.garage_system.DTO.request.SlotDto;
 import com.garage_system.Model.Slot;
 
-public class slotMapper {
-
-    public static Slot toEntity(SlotDto dto) {
+public class SlotMapper {
+     public static Slot toEntity(SlotDto dto) {
 
         Slot slot = new Slot();
         slot.setSlotWidth(dto.getSlotWidth());
