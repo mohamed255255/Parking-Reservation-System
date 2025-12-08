@@ -8069,3 +8069,9 @@ Caused by: java.lang.Error: Unresolved compilation problems:
 2025-12-08T23:49:43.483+02:00  INFO 8064 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
 2025-12-08T23:49:43.486+02:00  INFO 8064 --- [restartedMain] com.garage_system.DemoApplication        : Started DemoApplication in 1.104 seconds (process running for 5346.437)
 2025-12-08T23:49:43.489+02:00  INFO 8064 --- [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-12-08T23:51:02.918+02:00  INFO 8064 --- [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2025-12-08T23:51:02.920+02:00  INFO 8064 --- [Thread-841] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-12-08T23:51:02.943+02:00  INFO 8064 --- [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-12-08T23:51:02.947+02:00  INFO 8064 --- [Thread-841] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-12-08T23:51:02.948+02:00  INFO 8064 --- [Thread-841] com.zaxxer.hikari.HikariDataSource       : HikariPool-213 - Shutdown initiated...
+2025-12-08T23:51:02.950+02:00  INFO 8064 --- [Thread-841] com.zaxxer.hikari.HikariDataSource       : HikariPool-213 - Shutdown completed.
