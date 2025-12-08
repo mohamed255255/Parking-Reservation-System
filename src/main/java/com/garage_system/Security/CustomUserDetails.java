@@ -9,12 +9,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.garage_system.Model.User;
-public class UserPrincipal implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
-    private final User user; // the User entity
+    private final User user; 
+
     private List<GrantedAuthority> authorities;
 
-    public UserPrincipal(User user) {
+    public CustomUserDetails(User user) {
         this.user = user;
         this.authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))

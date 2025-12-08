@@ -29,10 +29,10 @@ import lombok.Setter;
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private int id ;
+    private int id ;   //// UUID
 
     @Column(name = "payment_id", nullable = true, unique = true)
-    private String paymentId;
+    private String paymentId; //// UUID
 
     @NotNull
     private double amount ;

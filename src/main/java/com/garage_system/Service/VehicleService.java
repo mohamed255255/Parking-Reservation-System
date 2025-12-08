@@ -1,5 +1,5 @@
 package com.garage_system.Service;
-import  com.garage_system.Security.UserPrincipal;
+import  com.garage_system.Security.CustomUserDetails;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class VehicleService {
     public Vehicle addVehicleToTheSystem(VehicleDto vehicleDto){
         Vehicle newVehicle = VehicleMapper.toEntity(vehicleDto) ;
         
-        User currentAuthUser = ((UserPrincipal) SecurityContextHolder.getContext()
+        User currentAuthUser = ((CustomUserDetails) SecurityContextHolder.getContext()
                     .getAuthentication().getPrincipal()).getUser();
         
         newVehicle.setUser(currentAuthUser);

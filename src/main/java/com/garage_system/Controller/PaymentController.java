@@ -1,44 +1,38 @@
-package com.garage_system.Controller;
-
-import jakarta.servlet.http.HttpServletRequest;
+package com.garage_system.Controller ;
 import lombok.RequiredArgsConstructor;
 
+import javax.swing.text.html.Option;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import com.garage_system.Service.PaymentService;
-import java.util.Map;
+
+import io.jsonwebtoken.*;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.garage_system.Model.User;
+import com.garage_system.Security.CustomUserDetails;
+import com.garage_system.Service.CustomUserDetailsService;
+import com.garage_system.Service.JWTService;
+import com.garage_system.Service.payment.PaymentService;
 
 @RestController
 @RequestMapping("/api/payments")
+@PreAuthorize("hasAnyRole('USER')")
 @RequiredArgsConstructor
-
 public class PaymentController {
 
     private final PaymentService paymentService;
 
 
-
     @PostMapping("/card")
-    public ResponseEntity<Map<String, Object>> initiateCardPayment() {
-        Map<String, Object> result = paymentService.initiateCardPayment();
-        return ResponseEntity.ok(result);
+    public ResponseEntity<String> initiateCardPayment() {
+        String paymentLink = paymentService.initiateCardPayment();
+        return ResponseEntity.ok(paymentLink);
     }
 
-    @PostMapping("/callback/paymob")
-    public ResponseEntity<String> handleCallback(
-            @RequestBody Map<String, Object> payload,
-            HttpServletRequest request
-    ) {
-        paymentService.handlePaymentCallback(payload, request);
-        return ResponseEntity.ok("Callback Received");
-    }
-    @GetMapping("/response")
-    public ResponseEntity<String> handleRedirect(
-            @RequestParam Map<String, String> query
-    ) {
-        String success = query.get("success");
-        return ResponseEntity.ok(
-                "Payment " + ("true".equalsIgnoreCase(success) ? "Successful" : "Failed")
-        );
-    }
 }
