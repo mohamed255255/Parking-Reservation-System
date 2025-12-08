@@ -27,7 +27,7 @@ Admin have full control over garage and slot creation , user details, reservatio
   - Admin can create garages and define slot dimensions  
   - Users only see slots that fit their vehicle  
 
-- ⏳ **Queue & Real-Time Notifications**  
+- ⏳ **Real-Time Notifications**  
   - Users can request "remind me later" when slots are unavailable  
   - Notification system alerts users instantly when a slot is freed  
 
@@ -46,20 +46,18 @@ Admin have full control over garage and slot creation , user details, reservatio
 
 - **Backend:** Spring Boot, Spring Security, JWT, REST API  
 - **Database:** PostgreSQL  
-- **Messaging/Queue:** RabbitMQ  
 - **Payment:** PayPal SDK  
 - **Containerization:** Docker  
 - **Testing:** JUnit5, Mockito  
-
+- **CI/CD:** Github actions
 ---
 
 ## 🔹 Design Patterns Used  
 
-- **Layered Architecture (Controller → Service → Repository)**
+- **Clean architecture (Controller → Service → Repository → Database)**
 -  Implemented a **unified response structure** by wrapping all API outputs in a custom `ApiResponse` object, ensuring consistency across success and error responses.
 - Used **DTOs** to decouple persistence models from exposed APIs, improving security, readability, and maintainability of the codebase.  
 - **Observer Pattern** (for notifications & event-driven updates)
--
 ---
 
 ## 📚 What I Learned in this project
