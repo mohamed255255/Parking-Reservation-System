@@ -30,10 +30,6 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
 
-    private LocalTime startingTime;
-
-    private LocalTime endingTime;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -42,10 +38,20 @@ public class Reservation {
     @JoinColumn(name = "slot_id", nullable = false)
     private Slot slot;
 
+
+    @OneToOne(mappedBy = "reservation")
+    @JoinColumn(name = "payment_id")
+    private Payment payment ;
+
+
+    private LocalTime startingTime;
+
+    private LocalTime endingTime;
+    
+
     @CreatedDate
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-    
 }

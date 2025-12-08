@@ -27,9 +27,11 @@ public class Bill {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id ;
 
-    private double price ;
+    private double amount ;
     private int vehicleNumber ;
-
+    /// private payment_id as a number or reservation_id as fk ;
+    //// add vehicle_id instead of vehcile No
+    /// add amount  of money instead of 
     private LocalTime startingTime;
     private LocalTime endingTime;
     private LocalDate date ;
