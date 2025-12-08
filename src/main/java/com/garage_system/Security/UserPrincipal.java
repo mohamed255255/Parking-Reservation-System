@@ -9,6 +9,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.garage_system.Model.User;
+
+// using a wrapper class to wrap the User entity for SRP this class for authentication details only
+// the entity is for BL only thats why user entity is not prefered to implement UserDetails interface  
 public class UserPrincipal implements UserDetails {
 
     private final User user; // the User entity

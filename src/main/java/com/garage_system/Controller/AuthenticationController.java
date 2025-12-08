@@ -4,30 +4,26 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.garage_system.DTO.request.LoginUserDto;
 import com.garage_system.DTO.request.RegisterUserDto;
-import com.garage_system.DTO.request.RegisterUserDto;
-import com.garage_system.Model.User;
+import com.garage_system.Service.AuthenticationService;
 import com.garage_system.Service.JWTService;
-import com.garage_system.Service.UserService;
 
 import jakarta.validation.Valid;
 
 @RestController
 public class AuthenticationController {
 
-    private final UserService userService;
+    private final AuthenticationService userService;
     private final JWTService jwtService;
     private final AuthenticationManager authManager;
 
-    public AuthenticationController(UserService userService,
+    public AuthenticationController(AuthenticationService userService,
                           JWTService jwtService,
                           AuthenticationManager authManager) {
         this.userService = userService;
