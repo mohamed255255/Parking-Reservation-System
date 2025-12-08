@@ -2,6 +2,7 @@ package com.garage_system.Model;
 
 import java.util.Collection;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,6 +19,8 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
+   
+    @Column(nullable = false)
     private String name;
     
     @ManyToMany(mappedBy = "roles")

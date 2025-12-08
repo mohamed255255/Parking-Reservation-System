@@ -3,6 +3,9 @@ package com.garage_system.Model;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,6 +30,7 @@ public class User {
     private int id;
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @Column(nullable = false)
     @JoinTable(
         name = "user_roles",
         joinColumns = @JoinColumn(name = "user_id"),
@@ -41,21 +45,28 @@ public class User {
         this.roles = roles;
     }
 
+    @Column(nullable = false)
     private String name;
     
-    @Column(unique = true)
+    @Column(unique = true , nullable = false)
     private String email;
-  
+   
+    @Column(nullable = false)
     private String password;
-
+  
+    @Column(nullable = false)
     private String phone ;
-    
+   
+    @Column(nullable = false)
+    @CreationTimestamp
     private LocalDate createdAt;
-
+   
+    @Column(nullable = false)
+    @UpdateTimestamp
     private LocalDate updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "bill_id")
+    @ManyToOne(fetch = FetchType.LAZY)  /// i dont want to fetch the bills on demand currently
+    @JoinColumn(name = "bill_id" , nullable = false)
     private Bill bill;
 
     @OneToMany(mappedBy = "user")
@@ -71,5 +82,5 @@ public class User {
         this.password = password;
     }
     
-  public User(){}
+    public User(){}
 }
