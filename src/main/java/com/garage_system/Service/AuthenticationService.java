@@ -35,6 +35,9 @@ public class AuthenticationService {
      public void RegisterUser(RegisterUserDto userDto) {
 
           User user = UserMapper.toUser(userDto, passwordEncoder);
+          user.setAccountCreationToken(UUID.randomUUID().toString());
+          user.setVerified(false);
+
           Optional<User> foundUser = userRepository.findById(user.getId()) ;
           if(foundUser.isPresent()){ /// to do : return custom exception later
               throw new  DataIntegrityViolationException("User already registered");

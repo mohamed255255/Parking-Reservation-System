@@ -1,6 +1,10 @@
 package com.garage_system.Model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,6 +36,12 @@ public class PasswordResetToken {
     @Column(nullable = false )
     private LocalDateTime expiryDate ;
 
-    
+    @Column(nullable = false)
+    @CreationTimestamp
+    private LocalDate createdAt;
+   
+    @Column(nullable = false)
+    @UpdateTimestamp
+    private LocalDate updatedAt;
 
 }

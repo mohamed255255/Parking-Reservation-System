@@ -1,6 +1,10 @@
 package com.garage_system.Model;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,6 +40,14 @@ public class Reservation {
     @JoinColumn(name = "slot_id", nullable = false)
     private Slot slot;
 
+
+    @Column(nullable = false)
+    @CreationTimestamp
+    private LocalDate createdAt;
+   
+    @Column(nullable = false)
+    @UpdateTimestamp
+    private LocalDate updatedAt;
 
     public Reservation() {}
 

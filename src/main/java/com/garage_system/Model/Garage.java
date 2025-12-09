@@ -1,7 +1,11 @@
 package com.garage_system.Model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,6 +40,14 @@ public class Garage {
 
     @Column(nullable = false)
     private int Capactiy ;
+
+    @Column(nullable = false)
+    @CreationTimestamp
+    private LocalDate createdAt;
+   
+    @Column(nullable = false)
+    @UpdateTimestamp
+    private LocalDate updatedAt;
 
     /// we code to interface not to concrete classes to achieve polymorphism
     @OneToMany(mappedBy = "garage")

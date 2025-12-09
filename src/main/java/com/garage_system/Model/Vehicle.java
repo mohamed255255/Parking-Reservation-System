@@ -1,5 +1,10 @@
 package com.garage_system.Model;
 
+import java.time.LocalDate;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -52,5 +57,12 @@ public class Vehicle {
     @JoinColumn(name = "user_id" , nullable = false) 
     private User user ;
 
+    @Column(nullable = false)
+    @CreationTimestamp
+    private LocalDate createdAt;
+   
+    @Column(nullable = false)
+    @UpdateTimestamp
+    private LocalDate updatedAt;
   
 }
