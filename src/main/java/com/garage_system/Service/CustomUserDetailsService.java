@@ -27,5 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         /// Adapter pattern here 
         // it converts the interface of your User entity into something Spring Security expects.
     }
+
+    
     
 }

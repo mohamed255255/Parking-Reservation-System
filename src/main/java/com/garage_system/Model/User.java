@@ -31,15 +31,13 @@ public class User {
     private int id;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @Column(nullable = false)
     @JoinTable(
         name = "user_roles",
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
 
-    @OneToOne(mappedBy="user")
-    private PasswordResetToken password_reset_token ;
+
 
     private List<Role> roles;
 

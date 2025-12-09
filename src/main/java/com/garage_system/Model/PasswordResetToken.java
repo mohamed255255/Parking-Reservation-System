@@ -10,7 +10,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
+import lombok.Getter;
+import lombok.Setter;
+@Setter
+@Getter
 @Entity
 @Table(name = "password_reset_tokens")
 public class PasswordResetToken {

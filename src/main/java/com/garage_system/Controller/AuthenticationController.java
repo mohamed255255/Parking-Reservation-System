@@ -19,28 +19,22 @@ import jakarta.validation.Valid;
 @RestController
 public class AuthenticationController {
 
-    private final AuthenticationService userService;
-    private final JWTService jwtService;
-    private final AuthenticationManager authManager;
+    private final AuthenticationService authenticationService;
 
-    public AuthenticationController(AuthenticationService userService,
-                          JWTService jwtService,
-                          AuthenticationManager authManager) {
-        this.userService = userService;
-        this.jwtService  = jwtService;
-        this.authManager = authManager;
+    public AuthenticationController(AuthenticationService authService) {
+        this.authenticationService = authService;
     }
 
     @PostMapping("/register")
     public void register(@Valid @RequestBody RegisterUserDto user) {
-        userService.RegisterUser(user);
+        //todo: this method should return custom exception and added to the global place
+        authenticationService.RegisterUser(user);  
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginUserDto userDto) {
-            authManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword()));
-            String token = jwtService.generateToken(userDto.getEmail());
-            return ResponseEntity.ok(Map.of("token", token));
+            String JWTtoken = authenticationService.loginUser(userDto);
+            return ResponseEntity.ok(Map.of("token", JWTtoken));
     }   
         
 }
