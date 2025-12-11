@@ -3,8 +3,7 @@ package com.garage_system.Controller;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.garage_system.DTO.request.LoginUserDto;
 import com.garage_system.DTO.request.RegisterUserDto;
 import com.garage_system.Service.AuthenticationService;
-import com.garage_system.Service.JWTService;
 
 import jakarta.validation.Valid;
 
@@ -36,5 +34,11 @@ public class AuthenticationController {
             String JWTtoken = authenticationService.loginUser(userDto);
             return ResponseEntity.ok(Map.of("token", JWTtoken));
     }   
+
+    @PostMapping("verify-user/{token}")
+    public void verifyUser(@PathVariable String token) {
+        authenticationService.verifyUser(token);
+    }
+    
         
 }

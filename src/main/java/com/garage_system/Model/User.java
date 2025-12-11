@@ -15,9 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -70,7 +68,7 @@ public class User {
     @Column(name = "is_verified" , columnDefinition = "BOOLEAN DEFAULT FALSE" , nullable =  false)
     private boolean isVerified ;
 
-    @Column(name="account_creation_token")  //// UUID i dont if we can use JWT or not search later about best practice
+    @Column(name="account_creation_token")
     private String accountCreationToken ;
 
     @Column(nullable = false)

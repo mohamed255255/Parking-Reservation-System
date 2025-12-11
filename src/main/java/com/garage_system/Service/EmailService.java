@@ -17,18 +17,25 @@ public class EmailService {
     private String from ;
 
 
-    public void sendAccountCreationEmail(String to , String token){
-         String link = "URL for the register" + token ;
+    public boolean sendVerificationEmail(String to , String token){
+          try {
+               String linkToVerification =  "http://localhost:8080/verify-user/"  + token ;
+               SimpleMailMessage message = new SimpleMailMessage();
+               message.setFrom(from);
+               message.setTo(to);
+               message.setSubject("email creation");
+               message.setText("hi please create ur account using this link \n" + linkToVerification); /// could be html 
+               mailSender.send(message);
+        
 
-         SimpleMailMessage message = new SimpleMailMessage();
-         message.setFrom(link);
-         message.setFrom(link);
-         message.setTo(from);
-         message.setSubject(to);
-         message.setText("hi please create ur account using this link \n" + link); /// could be html 
-         mailSender.send(message);
-
+          } catch (Exception e) {
+               
+              return false ;
+          }  
+         
+          return true ;
     }
+
     public String sendPasswordResetEmail(String email){
          return "" ;
     }
