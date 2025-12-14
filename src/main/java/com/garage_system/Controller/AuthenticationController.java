@@ -3,48 +3,42 @@ package com.garage_system.Controller;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.garage_system.DTO.request.LoginUserDto;
 import com.garage_system.DTO.request.RegisterUserDto;
-import com.garage_system.DTO.request.RegisterUserDto;
-import com.garage_system.Model.User;
-import com.garage_system.Service.JWTService;
-import com.garage_system.Service.UserService;
+import com.garage_system.Service.AuthenticationService;
 
 import jakarta.validation.Valid;
 
 @RestController
 public class AuthenticationController {
 
-    private final UserService userService;
-    private final JWTService jwtService;
-    private final AuthenticationManager authManager;
+    private final AuthenticationService authenticationService;
 
-    public AuthenticationController(UserService userService,
-                          JWTService jwtService,
-                          AuthenticationManager authManager) {
-        this.userService = userService;
-        this.jwtService  = jwtService;
-        this.authManager = authManager;
+    public AuthenticationController(AuthenticationService authService) {
+        this.authenticationService = authService;
     }
 
     @PostMapping("/register")
     public void register(@Valid @RequestBody RegisterUserDto user) {
-        userService.RegisterUser(user);
+        //todo: this method should return custom exception and added to the global place
+        authenticationService.RegisterUser(user);  
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginUserDto userDto) {
-            authManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword()));
-            String token = jwtService.generateToken(userDto.getEmail());
-            return ResponseEntity.ok(Map.of("token", token));
+            String JWTtoken = authenticationService.loginUser(userDto);
+            return ResponseEntity.ok(Map.of("token", JWTtoken));
     }   
+
+    @PostMapping("verify-user/{token}")
+    public void verifyUser(@PathVariable String token) {
+        authenticationService.verifyUser(token);
+    }
+    
         
 }

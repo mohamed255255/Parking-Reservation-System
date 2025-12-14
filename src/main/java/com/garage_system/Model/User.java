@@ -3,6 +3,9 @@ package com.garage_system.Model;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,15 +15,23 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity(name = "Users")
 @Setter
 @Getter
+@NoArgsConstructor
 public class User {
+
+    public User(int id, String name, String email, String password) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -32,6 +43,7 @@ public class User {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+
     private List<Role> roles;
 
     public List<Role> getRoles() {
@@ -41,22 +53,34 @@ public class User {
         this.roles = roles;
     }
 
+    @Column(nullable = false)
     private String name;
     
-    @Column(unique = true)
+    @Column(unique = true , nullable = false)
     private String email;
-  
+   
+    @Column(nullable = false)
     private String password;
-
+  
+    @Column(nullable = false)
     private String phone ;
-    
-    private LocalDate createdAt;
+   
+    @Column(name = "is_verified" , columnDefinition = "BOOLEAN DEFAULT FALSE" , nullable =  false)
+    private boolean isVerified ;
 
+    @Column(name="account_creation_token")
+    private String accountCreationToken ;
+
+    @Column(nullable = false)
+    @CreationTimestamp
+    private LocalDate createdAt;
+   
+    @Column(nullable = false)
+    @UpdateTimestamp
     private LocalDate updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "bill_id")
-    private Bill bill;
+    @OneToMany(mappedBy = "user")
+    private List<Bill> bills ;
 
     @OneToMany(mappedBy = "user")
     private List<Reservation> reservationList ;
@@ -64,12 +88,5 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Vehicle> vehicles ;
 
-    public User(int id, String name, String email, String password) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-    }
-    
-  public User(){}
+  
 }

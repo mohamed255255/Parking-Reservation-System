@@ -1,8 +1,7 @@
 package com.garage_system.Model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,34 +11,30 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-
-@Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Setter
 @Getter
-public class Garage {
+@Entity
+@Table(name = "password_reset_tokens")
+public class PasswordResetToken {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(name = "token" , unique = true , nullable = false) 
+    private String token ;
 
-    @Column(nullable = false)
-    private String location;
+    @OneToOne
+    @JoinColumn(name="user_id" , nullable= false)
+    private User user ;
 
-    @Column(nullable = false)
-    private boolean isActive;
-
-    @Column(nullable = false)
-    private int Capactiy ;
+    @Column(nullable = false )
+    private LocalDateTime expiryDate ;
 
     @Column(nullable = false)
     @CreationTimestamp
@@ -49,10 +44,4 @@ public class Garage {
     @UpdateTimestamp
     private LocalDate updatedAt;
 
-    /// we code to interface not to concrete classes to achieve polymorphism
-    @OneToMany(mappedBy = "garage")
-    private List<Slot> slots = new ArrayList<>();
-
-
-   
 }

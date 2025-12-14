@@ -2,7 +2,9 @@ package com.garage_system.Model;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.CascadeType;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,20 +27,26 @@ public class Slot {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
 
+    @Column(nullable = false)
     private double slotWidth;
 
+    @Column(nullable = false)
     private double slotDepth;
 
+    @Column(nullable = false)
+    @CreationTimestamp
     private LocalDateTime startTime ;
 
+    @Column(nullable = false)
+    @UpdateTimestamp
     private LocalDateTime endingTime ;
 
     @ManyToOne
-    @JoinColumn(name = "garage_id")
+    @JoinColumn(name = "garage_id" , nullable = false)
     private Garage garage;
 
     @OneToOne
-    @JoinColumn(name = "vehicle_id")
+    @JoinColumn(name = "vehicle_id" , nullable = false)
     private Vehicle vehicle;
 
     @OneToOne(mappedBy = "slot")
