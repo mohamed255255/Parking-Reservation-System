@@ -1,8 +1,10 @@
 package com.garage_system.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,8 +13,10 @@ import org.springframework.stereotype.Service;
 import com.garage_system.DTO.request.LoginUserDto;
 import com.garage_system.DTO.request.RegisterUserDto;
 import com.garage_system.Model.PasswordResetToken;
+import com.garage_system.Model.User;
 import com.garage_system.Repository.PasswordResetRepository;
 import com.garage_system.Repository.UserRepository;
+import com.garage_system.mapper.UserMapper;
 
 import lombok.AllArgsConstructor;
 
@@ -54,9 +58,12 @@ public class AuthenticationService {
 
      public String loginUser(LoginUserDto userDto){
             authManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword()));
+            /// if token expred redirect 
+            /// if user is not verified dont login
             return jwtService.generateToken(userDto.getEmail());
      }
 
+     
      public boolean initiatePasswordReset(String username){
         
           //// find user by username ; write jpql
