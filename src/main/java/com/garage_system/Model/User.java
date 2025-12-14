@@ -1,6 +1,7 @@
 package com.garage_system.Model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -65,12 +66,15 @@ public class User {
     @Column(nullable = false)
     private String phone ;
    
-    @Column(name = "is_verified" , columnDefinition = "BOOLEAN DEFAULT FALSE" , nullable =  false)
+    @Column(name = "verification_code" , nullable = false)
+    private String verificationCode ;
+
+    @Column(name = "code_expiration_time" , nullable = false)
+    private LocalDateTime expirationTime;
+   
+    @Column(name = "is_verified" , columnDefinition ="boolean default false")
     private boolean isVerified ;
-
-    @Column(name="account_creation_token")
-    private String accountCreationToken ;
-
+ 
     @Column(nullable = false)
     @CreationTimestamp
     private LocalDate createdAt;

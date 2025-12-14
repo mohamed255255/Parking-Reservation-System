@@ -17,19 +17,17 @@ public class EmailService {
     private String from ;
 
 
-    public boolean sendVerificationEmail(String to , String token){
+    public boolean sendVerificationEmail(String to , String code){
           try {
-               String linkToVerification =  "http://localhost:8080/verify-user/"  + token ;
+               String linkToVerification =  "http://localhost:8080/verify-user/" ;
                SimpleMailMessage message = new SimpleMailMessage();
                message.setFrom(from);
                message.setTo(to);
                message.setSubject("email creation");
-               message.setText("hi please create ur account using this link \n" + linkToVerification); /// could be html 
+               message.setText("your verification code is " + code  + " please verify you account using this link \n" + linkToVerification); /// could be html 
                mailSender.send(message);
-        
-
           } catch (Exception e) {
-               
+             /// return custom exception i think 500 that email failed to send  
               return false ;
           }  
          
