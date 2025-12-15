@@ -36,8 +36,21 @@ public class EmailService {
           return true ;
     }
 
-    public String sendPasswordResetEmail(String email){
-         return "" ;
+    public String sendPasswordResetEmail(String email , String token){
+            try {
+          
+               String linkToVerification =  "http://localhost:8081//reset-password?token="+token ;
+               SimpleMailMessage message = new SimpleMailMessage();
+               message.setFrom(from);
+               message.setTo(email);
+               message.setSubject("password reset");
+               message.setText("to reset your password visit this link : \n " + linkToVerification); /// could be html 
+               mailSender.send(message);
+          } catch (Exception e) {
+               throw new RuntimeException("Failed to send email");
+          } 
+          return "Success"; /////////////////// to do : return better response ;
+
     }
     
 

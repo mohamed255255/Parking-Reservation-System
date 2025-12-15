@@ -15,12 +15,15 @@ import com.garage_system.DTO.request.LoginUserDto;
 import com.garage_system.DTO.request.VerificationDto;
 
 import com.garage_system.DTO.request.RegisterUserDto;
+import com.garage_system.DTO.request.ResetPasswordDto;
 import com.garage_system.Model.PasswordResetToken;
 import com.garage_system.Model.User;
 import com.garage_system.Repository.PasswordResetRepository;
 import com.garage_system.Repository.UserRepository;
 import com.garage_system.exception.ResourceNotFoundException;
 import com.garage_system.mapper.UserMapper;
+
+import jakarta.transaction.Transactional;
 
 import java.security.SecureRandom;
 
@@ -34,7 +37,7 @@ public class AuthenticationService {
      private final PasswordEncoder passwordEncoder;
      private final JWTService jwtService ;
      private final AuthenticationManager authManager;
-    // private final PasswordResetRepository passwordResetRepository ;
+     private final PasswordResetRepository passwordResetRepository ;
      private final EmailService emailService ;
 
      private static final SecureRandom RANDOM = new SecureRandom();
@@ -73,7 +76,7 @@ public class AuthenticationService {
         return ;
      }
 
-     public void resendVerificationCode(String email) throws RuntimeException {
+   public void resendVerificationCode(String email) throws RuntimeException {
           User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new ResourceNotFoundException("Email not found"));
 
@@ -89,7 +92,7 @@ public class AuthenticationService {
      }
 
 
-     public String loginUser(LoginUserDto userDto){
+   public String loginUser(LoginUserDto userDto){
 
           User registeredUser = userRepository.findByEmail(userDto.getEmail())
           .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -101,22 +104,56 @@ public class AuthenticationService {
           return jwtService.generateToken(userDto.getEmail());
      }
 
-
-     /*
-     public boolean initiatePasswordReset(String username){
-        
-          //// find user by username ; write jpql
-          String token = UUID.randomUUID().toString();
-          LocalDateTime expiry = LocalDateTime.now().plusMinutes(15);
-         
-          PasswordResetToken passwordResetToken = new PasswordResetToken();
-          passwordResetToken.setToken(token);
-          passwordResetToken.setExpiryDate(expiry);
-          //passwordResetToken.setUser(user);
-          passwordResetRepository.save(passwordResetToken);
-
-          /// send mail
-          return true ;
+     //// key generation and saving should be indepndent from sening mail
+     @Transactional
+     public PasswordResetToken createResetToken(User user) {
+     var optionalPasswordResetToken = passwordResetRepository.findByUserId(user.getId());
+     if (optionalPasswordResetToken.isPresent()) {
+          return optionalPasswordResetToken.get();
+     } else {
+          PasswordResetToken token = new PasswordResetToken();
+          token.setToken(UUID.randomUUID().toString());
+          token.setExpiryDate(LocalDateTime.now().plusMinutes(15));
+          token.setUser(user);
+          return passwordResetRepository.save(token);
      }
- */
+     }
+
+    public String sendResetPasswordLink(String email) {
+          User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+          // Create token in transactional context (Atomic or independent action)
+          // in case of runtime error the transaction will roll back and then throw Exception
+          // if not Ex is not handled then the method will be forced to rollback else the email step will continue even if there is a problem with token creation
+          PasswordResetToken token = createResetToken(user);
+          // Send email outside transaction
+          emailService.sendPasswordResetEmail(email, token.getToken());
+          return "Password link has been sent to the user's email: " + email;
+     }
+
+
+     public String resetPassword(ResetPasswordDto dto , String Urltoken){      
+        User user = userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new ResourceNotFoundException("user is not found")) ;
+        PasswordResetToken existedToken = passwordResetRepository.findByUserId(user.getId()).orElseThrow(() -> new ResourceNotFoundException("The token doesn't exist")) ;; 
+        /// verifying   
+        if(!Urltoken.equals(existedToken.getToken())){
+            throw new RuntimeException("Token mismatch error");
+        }
+        /// is expired
+        if(existedToken.getExpiryDate().isBefore(LocalDateTime.now())){
+             throw new RuntimeException("Reset password token is expired");
+        }
+        /// same as old password
+        if(passwordEncoder.matches(dto.getNewPassword(), user.getPassword())){
+               throw new RuntimeException("old password must be different from old password");
+        } 
+        
+     user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+     /// consume after using so it wont be used infinitly
+     passwordResetRepository.delete(existedToken); 
+     userRepository.save(user) ;      
+
+     return "password is reset successfully" ;
+     }
+
 }
