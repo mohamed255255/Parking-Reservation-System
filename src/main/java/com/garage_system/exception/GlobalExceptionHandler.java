@@ -58,6 +58,16 @@ public class GlobalExceptionHandler {
            return new ResponseEntity<>(body , HttpStatus.BAD_REQUEST);
         }
 
+  /// Runtime exceptions 
+        @ExceptionHandler(RuntimeException.class)
+        public ResponseEntity<?> handleRTE(RuntimeException ex){
+                Map<String, Object> body = new HashMap<>();
+                body.put("timestamp", LocalDateTime.now());
+                body.put("status", HttpStatus.INTERNAL_SERVER_ERROR);
+                body.put("error", "Runtime error");
+                body.put("message", ex.getMessage());
+           return new ResponseEntity<>(body , HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
 
 

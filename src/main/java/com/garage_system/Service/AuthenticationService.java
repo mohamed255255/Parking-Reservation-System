@@ -22,9 +22,7 @@ import com.garage_system.Repository.UserRepository;
 import com.garage_system.exception.ResourceNotFoundException;
 import com.garage_system.mapper.UserMapper;
 
-import java.nio.file.attribute.UserPrincipal;
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 
@@ -58,29 +56,29 @@ public class AuthenticationService {
       
      }
 
-   public void verifyUser(VerificationDto dto) throws BadRequestException {
+   public void verifyUser(VerificationDto dto) throws RuntimeException {
           User existingUser = userRepository.findByEmail(dto.getEmail())
                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
           if (existingUser.getExpirationTime().isBefore(LocalDateTime.now())) {
-             throw new BadRequestException("Verification code has expired");
+             throw new RuntimeException("Verification code has expired");
           }
  
           if(existingUser.getVerificationCode().equals(dto.getVerificationCode())){
                existingUser.setVerified(true);
                userRepository.save(existingUser) ;
           }else{
-               throw new BadRequestException("Invalid verification code") ;
+               throw new RuntimeException("Invalid verification code") ;
           }
         return ;
      }
 
-     public void resendVerificationCode(String email) throws BadRequestException {
+     public void resendVerificationCode(String email) throws RuntimeException {
           User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new ResourceNotFoundException("Email not found"));
 
           if (user.isVerified()) {
-               throw new BadRequestException("User is already verified");
+               throw new RuntimeException("User is already verified");
           }
           String code = String.format("%05d", RANDOM.nextInt(100_000));
 
@@ -92,10 +90,15 @@ public class AuthenticationService {
 
 
      public String loginUser(LoginUserDto userDto){
-            authManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword()));
-            /// if token expred redirect 
-            /// if user is not verified dont login
-            return jwtService.generateToken(userDto.getEmail());
+
+          User registeredUser = userRepository.findByEmail(userDto.getEmail())
+          .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+          if(!registeredUser.isVerified())
+                  throw new RuntimeException("account has not verifiyed yet") ;
+          
+          authManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword()));
+          return jwtService.generateToken(userDto.getEmail());
      }
 
 

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.garage_system.DTO.request.LoginUserDto;
 import com.garage_system.DTO.request.RegisterUserDto;
+import com.garage_system.DTO.request.VerificationDto;
 import com.garage_system.Service.AuthenticationService;
 
 import jakarta.validation.Valid;
@@ -25,7 +26,6 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public void register(@Valid @RequestBody RegisterUserDto user) {
-        //todo: this method should return custom exception and added to the global place
         authenticationService.RegisterUser(user);  
     }
 
@@ -35,9 +35,13 @@ public class AuthenticationController {
             return ResponseEntity.ok(Map.of("token", JWTtoken));
     }   
 
-    @PostMapping("verify-user/{token}")
-    public void verifyUser(@PathVariable String token) {
-        authenticationService.verifyUser(token);
+    @PostMapping("/verify-user")
+    public void verifyUser(@RequestBody VerificationDto dto)  {
+        try {
+          authenticationService.verifyUser(dto);  
+        } catch (Exception e) { 
+            throw new RuntimeException(e.getMessage());
+        }
     }
     
         
