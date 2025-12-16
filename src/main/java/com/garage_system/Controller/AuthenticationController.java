@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.garage_system.DTO.request.LoginUserDto;
@@ -51,8 +52,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(message) ;
     }
     @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassowrd(@RequestBody ResetPasswordDto dto , @PathVariable String token)  {
-       
+    public ResponseEntity<String> resetPassowrd(@RequestBody @Valid ResetPasswordDto dto , @RequestParam("token") String token)  {
         String message = authenticationService.resetPassword(dto , token) ;
         return ResponseEntity.ok(message) ;
     }

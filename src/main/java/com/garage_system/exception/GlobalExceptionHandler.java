@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -16,20 +17,30 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+        // global error vs field error
+        // handle any field(arguemant) error 
+        // global error like @MatchPasswordsValidation at the class level
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
+        public Map<String, String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+                Map<String, String> errorMap = new HashMap<>();
 
-       /// handle any field(arguemant) error 
-       @ExceptionHandler(MethodArgumentNotValidException.class)
-       @ResponseStatus(HttpStatus.BAD_REQUEST) // cuz the default is 200 even if there is an exception  
-       public Map<String , String> handleMethodArgumentNotValidException( MethodArgumentNotValidException e){
-               Map<String , String> errorMap = new HashMap<>() ;
-               e.getBindingResult().getAllErrors().forEach(error -> {
-                       String fieldName = ((FieldError) error).getField();
-                       String message   = error.getDefaultMessage(); /// get the message we wrote in annotation
-                       errorMap.put(fieldName , message) ;
-               });
-               return errorMap ;
-       }
+                e.getBindingResult().getAllErrors().forEach(error -> {
 
+                    String fieldName;
+                    String message = error.getDefaultMessage();
+                
+                    if (error instanceof FieldError)
+                       fieldName = ((FieldError) error).getField();
+                    else if (error instanceof ObjectError) 
+                       fieldName = error.getObjectName();    
+                    else 
+                       fieldName = "unknown";
+
+                    errorMap.put(fieldName, message);
+        });
+        return errorMap;
+     }
        // wrong credentialss
         @ExceptionHandler(BadCredentialsException.class)
         public ResponseEntity<?> handleWrongCredentials(BadCredentialsException ex) {

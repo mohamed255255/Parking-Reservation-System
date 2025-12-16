@@ -39,7 +39,7 @@ public class EmailService {
     public String sendPasswordResetEmail(String email , String token){
             try {
           
-               String linkToVerification =  "http://localhost:8081//reset-password?token="+token ;
+               String linkToVerification =  "http://localhost:8081/reset-password?token="+token ;
                SimpleMailMessage message = new SimpleMailMessage();
                message.setFrom(from);
                message.setTo(email);
@@ -50,7 +50,6 @@ public class EmailService {
                throw new RuntimeException("Failed to send email");
           } 
           return "Success"; /////////////////// to do : return better response ;
-
     }
     
 

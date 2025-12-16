@@ -105,28 +105,30 @@ public class AuthenticationService {
      }
 
      //// key generation and saving should be indepndent from sening mail
-     @Transactional
-     public PasswordResetToken createResetToken(User user) {
-     var optionalPasswordResetToken = passwordResetRepository.findByUserId(user.getId());
-     if (optionalPasswordResetToken.isPresent()) {
-          return optionalPasswordResetToken.get();
-     } else {
-          PasswordResetToken token = new PasswordResetToken();
-          token.setToken(UUID.randomUUID().toString());
-          token.setExpiryDate(LocalDateTime.now().plusMinutes(15));
-          token.setUser(user);
-          return passwordResetRepository.save(token);
-     }
-     }
-
+@Transactional
+public PasswordResetToken createResetToken(User user) {
+    var optionalToken = passwordResetRepository.findByUserId(user.getId());
+    if (optionalToken.isPresent()) {
+        PasswordResetToken existingToken = optionalToken.get();
+        if (existingToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            existingToken.setToken(UUID.randomUUID().toString());
+            existingToken.setExpiryDate(LocalDateTime.now().plusMinutes(15));
+            return passwordResetRepository.save(existingToken);
+        } else {
+            return existingToken; 
+        }
+    } else {
+        PasswordResetToken newToken = new PasswordResetToken();
+        newToken.setToken(UUID.randomUUID().toString());
+        newToken.setExpiryDate(LocalDateTime.now().plusMinutes(15));
+        newToken.setUser(user);
+        return passwordResetRepository.save(newToken);
+    }
+}
     public String sendResetPasswordLink(String email) {
           User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-          // Create token in transactional context (Atomic or independent action)
-          // in case of runtime error the transaction will roll back and then throw Exception
-          // if not Ex is not handled then the method will be forced to rollback else the email step will continue even if there is a problem with token creation
           PasswordResetToken token = createResetToken(user);
-          // Send email outside transaction
           emailService.sendPasswordResetEmail(email, token.getToken());
           return "Password link has been sent to the user's email: " + email;
      }
