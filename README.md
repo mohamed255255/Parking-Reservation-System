@@ -17,7 +17,7 @@
 The application allows users to easily book parking spaces, join a waiting queue when all spots are full, and receive real-time notifications when a suitable slot becomes available. It also manages reservations, tracks booking history, and enables users to pay parking fees securely through digital payments. 
 Admin have full control over garage and slot creation , user details, reservations, and billing.
 
-## ✨ Features  
+## Features  
 
 - 🔐 **Authentication & Authorization**  
   - Role-based access (Admin/User) using Spring Security + JWT  
