@@ -1,21 +1,25 @@
-/* package com.example.paymob_springboot_integration.controller;
+package com.garage_system.Controller;
 
-import com.example.paymob_springboot_integration.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+
+import com.garage_system.Service.payment.PaymentService;
+import com.garage_system.Service.payment.WebhookService;
 
 @RestController
 @RequestMapping("/api/webhook")
 @RequiredArgsConstructor
 public class WebhookController {
 
+    private final WebhookService webhookService;
+
     private final PaymentService paymentService;
-
-
+    
     @PostMapping("/paymob/callback")
     public ResponseEntity<String> handlePaymobCallback(
             @RequestBody Map<String, Object> payload,
@@ -42,5 +46,3 @@ public class WebhookController {
         return ResponseEntity.ok(message);
     }
 }
-
-*/

@@ -1,15 +1,15 @@
 package com.garage_system.Service.payment;
 
 
-import com.garage_system.Service.payment.WebhookService;
+import java.util.Map;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.garage_system.Model.Payment ;
+
+import com.garage_system.Model.Payment;
 import com.garage_system.Repository.PaymentRepository;
 
-import java.util.Map;
+import lombok.RequiredArgsConstructor ;
 
 @Service
 @RequiredArgsConstructor
@@ -30,17 +30,20 @@ public class WebhookService{
         // Example placeholder logic:
         String success = (String) payload.get("success");
         String paymobOrderId = (String) payload.get("order_id");
-/* 
 
-        Payment payment = paymentRepository.findById(paymobOrderId).get();  
+        Payment payment = paymentRepository.findByPaymentId(paymobOrderId)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
 
         if ("true".equalsIgnoreCase(success)) {
             payment.setStatus(Payment.Status.ACCEPTED);
             paymentRepository.save(payment);
             // TODO: perform other actions that should be done after successful payment
+       
+       
         } else {
             payment.setStatus(Payment.Status.FAILED);
             paymentRepository.save(payment);
-        }*/
+      
+        }
     }
 }

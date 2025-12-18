@@ -28,7 +28,6 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-
     @PostMapping("/card")
     public ResponseEntity<String> initiateCardPayment() {
         String paymentLink = paymentService.initiateCardPayment();
