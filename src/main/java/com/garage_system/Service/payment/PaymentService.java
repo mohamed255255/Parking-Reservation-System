@@ -210,7 +210,7 @@ public class PaymentService {
             // TODO: Implement callback handling logic
             // This method should verify the HMAC, update payment status, and perform any post-payment actions
             // Step 1: Extract the HMAC from the request
-            String receivedHmac = request.getParameter("hmac");
+          /* */  String receivedHmac = request.getParameter("hmac");
             System.out.println("Received HMAC: " + receivedHmac);
             if (receivedHmac == null) {
                 throw new RuntimeException("HMAC is missing in the request");

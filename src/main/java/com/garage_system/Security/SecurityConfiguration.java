@@ -40,7 +40,9 @@ public class SecurityConfiguration {
             "/login",
             "/v3/api-docs/**", // for the JSON spec
             "/swagger-ui/**",  // Swagger UI resources
-            "/swagger-ui.html"         // optional if still accessible
+            "/swagger-ui.html" ,        // optional if still accessible
+            "/api/webhook/**"   // <--- add this
+
         ).permitAll().anyRequest().authenticated()
         )
         .addFilterBefore(JwtFilter, UsernamePasswordAuthenticationFilter.class);
