@@ -44,7 +44,8 @@ Admin have full control over garage and slot creation , user details, reservatio
   - used github actions for CI / CD
   - used AWS (EC2 , VPC , Terraform)
   - Unit tested with JUnit5 & Mockito
- 
+    
+ -  **Database**  
   -  designed DB schema that follows normalization for optimized queries and indexes
   -  used @Transactional for dependent steps and data integrety
   -  used validations for columns in the entity layer
