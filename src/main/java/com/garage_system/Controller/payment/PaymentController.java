@@ -1,4 +1,4 @@
-package com.garage_system.Controller ;
+package com.garage_system.Controller.payment ;
 import lombok.RequiredArgsConstructor;
 
 import javax.swing.text.html.Option;

@@ -38,10 +38,10 @@ public class SecurityConfiguration {
         .requestMatchers(
             "/register",
             "/login",
-            "/v3/api-docs/**", // for the JSON spec
-            "/swagger-ui/**",  // Swagger UI resources
-            "/swagger-ui.html" ,        // optional if still accessible
-            "/api/webhook/**"   // <--- add this
+            "/v3/api-docs/**",
+            "/swagger-ui/**",  
+            "/swagger-ui.html" , 
+            "/api/webhook/**"  
 
         ).permitAll().anyRequest().authenticated()
         )

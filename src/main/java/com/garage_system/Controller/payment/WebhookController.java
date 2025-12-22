@@ -1,4 +1,4 @@
-package com.garage_system.Controller;
+package com.garage_system.Controller.payment;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -18,20 +18,22 @@ import com.garage_system.Service.payment.WebhookService;
 public class WebhookController {
 
     private final WebhookService webhookService;
-
-    private final PaymentService paymentService;
     
     @PostMapping("/paymob/callback")
     public ResponseEntity<String> handlePaymobCallback(
             @RequestBody Map<String, Object> payload,
             HttpServletRequest request) {
-      /*   try {
-            paymentService.handlePaymentCallback(payload, request);
+         try {
+          
+            webhookService.callbackValidation(payload, request); /// handle excpetion in global
+            webhookService.processPaymentCallback(payload);     ///  handle excpetion in global
+           
             return ResponseEntity.ok("Callback received");
+       
         } catch (Exception e) {
             // Handle exceptions aappropriately
             return ResponseEntity.badRequest().body(e.getMessage());
-        }*/ return ResponseEntity.ok("SUCCESS");
+        } 
     }
 
     @GetMapping("/paymob/response")

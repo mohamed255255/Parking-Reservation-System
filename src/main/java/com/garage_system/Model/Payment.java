@@ -1,6 +1,7 @@
 package com.garage_system.Model;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -14,6 +15,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
@@ -28,11 +30,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private int id ;   //// UUID
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID paymentId;
 
-    @Column(name = "payment_id", nullable = true, unique = true)
-    private String paymentId; //// UUID
+    @Column
+    @NotNull
+    private String idempotency_key ;
 
     @NotNull
     private double amount ;
@@ -40,6 +43,7 @@ public class Payment {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
+
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -64,7 +68,7 @@ public class Payment {
     @NotNull
     private LocalDateTime updatedAt;
  
-    @OneToOne
+    @ManyToOne
     @NotNull
     private Reservation reservation ;
 }
