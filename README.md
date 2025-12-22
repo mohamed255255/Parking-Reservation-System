@@ -49,7 +49,11 @@ Admin have full control over garage and slot creation , user details, reservatio
     -  designed DB schema that follows normalization for optimized queries and indexes
     -  used @Transactional for dependent steps and data integrety
     -  used validations for columns in the entity layer
-  
+
+ - **Future features**
+     - scale throgh : break the services into microservicse , rabbit mq for notifications , add K8s
+     - create Refund for the payment
+     - add Angular later  
 ---
 
 ## 🛠️ Tech Stack  
