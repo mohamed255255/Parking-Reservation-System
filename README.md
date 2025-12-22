@@ -34,14 +34,20 @@ Admin have full control over garage and slot creation , user details, reservatio
 
 - 💳 **Payment & Billing**  
   - Parking fees calculated based on stay duration  
-  - Secure PayMob integration for digital payments , handled idempotency,security and webhook   
+  - Secure PayMob integration for digital payments , handled idempotency , HMAC verification   
   - Automated email receipts sent after payment
   - store payment transactions in the DB
+ 
 
 - 📦 **Deployment & Reliability**  
   - Dockerized for deployment readiness
   - used github actions for CI / CD
+  - used AWS (EC2 , VPC , Terraform)
   - Unit tested with JUnit5 & Mockito
+ 
+  -  designed DB schema that follows normalization for optimized queries and indexes
+  -  used @Transactional for dependent steps and data integrety
+  -  used validations for columns in the entity layer
   
 ---
 
