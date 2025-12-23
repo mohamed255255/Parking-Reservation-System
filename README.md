@@ -71,7 +71,7 @@ Admin have full control over garage and slot creation , user details, reservatio
 - **Clean architecture (Controller → Service → Repository → Database)**
 - Used **DTOs** for requests and responses to decouple persistence models from exposed APIs, improving security, readability, and maintainability of the codebase.
 - **Global exception handling** 
-
+- Implemented Strategy Design Pattern, allowing seamless integration of any kind of paymet gateway 
 
 
 
