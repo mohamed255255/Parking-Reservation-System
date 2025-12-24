@@ -1,10 +1,16 @@
 package com.garage_system.Service.payment;
 
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -13,21 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import com.garage_system.Model.User;
 import com.garage_system.Security.CustomUserDetails;
 
-import org.json.JSONObject;
-import org.json.JSONArray;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-
-import javax.crypto.SecretKey;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +44,6 @@ public class PaymentService {
     @Value("${PAYMOB.CARD_INTEGRATION_ID}")
     private int cardIntegrationId;
 
-    private final RestTemplate restTemplate = new RestTemplate();
 
     
     public String initiateCardPayment() {
@@ -83,13 +74,16 @@ public class PaymentService {
 
 
     private String createPaymentOrder(String token, BigDecimal price) {
+       
         JSONObject body = new JSONObject();
         body.put("auth_token", token);
         body.put("delivery_needed", false);
         body.put("currency", "EGP");
         body.put("amount_cents", price.multiply(BigDecimal.valueOf(100)).intValue());
         body.put("items", new JSONArray());
-       
+      
+        //// you need to send reservation_id in the payload
+        
         // ORDER_URL = https://accept.paymob.com/api/ecommerce/orders
         JSONObject response = postJson(orderUrl, body);
         return String.valueOf(response.getInt("id"));
@@ -102,7 +96,6 @@ public class PaymentService {
                         .getAuthentication().getPrincipal()).getUser();
 
         JSONObject billingData = new JSONObject();
-      
         //billingData.put("billing_id", "");  
         billingData.put("email", currentAuthUser.getEmail() );
         billingData.put("name", currentAuthUser.getName());
@@ -127,6 +120,7 @@ public class PaymentService {
 
 
     private JSONObject postJson(String url, JSONObject body) {
+            RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> entity = new HttpEntity<>(body.toString(), headers);
@@ -139,9 +133,10 @@ public class PaymentService {
                         String.class
                 );
                 return new JSONObject(response.getBody());
+
             } catch (HttpClientErrorException e) {
                 throw new RuntimeException("Paymob Error: " + e.getResponseBodyAsString());
             }
-        }
+    }
 
 }

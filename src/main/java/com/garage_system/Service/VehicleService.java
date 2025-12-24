@@ -27,7 +27,7 @@ public class VehicleService {
         this.vehicleRepository = vehicleRepository ;
      }
      
-    public Vehicle addVehicleToTheSystem(VehicleDto vehicleDto){
+     public Vehicle addVehicleToTheSystem(VehicleDto vehicleDto){
         Vehicle newVehicle = VehicleMapper.toEntity(vehicleDto) ;
         
         User currentAuthUser = ((CustomUserDetails) SecurityContextHolder.getContext()

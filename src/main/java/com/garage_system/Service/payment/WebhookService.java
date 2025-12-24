@@ -138,8 +138,9 @@ public class WebhookService{
     @Transactional
     public void processPaymentCallback(Map<String, Object> payload) {
         
-        String success       = (String) payload.get("success");
-        //String paymobOrderId = (String) payload.get("order_id");
+           String success       = (String) payload.get("success");
+        // String paymobOrderId = (String) payload.get(" ");
+        // if the reservation_id doesnt exist 
         if ("true".equalsIgnoreCase(success)) {
             payment.setStatus(Payment.Status.ACCEPTED);
             paymentRepository.save(payment);

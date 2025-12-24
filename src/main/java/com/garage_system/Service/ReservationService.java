@@ -1,18 +1,23 @@
 package com.garage_system.Service;
 
 import java.util.Optional;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.garage_system.DTO.request.ReservationDto;
+import com.garage_system.DTO.request.VehicleDto;
 import com.garage_system.Model.Reservation;
 import com.garage_system.Model.Slot;
 import com.garage_system.Model.User;
+import com.garage_system.Model.Vehicle;
 import com.garage_system.Repository.ReservationRepository;
 import com.garage_system.Repository.SlotRepository;
 import com.garage_system.Repository.UserRepository;
+import com.garage_system.Repository.VehicleRepository;
 import com.garage_system.exception.ResourceNotFoundException;
 import com.garage_system.mapper.ReservationMapper;
+import com.garage_system.mapper.VehicleMapper;
 
 
 @Service
@@ -31,19 +36,26 @@ public class ReservationService {
         this.userRepository = userRepository;
     }
 
-    public Optional<Reservation> createRequest(ReservationDto reservationDto) {
+    
+    public Optional<Reservation> createRequest(ReservationDto reservationDto , VehicleDto vehicleDto) {
         try {
         
-            User relatedUser =  userRepository.findById(reservationDto.getUser_id()).orElseThrow(() -> new ResourceNotFoundException("no user id is sent with this reservation"));
-            Slot relatedSlot =  slotRepository.findById(reservationDto.getSlot_id()).orElseThrow(() -> new ResourceNotFoundException("no slot id is sent with this reservation"));
-           
+            User currentUser  =  userRepository.findById(reservationDto.getUser_id()).orElseThrow(() -> new ResourceNotFoundException("user id is not found in the DB"));
+            Slot requiredSlot =  slotRepository.findById(reservationDto.getSlot_id()).orElseThrow(() -> new ResourceNotFoundException("slot id is not found in the DB"));
+            Vehicle choosenVehicle = VehicleMapper.toEntity(vehicleDto);
+
+            if(requiredSlot.getVehicle() != null){
+                    throw new RuntimeException("this slot is already occupied") ;
+            }
+
             Reservation newReservation = ReservationMapper.toEntity(reservationDto);
+            requiredSlot.setVehicle(choosenVehicle);
            
-            newReservation.setSlot(relatedSlot);
-            newReservation.setUser(relatedUser);
+            newReservation.setSlot(requiredSlot);
+            newReservation.setUser(currentUser);
            
             Reservation savedReservation = reservationRepository.save(newReservation);
-        
+            
             return Optional.of(savedReservation);
         } catch (DataIntegrityViolationException ex) {
             return Optional.empty();

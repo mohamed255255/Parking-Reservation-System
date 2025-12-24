@@ -10,7 +10,7 @@ public class ReservationMapper {
 
         Reservation reservation = new Reservation();
         reservation.setStartingTime(dto.getStartingTime());
-
+        reservation.setEndingTime(dto.getEndigTime());
         return reservation;
     }
 
