@@ -11,6 +11,7 @@ public class ReservationMapper {
         Reservation reservation = new Reservation();
         reservation.setStartingTime(dto.getStartingTime());
         reservation.setEndingTime(dto.getEndigTime());
+        reservation.setStatus(Reservation.Status.PENDING);
         return reservation;
     }
 
@@ -20,8 +21,10 @@ public class ReservationMapper {
         ReservationDto dto = new ReservationDto();
         dto.setId(entity.getId());
         dto.setStartingTime(entity.getStartingTime());
+        dto.setEndigTime(entity.getEndingTime());
         dto.setUser_id(entity.getUser().getId());
         dto.setSlot_id(entity.getSlot().getId());
+        
 
         return dto;
     }

@@ -56,9 +56,9 @@ public class Reservation {
     
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Status status;
+    public Status status;
 
-    private  enum Status {
+    public  enum Status {
         PENDING ,
         COMPLETED
     }
