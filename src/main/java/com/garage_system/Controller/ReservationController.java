@@ -1,5 +1,9 @@
 package com.garage_system.Controller;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.garage_system.DTO.request.ReservationDto;
 import com.garage_system.DTO.request.VehicleDto;
+import com.garage_system.Model.Reservation;
 import com.garage_system.Service.ReservationService;
 import com.garage_system.Service.SlotService;
 import com.garage_system.mapper.ReservationMapper;
@@ -29,12 +34,18 @@ public class ReservationController {
        @PreAuthorize("hasAnyRole('USER')")
        @PostMapping
        public ResponseEntity<?> createRequest(@RequestBody ReservationDto reservationDto , @RequestBody VehicleDto vehicleDto) {
-              var result = reservationService.createRequest(reservationDto , vehicleDto);             
-              if (result.isEmpty())
+              Optional<Reservation> newReservation = reservationService.createRequest(reservationDto , vehicleDto);                   
+              if (newReservation.isEmpty())
                      return ResponseEntity.status(500).body("Failed to save the reservation");
-              return ResponseEntity
-                            .status(201)
-                            .body(ReservationMapper.toDto(result.get()));
+              
+              double price = reservationService.calculateFees(newReservation.get()) ;
+              
+              Map<String, Object> bill = new HashMap<>();
+              bill.put("reservation", ReservationMapper.toDto(newReservation.get()));
+              bill.put("price", price);
+
+              return ResponseEntity.status(201).body(bill);
+
        }
 
        /// get my reservations as user paginated as user and support filters

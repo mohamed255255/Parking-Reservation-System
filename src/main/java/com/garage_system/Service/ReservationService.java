@@ -1,6 +1,10 @@
 package com.garage_system.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -25,9 +29,9 @@ import com.garage_system.mapper.VehicleMapper;
 
 @Service
 public class ReservationService {
-   
+    // since it is mvp project i put hourlyPricec in env file
     @Value("${parking.price.hourly}")
-    private BigDecimal hourlyPrice;
+    private int hourlyPrice;
   
     private final ReservationRepository reservationRepository;
     private final SlotRepository slotRepository;
@@ -36,13 +40,21 @@ public class ReservationService {
     public ReservationService(ReservationRepository reservationRepository,
                               SlotRepository slotRepository,
                               UserRepository userRepository) {
+        
         this.reservationRepository = reservationRepository;
         this.slotRepository = slotRepository;
         this.userRepository = userRepository;
     }
-
     
-    public ResponseEntity<?> createRequest(ReservationDto reservationDto , VehicleDto vehicleDto) {
+    public double calculateFees(Reservation newReservation) {
+        LocalTime start = newReservation.getStartingTime();
+        LocalTime end   = newReservation.getEndingTime();
+        long minutes = Duration.between(start, end).toMinutes();
+        double hours = Math.ceil((minutes / 60.0) * 100) / 100;
+        return hourlyPrice * hours;
+    }
+    
+    public Optional<Reservation> createRequest(ReservationDto reservationDto , VehicleDto vehicleDto) {
         try {
         
             User currentUser  =  userRepository.findById(reservationDto.getUser_id()).orElseThrow(() -> new ResourceNotFoundException("user id is not found in the DB"));
@@ -63,9 +75,9 @@ public class ReservationService {
             // return response of the reservation again which will act as recipt 
             // and add the price to id  price * hours
            
-            return ResponseEntity.ok(savedReservation);
+            return Optional.of(savedReservation);
         }catch (DataIntegrityViolationException ex) {
-            return ResponseEntity.ok((Optional.empty()));
+            return (Optional.empty());
             }
     }
 
