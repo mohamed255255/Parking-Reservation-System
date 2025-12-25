@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.garage_system.Repository.UserRepository;
-import com.garage_system.Security.UserPrincipal;
+import com.garage_system.Security.CustomUserDetails;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email){
         var optionalUser = userRepository.findByEmail(email);
-        return optionalUser.map(UserPrincipal::new)
+        return optionalUser.map(CustomUserDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
         /// Adapter pattern here 
         // it converts the interface of your User entity into something Spring Security expects.

@@ -3,21 +3,21 @@ package com.garage_system.Service;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import com.garage_system.DTO.request.SlotDto;
 import com.garage_system.DTO.request.VehicleDto;
 import com.garage_system.Model.Garage;
 import com.garage_system.Model.Slot;
+import com.garage_system.Model.User;
 import com.garage_system.Model.Vehicle;
 import com.garage_system.Repository.GarageRepository;
 import com.garage_system.Repository.SlotRepository;
 import com.garage_system.Repository.VehicleRepository;
+import com.garage_system.Security.CustomUserDetails;
 import com.garage_system.exception.ResourceNotFoundException;
 import com.garage_system.mapper.SlotMapper;
-import com.garage_system.mapper.VehicleMapper;
 
 @Service
 public class SlotService {
@@ -41,21 +41,30 @@ public class SlotService {
         slotRepository.save(newSlot);       
     }
 
-    public List<Slot> getAllSlots(){
-        return slotRepository.getAllSlots();
+///// to do :
+    public List<Slot> getUserSlots(){
+        User currentAuthUser = ((CustomUserDetails) SecurityContextHolder.getContext()
+        .getAuthentication().getPrincipal()).getUser();
+        
+        if(currentAuthUser == null) throw new ResourceNotFoundException("User is not found") ;
+        return slotRepository.getUserSlotsAndVehicles(currentAuthUser.getId());
+        
     }
-     
+    /// admin 
     public Slot getSlotById(int id){
         return slotRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("slot not found with id: "+id)) ;
     }
 
-    public Map<?,?> addVehicleToAnEmptySlot(int slotId , VehicleDto vehicleDto){
+
+
+
+    public Map<?,?> addVehicleToAnEmptySlot(int slotId , Vehicle vehicle){
         Slot slot = slotRepository.findById(slotId).get();
         boolean isEmpty = slot.getVehicle() == null;
         if(isEmpty){
-             if(vehicleDto.getVehicleDepth()<=slot.getSlotDepth()&&vehicleDto.getVehicleWidth()<=slot.getSlotWidth()){
+             if(vehicle.getVehicleDepth() <= slot.getSlotDepth() && vehicle.getVehicleWidth()<=slot.getSlotWidth()){
                    
-                Vehicle myVehicle = vehicleRepository.findById(vehicleDto.getId())
+                Vehicle myVehicle = vehicleRepository.findById(vehicle.getId())
                       .orElseThrow(() -> new ResourceNotFoundException("Vehicle is not found"));
                    
                      slot.setVehicle(myVehicle);

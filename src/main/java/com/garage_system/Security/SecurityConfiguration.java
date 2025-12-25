@@ -35,7 +35,15 @@ public class SecurityConfiguration {
         .csrf(csrf -> csrf.disable())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/register", "/login", "/verify-user", "/reset-password/**", "/forget-password/**").permitAll()            .anyRequest().authenticated()
+        .requestMatchers(
+            "/register",
+            "/login",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",  
+            "/swagger-ui.html" , 
+            "/api/webhook/**"  
+
+        ).permitAll().anyRequest().authenticated()
         )
         .addFilterBefore(JwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

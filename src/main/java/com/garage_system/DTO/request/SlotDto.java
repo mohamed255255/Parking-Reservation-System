@@ -27,9 +27,6 @@ public class SlotDto {
     @NotNull
     @Positive(message = "Slot depth must be positive")
     private Double slotDepth;
-    
-    @NotNull(message = "Empty status must be specified")
-    private Boolean empty;
 
     @NotNull(message = "Start time is required")
     @Future(message = "Start time must be in the future")

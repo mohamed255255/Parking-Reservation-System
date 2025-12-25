@@ -8,12 +8,22 @@ import org.springframework.stereotype.Repository;
 
 import  com.garage_system.Model.Slot ;
 
+import jakarta.transaction.Transactional;
+
 @Repository
 public interface SlotRepository extends JpaRepository<Slot, Integer> {
   
-    @Query("select s from Slot s")
-    List<Slot> getAllSlots();
-
-
-
+    
+    // @Query("SELECT s from slots s where user")
+    //List<Slot> findByUserId();
+    @Transactional
+    @Query("""
+        SELECT s
+        FROM Slot s
+        JOIN FETCH s.vehicle v
+        JOIN FETCH v.user u
+        WHERE u.id = :userId
+     """)
+    List<Slot> getUserSlotsAndVehicles(int userId);
+    
 } 

@@ -55,7 +55,6 @@ public class VehicleController {
         return ResponseEntity.ok(vehicles);
     }
 
-
     // Get Vehicle by ID
     @GetMapping("/{id}")
     public ResponseEntity<Vehicle> getVehicleById(@PathVariable int id) {
