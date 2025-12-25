@@ -25,16 +25,25 @@ Admin have full control over garage and slot creation , user details, reservatio
 
 - 🏢 **Garage & Slot Management**  
   - Admin can create garages , define slot dimensions.
-  - every created slot has its own QR code
+  - Admin generates QR codes for every created slot to comfirm arrival
   - Users only see slots that fit their vehicle size
 
 - ⏳ **Real-Time Notifications**  
   - Users can request "remind me later" when slots are unavailable  
   - Implemented using **schedulers** to send **emails** when parking slots become available
-  - future enhancements : i will use firebase and in case of microservice approach i will use message queues
 
+- 🚗 **Reservation**
+  - User creates a reservation if the slot is empty. The reservation is created with status **PENDING** ⏳
+  - The reservation is confirmed only when the user scans the QR code at the physical location 📍  
+    Once confirmed, the parking timer starts and payment begins 💳⏱️
+  - **QR code rejection cases **
+    - The QR code represents a specific **slot ID + garage ID**.  
+      QR codes from other locations are rejected 🚫
+    - If the QR code is not linked to an active **PENDING** reservation, it is rejected 🛑
+    - If the slot is already occupied whether by another user on the way or already parked car , the scan is rejected 🚧
+  - User can view all of their reservations 📋
+  
 - 💳 **Payment & Billing**
-  - Reservation is confirmed by scaning the QR code at location itself so the timer start counting and the payment starts
   - Parking fees calculated based on stay duration  
   - Secure PayMob integration for digital payments , handled idempotency , HMAC verification   
   - Automated email receipts sent after payment 
@@ -47,11 +56,11 @@ Admin have full control over garage and slot creation , user details, reservatio
  -  **Database**  
     -  designed DB schema that follows normalization for optimized queries and indexes
     -  used @Transactional for dependent steps and data integrety
-    -  used validations for columns in the entity layer and validations at the DTO level
+    -  used validations for columns in the entity layer
 
  - **Future features**
      - scale throgh : break the services into microservicse , rabbit mq for notifications , add K8s
-     - create Refund for the payment
+     - create Refund for the canceled payment
      - add Angular later for admin dashboard and user UI
 ---
 
@@ -67,10 +76,10 @@ Admin have full control over garage and slot creation , user details, reservatio
 
 ## 🔹 Architecutre / Design Patterns Used  
 
-- **Clean architecture (Controller → Service → Repository → Database)**
-- Used **DTOs** for requests and responses to decouple persistence models from exposed APIs, improving security, readability, and maintainability of the codebase.
+- **Clean architecture**
+- **DTOs** for requests and responses to decouple persistence models from exposed APIs, improving security, readability, and maintainability of the codebase.
 - **Global exception handling** 
-- Implemented Strategy Design Pattern, allowing seamless integration of any kind of paymet gateways
+- **Strategy Design Pattern** : allowing seamless integration of any kind of paymet gateways
 
 
 
