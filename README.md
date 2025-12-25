@@ -24,36 +24,35 @@ Admin have full control over garage and slot creation , user details, reservatio
   - Password reset & Two-Factor Authentication (2FA)  
 
 - 🏢 **Garage & Slot Management**  
-  - Admin can create garages and define slot dimensions  
-  - Users only see slots that fit their vehicle  
+  - Admin can create garages , define slot dimensions.
+  - every created slot has its own QR code
+  - Users only see slots that fit their vehicle size
 
 - ⏳ **Real-Time Notifications**  
   - Users can request "remind me later" when slots are unavailable  
   - Implemented using **schedulers** to send **emails** when parking slots become available
   - future enhancements : i will use firebase and in case of microservice approach i will use message queues
 
-- 💳 **Payment & Billing**  
+- 💳 **Payment & Billing**
+  - Reservation is confirmed by scaning the QR code at location itself so the timer start counting and the payment starts
   - Parking fees calculated based on stay duration  
   - Secure PayMob integration for digital payments , handled idempotency , HMAC verification   
-  - Automated email receipts sent after payment
-  - store payment transactions in the DB
- 
+  - Automated email receipts sent after payment 
 
 - 📦 **Deployment & Reliability**  
   - Dockerized for deployment readiness
   - used github actions for CI / CD
-  - used AWS (EC2 , VPC , Terraform)
   - Unit tested with JUnit5 & Mockito
     
  -  **Database**  
     -  designed DB schema that follows normalization for optimized queries and indexes
     -  used @Transactional for dependent steps and data integrety
-    -  used validations for columns in the entity layer
+    -  used validations for columns in the entity layer and validations at the DTO level
 
  - **Future features**
      - scale throgh : break the services into microservicse , rabbit mq for notifications , add K8s
      - create Refund for the payment
-     - add Angular later  
+     - add Angular later for admin dashboard and user UI
 ---
 
 ## 🛠️ Tech Stack  
@@ -71,7 +70,7 @@ Admin have full control over garage and slot creation , user details, reservatio
 - **Clean architecture (Controller → Service → Repository → Database)**
 - Used **DTOs** for requests and responses to decouple persistence models from exposed APIs, improving security, readability, and maintainability of the codebase.
 - **Global exception handling** 
-- Implemented Strategy Design Pattern, allowing seamless integration of any kind of paymet gateway 
+- Implemented Strategy Design Pattern, allowing seamless integration of any kind of paymet gateways
 
 
 
