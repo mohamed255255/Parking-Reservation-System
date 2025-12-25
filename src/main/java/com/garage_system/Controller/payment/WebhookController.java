@@ -1,24 +1,21 @@
 package com.garage_system.Controller.payment;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Map;
-
-import com.garage_system.Service.payment.PaymentService;
 import com.garage_system.Service.payment.WebhookService;
-@CrossOrigin(origins = "*")
 
 @RestController
 @RequestMapping("/api/webhook")
-@RequiredArgsConstructor
 public class WebhookController {
 
     private final WebhookService webhookService;
-    
+
+    public WebhookController(  WebhookService webhookService ){
+        this.webhookService = webhookService ;
+    }
+
     @PostMapping("/paymob/callback")
     public ResponseEntity<String> handlePaymobCallback(
             @RequestBody Map<String, Object> payload,

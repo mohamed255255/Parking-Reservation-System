@@ -137,7 +137,7 @@ public class WebhookService{
 
     @Transactional
     public void processPaymentCallback(Map<String, Object> payload) {
-        
+       /* 
            String success       = (String) payload.get("success");
         // String paymobOrderId = (String) payload.get(" ");
         // if the reservation_id doesnt exist 
@@ -153,7 +153,7 @@ public class WebhookService{
         //  One reservation could have multiple payment trials
         //  Send payment status as email whatever the status
  
-
+*/
     }
 
 

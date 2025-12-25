@@ -45,7 +45,6 @@ public class Reservation {
 
 
     @OneToMany(mappedBy = "reservation")
-    @JoinColumn(name = "payment_id")
     private List<Payment> payments ;
 
 
