@@ -36,7 +36,7 @@ Admin have full control over garage and slot creation , user details, reservatio
   - User creates a reservation if the slot is empty. The reservation is created with status **PENDING** ⏳
   - The reservation is confirmed only when the user scans the QR code at the physical location 📍  
     Once confirmed, the parking timer starts and payment begins 💳⏱️
-  - **QR code rejection cases **
+  - **QR code rejection cases**
     - The QR code represents a specific **slot ID + garage ID**.  
       QR codes from other locations are rejected 🚫
     - If the QR code is not linked to an active **PENDING** reservation, it is rejected 🛑
