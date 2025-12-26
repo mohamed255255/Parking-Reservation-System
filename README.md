@@ -21,7 +21,7 @@ Admin have full control over garage and slot creation , user details, reservatio
 
 - 🔐 **Authentication & Authorization**  
   - Role-based access (Admin/User) using Spring Security + JWT  
-  - Password reset & Two-Factor Authentication (2FA)  
+  - Password reset , email verification  and Two-Factor Authentication (2FA)  
 
 - 🏢 **Garage & Slot Management**  
   - Admin can create garages , define slot dimensions.
