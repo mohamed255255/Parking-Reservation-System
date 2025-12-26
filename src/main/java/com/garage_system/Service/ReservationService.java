@@ -25,9 +25,13 @@ import com.garage_system.Repository.VehicleRepository;
 import com.garage_system.exception.ResourceNotFoundException;
 import com.garage_system.mapper.ReservationMapper;
 import com.garage_system.mapper.VehicleMapper;
+import com.google.zxing.qrcode.encoder.QRCode;
+
+import lombok.AllArgsConstructor;
 
 
 @Service
+@AllArgsConstructor
 public class ReservationService {
     // since it is mvp project i put hourlyPricec in env file
     @Value("${parking.price.hourly}")
@@ -36,16 +40,8 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final SlotRepository slotRepository;
     private final UserRepository userRepository;
+    private final QRCodeService qrCodeService ;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              SlotRepository slotRepository,
-                              UserRepository userRepository) {
-        
-        this.reservationRepository = reservationRepository;
-        this.slotRepository = slotRepository;
-        this.userRepository = userRepository;
-    }
-    
     public double calculateFees(Reservation newReservation) {
         LocalTime start = newReservation.getStartingTime();
         LocalTime end   = newReservation.getEndingTime();
@@ -72,14 +68,27 @@ public class ReservationService {
             newReservation.setUser(currentUser);
            
             Reservation savedReservation = reservationRepository.save(newReservation);
-            // return response of the reservation again which will act as recipt 
-            // and add the price to id  price * hours
            
             return Optional.of(savedReservation);
         }catch (DataIntegrityViolationException ex) {
             return (Optional.empty());
             }
     }
+
+    
+    public void confirmReservation(){
+       
+    }
+
+
+
+
+
+
+
+
+
+
 
 
 }

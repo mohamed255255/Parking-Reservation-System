@@ -1,13 +1,13 @@
 package com.garage_system.Model;
 
+import java.util.List;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,11 +37,6 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
 
-    @Column(nullable = false)
-    private LocalTime startingTime;
-
-    @Column(nullable = false)
-    private LocalTime endingTime;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -53,11 +49,11 @@ public class Reservation {
 
     @Column(nullable = false)
     @CreationTimestamp
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
    
     @Column(nullable = false)
     @UpdateTimestamp
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "reservation")
     private List<Payment> payments ;
@@ -78,9 +74,4 @@ public class Reservation {
     }
 
 
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 }

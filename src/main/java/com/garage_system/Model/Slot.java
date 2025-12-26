@@ -27,6 +27,9 @@ public class Slot {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
 
+    @Column(name = "slot_number")
+    private int slotNumber ;
+
     @Column(nullable = false)
     private double slotWidth;
 
@@ -41,12 +44,15 @@ public class Slot {
     @UpdateTimestamp
     private LocalDateTime endingTime ;
 
+    @Column(name = "qrcode_path"   , nullable = false)
+    private String qrCodeImagePath ;
+   
     @ManyToOne
     @JoinColumn(name = "garage_id" , nullable = false)
     private Garage garage;
 
     @OneToOne
-    @JoinColumn(name = "vehicle_id" , nullable = false)
+    @JoinColumn(name = "vehicle_id" , nullable = true)
     private Vehicle vehicle;
 
     @OneToOne(mappedBy = "slot")

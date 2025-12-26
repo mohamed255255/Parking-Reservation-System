@@ -1,5 +1,6 @@
 package com.garage_system.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -18,26 +19,29 @@ import com.garage_system.Repository.VehicleRepository;
 import com.garage_system.Security.CustomUserDetails;
 import com.garage_system.exception.ResourceNotFoundException;
 import com.garage_system.mapper.SlotMapper;
+import com.google.zxing.WriterException;
+
+import lombok.AllArgsConstructor;
 
 @Service
+@AllArgsConstructor
 public class SlotService {
     
     private final SlotRepository slotRepository;
     private final GarageRepository garageRepository ;
     private final VehicleRepository vehicleRepository ;
+    private final QRCodeService qrCodeService ;
 
-    public SlotService(SlotRepository slotRepository , GarageRepository garageRepository , VehicleRepository vehicleRepository) {
-        this.slotRepository    = slotRepository ;
-        this.garageRepository  = garageRepository ;
-        this.vehicleRepository = vehicleRepository ;
-    }
+ 
+    public void createSlot(SlotDto slotDto)  throws IOException , WriterException{
 
-    public void addNewSlot(SlotDto slotDto) {
         Slot   newSlot         = SlotMapper.toEntity(slotDto) ;
-        Garage existedGarage = garageRepository.findById(slotDto.getGarage_id())
+        Garage existedGarage   = garageRepository.findById(slotDto.getGarage_id())
         .orElseThrow(() -> new ResourceNotFoundException("Garage not found with id: " + slotDto.getGarage_id()));
-      
+       
         newSlot.setGarage(existedGarage);
+        String qrCodePath = qrCodeService.saveQRCodeImage(slotDto) ;
+        newSlot.setQrCodeImagePath(qrCodePath);
         slotRepository.save(newSlot);       
     }
 
@@ -54,8 +58,6 @@ public class SlotService {
     public Slot getSlotById(int id){
         return slotRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("slot not found with id: "+id)) ;
     }
-
-
 
 
     public Map<?,?> addVehicleToAnEmptySlot(int slotId , Vehicle vehicle){

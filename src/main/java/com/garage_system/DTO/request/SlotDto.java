@@ -18,7 +18,7 @@ import lombok.Setter;
 @Getter
 public class SlotDto {
 
-    private Integer id; 
+    private int slot_number; 
 
     @NotNull
     @Positive(message = "Slot width must be positive")
@@ -41,7 +41,9 @@ public class SlotDto {
         if (startTime == null || endingTime == null) return true; 
         return endingTime.isAfter(startTime);
     }
+    @NotNull(message = " slot should be connected with a garage")
     private int garage_id ;
     
     private int vehicle_id ;
+
 }

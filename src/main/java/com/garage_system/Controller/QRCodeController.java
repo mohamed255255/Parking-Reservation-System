@@ -17,23 +17,21 @@ import java.io.IOException;
 @RestController
 public class QRCodeController {
 
-    private final QRCodeService qrCodeService;
+    private QRCodeService qrCodeService ;
 
     public QRCodeController(QRCodeService qrCodeService) {
         this.qrCodeService = qrCodeService;
     }
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/generateQRCode")
-    public ResponseEntity<byte[]> generateQRCode(@RequestParam String text) throws IOException, WriterException {
-        byte[] qrCode = qrCodeService.generateQRCode(text);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_PNG);
-        return ResponseEntity.ok().headers(headers).body(qrCode);
-    }
+    
+
+    /// this method Confrim the reservation after scaning the code
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/readQRCode")
     public ResponseEntity<String> readQRCode(@RequestParam("file") byte[] file) throws IOException {
         String result = qrCodeService.readQRCode(file);
+        // front end should redirect to the payment page if the result 
+        // is sucess and send reservation info in the body 
+        // so front end use it for payment
         return ResponseEntity.ok(result);
     }
 }

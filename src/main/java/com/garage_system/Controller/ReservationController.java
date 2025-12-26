@@ -47,6 +47,12 @@ public class ReservationController {
               return ResponseEntity.status(201).body(bill);
 
        }
+       @PreAuthorize("hasAnyRole('USER')")
+       @PostMapping("/confirmation")
+       public ResponseEntity<?> confirmReservation(){
+            reservationService.confirmReservation() ;
+            return ResponseEntity.ok("You reservation has confirmed sucessfully , now your parking time started")
+       }
 
        /// get my reservations as user paginated as user and support filters
        // @PreAuthorize("hasAnyRole('ADMIN')")

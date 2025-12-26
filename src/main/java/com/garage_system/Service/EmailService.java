@@ -22,7 +22,7 @@ public class EmailService {
     public boolean sendVerificationEmail(String to , String code){
           try {
                /// should be thymleaf to either wirte the code or just open a dummy page
-               String linkToVerification =  "http://localhost:8081/verify-user" ;
+               String linkToVerification =  "frontendUr/verify-email?email="+to ;
                SimpleMailMessage message = new SimpleMailMessage();
                message.setFrom(from);
                message.setTo(to);
