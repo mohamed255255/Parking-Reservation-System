@@ -53,6 +53,7 @@ public class Garage {
     @OneToMany(mappedBy = "garage")
     private List<Slot> slots = new ArrayList<>();
 
-
+    @OneToMany(mappedBy = "garage")
+    private List<Reservation> reservations ;
    
 }

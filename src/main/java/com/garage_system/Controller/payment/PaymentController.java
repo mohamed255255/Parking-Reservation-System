@@ -14,6 +14,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.garage_system.DTO.request.ReservationDto;
+import com.garage_system.Model.Reservation;
 import com.garage_system.Model.User;
 import com.garage_system.Security.CustomUserDetails;
 import com.garage_system.Service.CustomUserDetailsService;
@@ -28,9 +30,9 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    @PostMapping("/card")
-    public ResponseEntity<String> initiateCardPayment() {
-        String paymentLink = paymentService.initiateCardPayment();
+    @PostMapping("/card/{id}")  /////// make it UUID for security and prevent IDOR 
+    public ResponseEntity<String> initiateCardPayment(@RequestParam("id") int reservationId ) {
+        String paymentLink = paymentService.initiateCardPayment(reservationId);
         return ResponseEntity.ok(paymentLink);
     }
 

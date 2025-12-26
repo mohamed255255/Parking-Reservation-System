@@ -4,7 +4,9 @@ import java.time.LocalTime;
 
 import com.garage_system.Model.Reservation;
 
+import io.micrometer.common.lang.NonNull;
 import io.micrometer.common.lang.Nullable;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,6 +31,9 @@ public class ReservationDto {
 
     private int slot_id ;
 
+    private int garage_id ;
+    
+    @NotNull(message = "user_id is required")  
     private int user_id ;
 
 }

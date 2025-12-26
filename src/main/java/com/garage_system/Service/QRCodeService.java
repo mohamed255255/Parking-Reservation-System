@@ -62,12 +62,7 @@ public class QRCodeService {
             BufferedImageLuminanceSource source = new BufferedImageLuminanceSource(bufferedImage);
             HybridBinarizer binarizer = new HybridBinarizer(source);
             com.google.zxing.BinaryBitmap bitmap = new com.google.zxing.BinaryBitmap(binarizer);
-            MultiFormatReader reader = new MultiFormatReader();
-            
-            /// check that QR code is valid :
-            /// 1. decode extract garage_id , slot_id from garage##,slot##.png
-           
-
+            MultiFormatReader reader = new MultiFormatReader();           
             try {
                 Result result = reader.decode(bitmap);
                 return result.getText();
@@ -86,8 +81,8 @@ public class QRCodeService {
         Files.createDirectories(qrCodeDir);
         
         // Generate
-        String fileName = "qrcode_garage" + slotDto.getGarage_id() + 
-                        "_slot" + slotDto.getSlot_number() + ".png";
+        String fileName = "G" + slotDto.getGarage_id() + 
+                        "_S" + slotDto.getSlot_number() + ".png";
         
         Path targetLocation = qrCodeDir.resolve(fileName);
 

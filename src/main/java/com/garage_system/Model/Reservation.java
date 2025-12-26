@@ -46,6 +46,9 @@ public class Reservation {
     @JoinColumn(name = "slot_id", nullable = false)
     private Slot slot;
 
+    @ManyToOne
+    @JoinColumn(name = "garage_id", nullable = false)
+    private Garage garage;
 
     @Column(nullable = false)
     @CreationTimestamp

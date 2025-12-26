@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.garage_system.DTO.request.ReservationDto;
+import com.garage_system.Model.Reservation;
 import com.garage_system.Model.User;
 import com.garage_system.Security.CustomUserDetails;
 
@@ -46,18 +48,18 @@ public class PaymentService {
 
 
     
-    public String initiateCardPayment() {
+    public String initiateCardPayment(int reservationId) {
        
         var principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (principal instanceof String) { // usually a string "anonymousUser" if not logged in
-            return "Please log in to initiate a payment.";
+        if (principal instanceof String) { 
+            return "Please log in to initiate payment.";
         }
 
         BigDecimal price = BigDecimal.valueOf(100);
 
         String token      = authenticate();
-        String orderId    = createPaymentOrder(token, price);
+        String orderId    = createPaymentOrder(token, price , reservationId);
         String paymentKey = generatePaymentKey(token, orderId, price);
         return "https://accept.paymob.com/api/acceptance/iframes/"
                 + iframeId + "?payment_token=" + paymentKey;
@@ -73,16 +75,24 @@ public class PaymentService {
     }
 
 
-    private String createPaymentOrder(String token, BigDecimal price) {
-       
+    private String createPaymentOrder(String token, BigDecimal price , int reservationId) {
+        int amount_cents = price.multiply(BigDecimal.valueOf(100)).intValue() ;
+
         JSONObject body = new JSONObject();
         body.put("auth_token", token);
         body.put("delivery_needed", false);
         body.put("currency", "EGP");
-        body.put("amount_cents", price.multiply(BigDecimal.valueOf(100)).intValue());
-        body.put("items", new JSONArray());
-      
-        //// you need to send reservation_id in the payload
+        body.put("amount_cents", amount_cents );
+        
+        JSONArray items = new JSONArray();       
+        JSONObject oneItem = new JSONObject();
+        oneItem.put("name", "Parking Slot");
+        oneItem.put("amount_cents", amount_cents);
+        oneItem.put("description", "reservationId_"+reservationId);
+        items.put(oneItem);
+       
+        body.put("items", items);
+
         
         // ORDER_URL = https://accept.paymob.com/api/ecommerce/orders
         JSONObject response = postJson(orderUrl, body);
@@ -95,14 +105,19 @@ public class PaymentService {
         User currentAuthUser = ((CustomUserDetails) SecurityContextHolder.getContext()
                         .getAuthentication().getPrincipal()).getUser();
 
-        JSONObject billingData = new JSONObject();
-        //billingData.put("billing_id", "");  
-        billingData.put("email", currentAuthUser.getEmail() );
-        billingData.put("name", currentAuthUser.getName());
-        billingData.put("phone_number",  currentAuthUser.getPhone());
-        billingData.put("created_at",  LocalDateTime.now());
-        //billingData.put("city", "user-city");
-        //billingData.put("country", "user-country");
+       JSONObject billingData = new JSONObject();
+        billingData.put("first_name", currentAuthUser.getName()); // split if you store full name
+        billingData.put("last_name", "Y");
+        billingData.put("email", currentAuthUser.getEmail());
+        billingData.put("phone_number", currentAuthUser.getPhone());
+        billingData.put("street", "User street");        // mandatory
+        billingData.put("building", "Building info");    // mandatory
+        billingData.put("floor", "Floor info");          // mandatory
+        billingData.put("apartment", "Apartment info");  // mandatory
+        billingData.put("city", "User city");
+        billingData.put("country", "User country");
+        billingData.put("created_at", LocalDateTime.now().toString()); // optional
+
 
        
         JSONObject body = new JSONObject();

@@ -17,15 +17,13 @@ public class ReservationMapper {
 
     public static ReservationDto toDto(Reservation entity) {
         if (entity == null) return null;
-
         ReservationDto dto = new ReservationDto();
         dto.setId(entity.getId());
         dto.setStartingTime(entity.getStartingTime());
         dto.setEndigTime(entity.getEndingTime());
         dto.setUser_id(entity.getUser().getId());
         dto.setSlot_id(entity.getSlot().getId());
-        
-
+        dto.setGarage_id(entity.getGarage().getId());  
         return dto;
     }
 }
