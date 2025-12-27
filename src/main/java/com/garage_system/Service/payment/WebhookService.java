@@ -137,11 +137,22 @@ public class WebhookService{
 
     @Transactional
     public void processPaymentCallback(Map<String, Object> payload) {
-       /* 
+       
            String success       = (String) payload.get("success");
-        // String paymobOrderId = (String) payload.get(" ");
-        // if the reservation_id doesnt exist 
-        if ("true".equalsIgnoreCase(success)) {
+           String reservationId = (String) payload.get("description");
+    
+        
+           Payment p = new Payment() ;
+           p.setAmount(0);
+           p.created_at();
+           p.setMethod(null);
+           p.setIdempotency_key(reservationId);
+           p.setReservation(null);
+           p.statu
+
+
+
+          if ("true".equalsIgnoreCase(success)) {
             payment.setStatus(Payment.Status.ACCEPTED);
             paymentRepository.save(payment);
         } else {
@@ -153,7 +164,6 @@ public class WebhookService{
         //  One reservation could have multiple payment trials
         //  Send payment status as email whatever the status
  
-*/
     }
 
 

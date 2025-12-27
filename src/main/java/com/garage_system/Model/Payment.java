@@ -49,7 +49,7 @@ public class Payment {
     public enum Status {
         ACCEPTED,
         FAILED,
-        REFUNDED
+        REFUNDED,
     }
 
     public enum Method {

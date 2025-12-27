@@ -106,8 +106,8 @@ public class ReservationService {
         );
        
         // comfirm the status
-         reservation.setStatus(Reservation.Status.COMPLETED);
-         reservationRepository.save(reservation);
+        // reservation.setStatus(Reservation.Status.COMPLETED);
+        // reservationRepository.save(reservation);
        
         // start payment
         return paymentService.initiateCardPayment(reservation.getId());
