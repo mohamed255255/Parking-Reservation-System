@@ -33,21 +33,28 @@ Admin have full control over garage and slot creation , user details, reservatio
   - Implemented using **schedulers** to send **emails** when parking slots become available
 
 - 🚗 **Reservation**
-  - User creates a reservation if the slot is empty. The reservation is created with status **PENDING** ⏳
-  - The reservation is confirmed only when the user scans the QR code at the physical location 📍  
-    Once confirmed, the parking timer starts and payment begins 💳⏱️
-  - **QR code rejection cases**
-    - The QR code represents a specific **slot ID + garage ID**.  
-      QR codes from other locations are rejected 🚫
-    - If the QR code is not linked to an active **PENDING** reservation, it is rejected 🛑
-    - If the slot is already occupied whether by another user on the way or already parked car , the scan is rejected 🚧
-  - User can view all of their reservations 📋
-  
-- 💳 **Payment & Billing**
-  - Parking fees calculated based on stay duration  
-  - Secure PayMob integration for digital payments , handled idempotency , HMAC verification   
-  - Automated email receipts sent after payment 
+  - **Creating a Reservation**
+    - Users can create a reservation for any available parking slot
+    - New reservations are created with **PENDING** status ⏳
+    - Users can view all their reservations in one place 📋
+  - **Payment Process**
+    - When users arrive at the physical location and scan the QR code (each QR code represents a specific **slot number + garage ID**), they are redirected to a payment iframe
+    - Upon successful payment submission, the reservation status changes to **CONFIRMED** ✅
+  - **Reservation Expiration**
+    - A reservation will automatically expire if:
+      - Payment is not completed within **30 minutes** of creation ⏱️
+      - **3 failed payment transactions** occur ❌
 
+- 💳 **Payment & Billing**
+  - **Fee Calculation**
+    - Parking fees are calculated based on stay duration
+  - **Payment Integration**
+    - Secure **PayMob** integration for digital payments
+    - Features include:
+      - Idempotency handling to prevent duplicate charges
+      - HMAC verification for enhanced security
+  - **Payment Confirmation**
+    - Automated email receipts are sent to users after successful payment
 - 📦 **Deployment & Reliability**  
   - Dockerized for deployment readiness
   - used github actions for CI / CD
@@ -63,7 +70,6 @@ Admin have full control over garage and slot creation , user details, reservatio
      - scale throgh : break the services into microservicse , rabbit mq for notifications , add K8s
      - create Refund for the canceled payment
      - add Angular later for admin dashboard and user UI
----
 
 ## 🛠️ Tech Stack  
 
@@ -73,7 +79,6 @@ Admin have full control over garage and slot creation , user details, reservatio
 - **Containerization:** Docker  
 - **Testing:** JUnit5, Mockito  
 - **CI/CD:** Github actions
----
 
 ## 🔹 Architecutre / Design Patterns Used  
 
@@ -84,6 +89,7 @@ Admin have full control over garage and slot creation , user details, reservatio
 
 
 
+##  Swagger documentation
 
 
 
