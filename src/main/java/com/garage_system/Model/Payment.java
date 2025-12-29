@@ -31,9 +31,6 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID paymentId;
 
-    @Column(unique = true)
-    private String idempotency_key ;
-
     @NotNull
     private double amount ;
 

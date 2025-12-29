@@ -142,7 +142,7 @@ public class WebhookService{
            String reservationId = (String) payload.get("description");
     
         
-           Payment p = new Payment() ;
+         /*   Payment p = new Payment() ;
            p.setAmount(0);
            p.created_at();
            p.setMethod(null);
@@ -158,7 +158,7 @@ public class WebhookService{
         } else {
             payment.setStatus(Payment.Status.FAILED);
             paymentRepository.save(payment);    
-        }
+        }*/
 
         //  Store reservation
         //  One reservation could have multiple payment trials

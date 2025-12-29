@@ -65,10 +65,10 @@ public class User {
     @Column(nullable = false)
     private String phone ;
    
-    @Column(name = "verification_code" , nullable = false)
+    @Column(name = "verification_code")
     private String verificationCode ;
 
-    @Column(name = "code_expiration_time" , nullable = false)
+    @Column(name = "code_expiration_time")
     private LocalDateTime expirationTime;
    
     @Column(name = "is_verified" , columnDefinition ="boolean default false")

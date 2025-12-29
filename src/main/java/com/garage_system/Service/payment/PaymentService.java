@@ -2,6 +2,10 @@ package com.garage_system.Service.payment;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -9,18 +13,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.garage_system.DTO.request.ReservationDto;
+import com.garage_system.Model.IdempotencyKey;
 import com.garage_system.Model.Reservation;
 import com.garage_system.Model.User;
+import com.garage_system.Repository.IdempotencyKeyRepository;
 import com.garage_system.Security.CustomUserDetails;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -46,9 +56,10 @@ public class PaymentService {
     @Value("${PAYMOB.CARD_INTEGRATION_ID}")
     private int cardIntegrationId;
 
-
+    private final IdempotencyKeyRepository idempotencyKeyRepository;
+    private static final long LOCK_TIMEOUT_SECONDS = 60;
     
-    public String initiateCardPayment(int reservationId) {
+    public String initiateCardPayment(int reservationId , UUID idempotencyKey ) {
        
         var principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -59,7 +70,7 @@ public class PaymentService {
         BigDecimal price = BigDecimal.valueOf(100);
 
         String token      = authenticate();
-        String orderId    = createPaymentOrder(token, price , reservationId);
+        String orderId    = createPaymentOrder(token, price , reservationId ,  idempotencyKey);
         String paymentKey = generatePaymentKey(token, orderId, price);
         return "https://accept.paymob.com/api/acceptance/iframes/"
                 + iframeId + "?payment_token=" + paymentKey;
@@ -74,30 +85,48 @@ public class PaymentService {
         return response.getString("token");
     }
 
-
-    private String createPaymentOrder(String token, BigDecimal price , int reservationId) {
-        int amount_cents = price.multiply(BigDecimal.valueOf(100)).intValue() ;
-
-        JSONObject body = new JSONObject();
-        body.put("auth_token", token);
-        body.put("delivery_needed", false);
-        body.put("currency", "EGP");
-        body.put("amount_cents", amount_cents );
-        
-        JSONArray items = new JSONArray();       
-        JSONObject oneItem = new JSONObject();
-        oneItem.put("name", "Parking Slot");
-        oneItem.put("amount_cents", amount_cents);
-        oneItem.put("description", "reservationId_"+reservationId);
-        items.put(oneItem);
-       
-        body.put("items", items);
-
-        
-        // ORDER_URL = https://accept.paymob.com/api/ecommerce/orders
-        JSONObject response = postJson(orderUrl, body);
-        return String.valueOf(response.getInt("id"));
+   @Transactional
+    protected String createPaymentOrder(String token, BigDecimal price, int reservationId, UUID key) {
+    // 1. Idempotency Check
+    IdempotencyKey record = getIdempotency(key);
+    
+    // If we already finished this specific request, return the cached Order ID
+    if ("COMPLETED".equals(record.getStatus())) {
+        return record.getResponse_body(); 
     }
+
+    try {
+        // 2. Prepare Paymob Request Body
+        int amountCents = price.multiply(BigDecimal.valueOf(100)).intValue();
+        
+        Map<String, Object> body = Map.of(
+            "auth_token", token,
+            "delivery_needed", false,
+            "currency", "EGP",
+            "amount_cents", amountCents,
+            "items", List.of(Map.of(
+                "name", "Parking Slot",
+                "amount_cents", amountCents,
+                "description", "reservationId_" + reservationId
+            ))
+        );
+
+        // 3. Call Gateway
+        JSONObject response = postJson(orderUrl, new JSONObject(body));
+        String orderId = String.valueOf(response.getInt("id"));
+
+        // 4. Finalize Idempotency
+        record.setStatus("COMPLETED");
+        record.setResponse_body(orderId); // Store OrderID to return on retries
+        record.setResponse_code(200);
+        
+        return orderId;
+
+    } catch (Exception e) {
+        // Rollback happens automatically; next retry will find no record or zombie
+        throw new RuntimeException("Paymob Order Creation Failed", e);
+    }
+}
 
 
     private String generatePaymentKey(String token, String orderId, BigDecimal price) {
@@ -153,5 +182,28 @@ public class PaymentService {
                 throw new RuntimeException("Paymob Error: " + e.getResponseBodyAsString());
             }
     }
+
+    @Transactional
+public IdempotencyKey getIdempotency(UUID key) {
+    return idempotencyKeyRepository.findByIdWithLock(key).map(record -> {
+        if ("COMPLETED".equals(record.getStatus())) return record;
+        
+        boolean isZombie = record.getCreatedAt().isBefore(LocalDateTime.now().minusSeconds(60));
+        if (!isZombie && "PROCESSING".equals(record.getStatus())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Payment already processing");
+        }
+        
+        // Reset zombie
+        record.setCreatedAt(LocalDateTime.now());
+        record.setStatus("PROCESSING");
+        return idempotencyKeyRepository.save(record);
+    }).orElseGet(() -> {
+        IdempotencyKey newRecord = new IdempotencyKey();
+        newRecord.setIdempotency_key(key);
+        newRecord.setStatus("PROCESSING");
+        newRecord.setCreatedAt(LocalDateTime.now());
+        return idempotencyKeyRepository.save(newRecord);
+    });
+}
 
 }
