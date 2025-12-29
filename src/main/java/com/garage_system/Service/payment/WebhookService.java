@@ -85,10 +85,6 @@ public class WebhookService{
         }
     }
 
-    public boolean checkIdempotency(){
-        return true ;
-    }
-
     public void HmacValidation(Map<String, Object> payload, HttpServletRequest request){
         // step 1: Extract the HMAC from the request
         String receivedHmac = request.getParameter("hmac");
@@ -132,21 +128,19 @@ public class WebhookService{
   
     public void callbackValidation(Map<String, Object> payload, HttpServletRequest request) {
         HmacValidation(payload,  request);
-        checkIdempotency();
     }
 
     @Transactional
-    public void processPaymentCallback(Map<String, Object> payload) {
+    public List processPaymentCallback(Map<String, Object> payload) {
        
            String success       = (String) payload.get("success");
            String reservationId = (String) payload.get("description");
-    
         
+           return List.of(success , reservationId);
          /*   Payment p = new Payment() ;
            p.setAmount(0);
            p.created_at();
            p.setMethod(null);
-           p.setIdempotency_key(reservationId);
            p.setReservation(null);
            p.statu
 

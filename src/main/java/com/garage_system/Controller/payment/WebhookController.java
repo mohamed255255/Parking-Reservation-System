@@ -12,21 +12,19 @@ public class WebhookController {
 
     private final WebhookService webhookService;
 
-    public WebhookController(  WebhookService webhookService ){
+    public WebhookController(WebhookService webhookService ){
         this.webhookService = webhookService ;
     }
 
     @PostMapping("/paymob/callback")
-    public ResponseEntity<String> handlePaymobCallback(
+    public ResponseEntity<?> handlePaymobCallback(
             @RequestBody Map<String, Object> payload,
             HttpServletRequest request) {
          try {
           
             webhookService.callbackValidation(payload, request); /// handle excpetion in global
-            webhookService.processPaymentCallback(payload);     ///  handle excpetion in global
+            return ResponseEntity.ok(webhookService.processPaymentCallback(payload));     ///  handle excpetion in global
            
-            return ResponseEntity.ok("Callback received");
-       
         } catch (Exception e) {
             // Handle exceptions aappropriately
             return ResponseEntity.badRequest().body(e.getMessage());

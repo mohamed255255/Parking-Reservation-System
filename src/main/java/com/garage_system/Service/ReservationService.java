@@ -104,13 +104,9 @@ public class ReservationService {
         var reservation = reservationRepository.findActiveReservation(garageId , slot.getId(), Reservation.Status.PENDING).orElseThrow(
             () -> new ResourceNotFoundException("there is no reservation active for slot number : " + slotNumber + " garage id : " + garageId)
         );
-       
-        // comfirm the status
-        // reservation.setStatus(Reservation.Status.COMPLETED);
-        // reservationRepository.save(reservation);
-       
-        // start payment
-        return paymentService.initiateCardPayment(reservation.getId());
+    
+        // Redirect to payment page
+        return "reservation has been created" ;
 
     }
 

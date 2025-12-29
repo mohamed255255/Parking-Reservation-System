@@ -34,28 +34,30 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-  @PostMapping("/card/{id}") 
+  @PostMapping("/card/{id}")
     public ResponseEntity<String> initiateCardPayment(
-        @PathVariable("id") UUID reservationId, // Changed to UUID for security
-        @RequestHeader(value = "x-idempotency-key", required = false) String keyStr) {
+             HttpServletRequest request,
+             @PathVariable("id") int reservationId
+    ){
+        String keyStr = request.getHeader("x-idempotency-key");
 
-    // 1. Validate Idempotency Header
-    if (keyStr == null || keyStr.isBlank()) {
-        return ResponseEntity.badRequest().body("Missing x-idempotency-key header");
+        if (keyStr == null || keyStr.isBlank()) {
+            return ResponseEntity.badRequest()
+                    .body("Missing x-idempotency-key header");
+        }
+
+        UUID idempotencyKey;
+        try {
+            idempotencyKey = UUID.fromString(keyStr);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body("Invalid Idempotency-Key format. Must be a UUID.");
+        }
+
+        String paymentLink =
+        paymentService.initiateCardPayment(reservationId, idempotencyKey);
+
+        return ResponseEntity.ok(paymentLink);
     }
-
-    UUID idempotencyKey;
-    try {
-        idempotencyKey = UUID.fromString(keyStr);
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body("Invalid Idempotency-Key format. Must be a UUID.");
-    }
-
-    // 2. Call Service
-    // The service will throw a ResponseStatusException (409) if a race condition occurs
-    String paymentLink = paymentService.initiateCardPayment(reservationId, idempotencyKey);
-    
-    return ResponseEntity.ok(paymentLink);
-}
 
 }

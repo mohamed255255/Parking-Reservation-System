@@ -17,7 +17,6 @@ import lombok.Setter;
 @Entity(name = "idempotency_keys")
 @Getter
 @Setter
-
 public class IdempotencyKey{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
