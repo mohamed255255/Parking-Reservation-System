@@ -2,6 +2,7 @@ package  com.garage_system.Model;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.json.JSONObject;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import jakarta.persistence.Column;
@@ -19,16 +20,14 @@ import lombok.Setter;
 @Setter
 public class IdempotencyKey{
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID idempotency_key;
 
     @Column(nullable = false)
     private String status ;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "jsonb")
     private String payload;
 
-    @Lob
     private String response_body ; 
 
     @Column(columnDefinition= "SMALLINT")

@@ -153,7 +153,7 @@ public class WebhookService{
             payment.setStatus(Payment.Status.FAILED);
             paymentRepository.save(payment);    
         }*/
-
+       /// update reservation status to completed 
         //  Store reservation
         //  One reservation could have multiple payment trials
         //  Send payment status as email whatever the status

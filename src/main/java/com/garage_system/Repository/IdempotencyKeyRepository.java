@@ -7,10 +7,11 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Repository;
 import com.garage_system.Model.IdempotencyKey;
 import jakarta.persistence.LockModeType;
+import jakarta.persistence.Persistence;
 
 public interface IdempotencyKeyRepository extends JpaRepository<IdempotencyKey , UUID> {
   
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+   // @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<IdempotencyKey> findById(UUID key);
 
     void deleteByCreatedAtBefore(LocalDateTime time);

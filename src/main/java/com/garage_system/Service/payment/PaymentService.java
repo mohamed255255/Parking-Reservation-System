@@ -4,10 +4,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -25,6 +28,9 @@ import com.garage_system.Model.Reservation;
 import com.garage_system.Model.User;
 import com.garage_system.Repository.IdempotencyKeyRepository;
 import com.garage_system.Security.CustomUserDetails;
+
+import jakarta.persistence.LockModeType;
+
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -84,40 +90,66 @@ public class PaymentService {
 
 
     @Transactional
-    protected String createPaymentOrder(String token, BigDecimal price, int reservationId, UUID key) {
+    protected String createPaymentOrder(
+            String token,
+            BigDecimal price,
+            int reservationId,
+            UUID key
+    ){
 
-    IdempotencyKey record = getIdempotencyKey(key);
+    Optional<IdempotencyKey> recordOpt = getIdempotencyKey(key);
+        if (recordOpt.isPresent()) {
+            IdempotencyKey record = recordOpt.get();
+            if ("COMPLETED".equals(record.getStatus())) {
+                return record.getResponse_body();
+            }
+        }
+        IdempotencyKey record = recordOpt.orElseGet(() -> {
+      
+            IdempotencyKey newRecord = new IdempotencyKey();
+            newRecord.setIdempotency_key(key);
+            newRecord.setStatus("PROCESSING");
+            newRecord.setPayload("{}");
+            newRecord.setCreatedAt(LocalDateTime.now());
+            return idempotencyKeyRepository.save(newRecord);
+      });
+
+    try {
+        int amountCents =
+                price.multiply(BigDecimal.valueOf(100)).intValueExact();
+
+        JSONObject body = new JSONObject();
+        body.put("auth_token", token);
+        body.put("delivery_needed", false);
+        body.put("currency", "EGP");
+        body.put("amount_cents", amountCents);
     
-    if ("COMPLETED".equals(record.getStatus())) 
-        return record.getResponse_body(); 
-   
-    try{
-        int amountCents = 
-        price.multiply(BigDecimal.valueOf(100)).intValue();
-
-        Map<String, Object> body = Map.of(
-            "auth_token", token,
-            "delivery_needed", false,
-            "currency", "EGP",
-            "amount_cents", amountCents,
-            "items", List.of(Map.of(
-                "name", "Parking Slot",
-                "amount_cents", amountCents,
-                "description", "reservationId_" + reservationId
-            ))
-        );
-        // call paymob 
-        JSONObject response = postJson(orderUrl, new JSONObject(body));
-        String orderId = String.valueOf(response.getInt("id"));
+        JSONArray items = new JSONArray();       
+        JSONObject oneItem = new JSONObject();
+        oneItem.put("name", "Parking Slot");
+        oneItem.put("amount_cents", amountCents);
+        oneItem.put("description", "reservationId_"+reservationId);
+        items.put(oneItem);
        
-        record.setStatus("COMPLETED");
-        record.setResponse_body(orderId); 
+        body.put("items", items);
+
+        JSONObject apiResponse = postJson(orderUrl, body);
+    
+        JSONObject payload = getNeededDataFromPayload(apiResponse);
+
+        String orderId =  String.valueOf(apiResponse.getInt("id"));
+
+        // Update idempotency record this line hit the DB second time after insertion for update 
+        // i want to send one single query
+        record.setPayload(payload.toString());
+        record.setResponse_body(orderId);
         record.setResponse_code(200);
-        record.setPayload(response.toString());
-        return orderId;
+        record.setStatus("COMPLETED");
+        idempotencyKeyRepository.save(record);
+        return orderId ;
 
     } catch (Exception e) {
-        throw new RuntimeException("Paymob Order Creation Failed", e);
+        throw new RuntimeException(e.getMessage(), e);
     }
 }
 
@@ -175,11 +207,11 @@ public class PaymentService {
                 throw new RuntimeException("Paymob Error: " + e.getResponseBodyAsString());
             }
     }
-
-    @Transactional(readOnly =  false)
-    public IdempotencyKey getIdempotencyKey(UUID key) {
-        return idempotencyKeyRepository.findById(key).map(record -> {
-            if ("COMPLETED".equals(record.getStatus())) return record;
+    
+    public Optional<IdempotencyKey> getIdempotencyKey(UUID key) {
+        return idempotencyKeyRepository.findById(key).map(
+            record -> {
+               if ("COMPLETED".equals(record.getStatus())) return record;
             
             boolean isZombie = record.getCreatedAt().isBefore(LocalDateTime.now().minusSeconds(60));
             if (!isZombie && "PROCESSING".equals(record.getStatus())) {
@@ -190,13 +222,22 @@ public class PaymentService {
             record.setCreatedAt(LocalDateTime.now());
             record.setStatus("PROCESSING");
             return idempotencyKeyRepository.save(record);
-        }).orElseGet(() -> {
-            IdempotencyKey newRecord = new IdempotencyKey();
-            newRecord.setIdempotency_key(key);
-            newRecord.setStatus("PROCESSING");
-            newRecord.setCreatedAt(LocalDateTime.now());
-            return idempotencyKeyRepository.save(newRecord);
+
         });
+    }
+
+    public JSONObject getNeededDataFromPayload(JSONObject response){
+        JSONObject payload = new JSONObject();
+        payload.put("payment_id", response.optInt("id"));
+        payload.put("amount_cents", response.optInt("amount_cents"));
+        payload.put("currency", response.optString("currency"));
+        payload.put("success", response.optBoolean("success"));
+        payload.put("is_auth", response.optBoolean("is_auth"));
+        payload.put("is_capture", response.optBoolean("is_capture"));
+        payload.put("is_refunded", response.optBoolean("is_refunded"));
+        payload.put("is_voided", response.optBoolean("is_voided"));
+        payload.put("items", response.getJSONArray("items"));
+        return payload ;
     }
 
 }
