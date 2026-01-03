@@ -1,6 +1,9 @@
 package com.garage_system.Controller.payment;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
@@ -9,7 +12,7 @@ import com.garage_system.Service.payment.WebhookService;
 @RestController
 @RequestMapping("/api/webhook")
 public class WebhookController {
-
+  
     private final WebhookService webhookService;
 
     public WebhookController(WebhookService webhookService ){
@@ -20,13 +23,14 @@ public class WebhookController {
     public ResponseEntity<?> handlePaymobCallback(
             @RequestBody Map<String, Object> payload,
             HttpServletRequest request) {
+                
          try {
+             webhookService.HmacValidation(payload, request);
+             webhookService.processPaymentCallback(payload);
           
-            webhookService.callbackValidation(payload, request); /// handle excpetion in global
-            return ResponseEntity.ok(webhookService.processPaymentCallback(payload));     ///  handle excpetion in global
+             return ResponseEntity.ok("Callback recieved sucessfully");     
            
         } catch (Exception e) {
-            // Handle exceptions aappropriately
             return ResponseEntity.badRequest().body(e.getMessage());
         } 
     }

@@ -2,9 +2,11 @@ package com.garage_system.Service.payment;
 
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -15,10 +17,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.garage_system.Model.Payment;
-import com.garage_system.Repository.PaymentRepository;
+import com.garage_system.Model.Reservation;
 
+import com.garage_system.Model.Payment.Method;
+import com.garage_system.Model.Payment.Status;
+
+
+import com.garage_system.Repository.PaymentRepository;
+import com.garage_system.Repository.ReservationRepository;
+import com.garage_system.Service.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor ;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +38,12 @@ public class WebhookService{
     @Value("${PAYMOB.HMAC_SECRET}")
     private String hmacSecretKey;
 
+    private static Logger logger = LoggerFactory.getLogger(WebhookService.class);
     private final PaymentRepository paymentRepository;
+    private final ReservationRepository reservationRepository ;
+    private final EmailService emailService ;
+
+ 
 
     // Additional helper methods like HMAC verification can be added here
     private String concatenateValues(Map<String, Object> payload, List<String> hmacKeys) {
@@ -125,40 +141,70 @@ public class WebhookService{
             throw new RuntimeException("Invalid HMAC signature");
         }
     }
+    
+@Transactional
+public void processPaymentCallback(Map<String, Object> payload) {
+   
+    logger.info("Processing Payment: {}", payload);
+
+    Map<String, Object> obj = (Map<String, Object>) payload.get("obj");
+    Map<String, Object> order = (Map<String, Object>) obj.get("order");
+    List<Map<String, Object>> items = (List<Map<String, Object>>) order.get("items");
+    
+    // 1. Extract Reservation & Transaction Info
+    Map<String, Object> item = items.get(0);
+    String desc = item.get("description").toString();
+    int reservationId = Integer.parseInt(desc.substring(desc.lastIndexOf('_') + 1));
+    
+    // Security/Logic Check: Ensure reservation exists before doing anything
+    Reservation reservation = reservationRepository.findById(reservationId)
+            .orElseThrow(() -> new RuntimeException("CRITICAL: Reservation " + reservationId + " not found"));
+
+    // 2. Build Payment Entity
+    Payment payment = new Payment();
+    payment.setReservation(reservation);
+    payment.setTransaction_id(obj.get("id").toString());
+    payment.setAmount(Integer.parseInt(obj.get("amount_cents").toString()));
+
+    // Map Method (Simplified check)
+    String subType = String.valueOf(((Map)obj.get("source_data")).get("sub_type")).toUpperCase();
+    payment.setMethod(subType.matches(".*(VISA|MASTERCARD).*") ? Method.CARD : Method.E_WALLET);
+
+    // Map Status (Directly from payload booleans)
+    if (Boolean.parseBoolean(obj.get("pending").toString())) payment.setStatus(Status.PENDING);
+    else if (Boolean.parseBoolean(obj.get("is_refunded").toString())) payment.setStatus(Status.REFUNDED);
+    else if (Boolean.parseBoolean(obj.get("success").toString())) {
+        payment.setStatus(Status.ACCEPTED);
+        reservation.setStatus(Reservation.Status.COMPLETED); // Only complete if successful
+    } else {
+        payment.setStatus(Status.FAILED);
+    }
+
+    // 3. Persist and Notify
+    reservationRepository.save(reservation);
+    paymentRepository.save(payment);
   
-    public void callbackValidation(Map<String, Object> payload, HttpServletRequest request) {
-        HmacValidation(payload,  request);
-    }
+    // 1. Extract email from the nested shipping_data
+    Map<String, Object> shippingData = (Map<String, Object>) order.get("shipping_data");
+    String to = shippingData.get("email").toString();
 
-    @Transactional
-    public List processPaymentCallback(Map<String, Object> payload) {
+    // 2. Define the subject
+    String subject = "Payment Receipt";
+
+    // 3. Build the body using String.format for readability
+    String mailBody = String.format(
+        "Your payment id : %s for reservation #%d is %s.",
+        payment.getPaymentId(), 
+        reservationId, 
+        payment.getStatus().toString().toLowerCase()
+    );
+
+    // 4. Send payment details as notification 
+    emailService.sendMail(to, subject, mailBody);
+}
+
        
-           String success       = (String) payload.get("success");
-           String reservationId = (String) payload.get("description");
-        
-           return List.of(success , reservationId);
-         /*   Payment p = new Payment() ;
-           p.setAmount(0);
-           p.created_at();
-           p.setMethod(null);
-           p.setReservation(null);
-           p.statu
-
-
-
-          if ("true".equalsIgnoreCase(success)) {
-            payment.setStatus(Payment.Status.ACCEPTED);
-            paymentRepository.save(payment);
-        } else {
-            payment.setStatus(Payment.Status.FAILED);
-            paymentRepository.save(payment);    
-        }*/
-       /// update reservation status to completed 
-        //  Store reservation
-        //  One reservation could have multiple payment trials
-        //  Send payment status as email whatever the status
  
-    }
 
 
 }

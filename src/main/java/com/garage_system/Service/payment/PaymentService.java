@@ -88,7 +88,6 @@ public class PaymentService {
         return response.getString("token");
     }
 
-
     @Transactional
     protected String createPaymentOrder(
             String token,
@@ -98,12 +97,14 @@ public class PaymentService {
     ){
 
     Optional<IdempotencyKey> recordOpt = getIdempotencyKey(key);
-        if (recordOpt.isPresent()) {
+        
+    if (recordOpt.isPresent()) {
             IdempotencyKey record = recordOpt.get();
+            
             if ("COMPLETED".equals(record.getStatus())) {
                 return record.getResponse_body();
             }
-        }
+    }
         IdempotencyKey record = recordOpt.orElseGet(() -> {
       
             IdempotencyKey newRecord = new IdempotencyKey();
@@ -111,6 +112,7 @@ public class PaymentService {
             newRecord.setStatus("PROCESSING");
             newRecord.setPayload("{}");
             newRecord.setCreatedAt(LocalDateTime.now());
+            
             return idempotencyKeyRepository.save(newRecord);
       });
 
@@ -124,7 +126,7 @@ public class PaymentService {
         body.put("currency", "EGP");
         body.put("amount_cents", amountCents);
     
-        JSONArray items = new JSONArray();       
+        JSONArray items    = new JSONArray();       
         JSONObject oneItem = new JSONObject();
         oneItem.put("name", "Parking Slot");
         oneItem.put("amount_cents", amountCents);
@@ -161,7 +163,7 @@ public class PaymentService {
 
        JSONObject billingData = new JSONObject();
         billingData.put("first_name", currentAuthUser.getName()); // split if you store full name
-        billingData.put("last_name", "Y");
+        billingData.put("last_name", " LastName");
         billingData.put("email", currentAuthUser.getEmail());
         billingData.put("phone_number", currentAuthUser.getPhone());
         billingData.put("street", "User street");        // mandatory

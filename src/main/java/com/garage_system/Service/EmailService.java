@@ -18,37 +18,33 @@ public class EmailService {
            this.mailSender = mailSender ;
     }
 
-
-    public boolean sendVerificationEmail(String to , String code){
+    public void sendMail(String to , String subject , String body){
           try {
-               /// should be thymleaf to either wirte the code or just open a dummy page
-               String linkToVerification =  "frontendUr/verify-email?email="+to ;
                SimpleMailMessage message = new SimpleMailMessage();
                message.setFrom(from);
                message.setTo(to);
-               message.setSubject("email verification");
-               message.setText("your verification code is : " + code  + "\nplease verify you account using this link : \n " + linkToVerification); /// could be html 
+               message.setSubject(subject);
+               message.setText(body);
                mailSender.send(message);
           } catch (Exception e) {
-               throw new RuntimeException("Failed to send email");
-          }  
-         
+                    throw new RuntimeException("Failed to send email");
+          }
+     }
+               
+    public boolean sendVerificationEmail(String to , String code){
+          /// should be thymleaf to either wirte the code or just open a dummy page
+          String linkToVerification =  "frontendUrl/verify-email?email="+to ;
+          String subject = "email verification";
+          String body = "your verification code is : " + code  + "\nplease verify you account using this link : \n " + linkToVerification;
+          sendMail(to, subject, body);
           return true ;
     }
 
-    public String sendPasswordResetEmail(String email , String token){
-            try {
-          
-               String linkToVerification =  "http://localhost:8081/reset-password?token="+token ;
-               SimpleMailMessage message = new SimpleMailMessage();
-               message.setFrom(from);
-               message.setTo(email);
-               message.setSubject("password reset");
-               message.setText("to reset your password visit this link : \n " + linkToVerification); /// could be html 
-               mailSender.send(message);
-          } catch (Exception e) {
-               throw new RuntimeException("Failed to send email");
-          } 
+    public String sendPasswordResetEmail(String to , String token){
+          String linkToVerification =  "frontendUrl/reset-password?token="+token ;             
+          String subject = "password reset";
+          String body = "to reset your password visit this link : \n " + linkToVerification ;
+          sendMail(to, subject, body);
           return "Success"; /////////////////// to do : return better response ;
     }
     
