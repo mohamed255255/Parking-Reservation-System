@@ -86,9 +86,6 @@ public class User {
     private LocalDate updatedAt;
 
     @OneToMany(mappedBy = "user")
-    private List<Bill> bills ;
-
-    @OneToMany(mappedBy = "user")
     private List<Reservation> reservationList ;
 
     @OneToMany(mappedBy = "user")

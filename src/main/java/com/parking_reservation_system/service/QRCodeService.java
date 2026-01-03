@@ -74,15 +74,15 @@ public class QRCodeService {
 
     public String saveQRCodeImage(SlotDto slotDto) throws IOException, WriterException {
         
-        String toBeEncodedText = "G" + slotDto.getGarage_id() + "_S" + slotDto.getSlot_number();
+        String toBeEncodedText = "G" + slotDto.garage_id() + "_S" + slotDto.slot_number();
         
         // Create QR code directory if it doesn't exist
         Path qrCodeDir = Paths.get(qrCodeDirectory).toAbsolutePath().normalize();
         Files.createDirectories(qrCodeDir);
         
         // Generate
-        String fileName = "G" + slotDto.getGarage_id() + 
-                        "_S" + slotDto.getSlot_number() + ".png";
+        String fileName = "G" + slotDto.garage_id() + 
+                        "_S" + slotDto.slot_number() + ".png";
         
         Path targetLocation = qrCodeDir.resolve(fileName);
 

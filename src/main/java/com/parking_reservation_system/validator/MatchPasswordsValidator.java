@@ -7,6 +7,6 @@ import jakarta.validation.ConstraintValidatorContext;
 public class MatchPasswordsValidator implements ConstraintValidator<MatchPasswordsValidation, ResetPasswordDto> {
     @Override
     public boolean isValid(ResetPasswordDto dto , ConstraintValidatorContext context) {
-        return dto.getNewPassword().equals(dto.getConfirmedNewPassword());
+        return dto.newPassword().equals(dto.confirmedNewPassword());
     }
 }

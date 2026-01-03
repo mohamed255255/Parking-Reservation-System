@@ -62,8 +62,8 @@ public class ReservationService {
        
         try {
         
-            User currentUser  =  userRepository.findById(reservationDto.getUser_id()).orElseThrow(() -> new ResourceNotFoundException("user id is not found in the DB"));
-            Slot requiredSlot =  slotRepository.findById(reservationDto.getSlot_id()).orElseThrow(() -> new ResourceNotFoundException("slot id is not found in the DB"));
+            User currentUser  =  userRepository.findById(reservationDto.user_id()).orElseThrow(() -> new ResourceNotFoundException("user id is not found in the DB"));
+            Slot requiredSlot =  slotRepository.findById(reservationDto.slot_id()).orElseThrow(() -> new ResourceNotFoundException("slot id is not found in the DB"));
             Vehicle choosenVehicle =  vehicleRepository.findById(vehicleId).orElseThrow(() -> new ResourceNotFoundException("the vehicle is not found")) ;
 
             if(requiredSlot.getVehicle() != null){
