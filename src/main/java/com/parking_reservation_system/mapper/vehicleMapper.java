@@ -1,35 +1,55 @@
 package com.parking_reservation_system.mapper;
 
 import com.parking_reservation_system.dto.request.VehicleDto;
+import com.parking_reservation_system.dto.response.VehicleResponseDto;
 import com.parking_reservation_system.model.Vehicle;
 
 public class VehicleMapper {
 
+    // Request DTO -> Entity
     public static Vehicle toEntity(VehicleDto dto) {
         if (dto == null) return null;
 
         Vehicle vehicle = new Vehicle();
-        vehicle.setPlateNumber(dto.getPlateNumber());
-        vehicle.setModelYear(dto.getModelYear());
-        vehicle.setModelName(dto.getModelName());
-        vehicle.setVehicleWidth(dto.getVehicleWidth());
-        vehicle.setVehicleDepth(dto.getVehicleDepth());
-        vehicle.setType(dto.getType());
-
+        vehicle.setPlateNumber(dto.plateNumber());
+        vehicle.setModelYear(dto.modelYear());
+        vehicle.setModelName(dto.modelName());
+        vehicle.setVehicleWidth(dto.vehicleWidth());
+        vehicle.setVehicleDepth(dto.vehicleDepth());
+        vehicle.setType(dto.type());
+        // you may want to set vehicle.setUser(...) if user info is available
         return vehicle;
     }
 
+    // Entity -> Request DTO (if needed)
     public static VehicleDto toDto(Vehicle vehicle) {
         if (vehicle == null) return null;
 
-        VehicleDto dto = new VehicleDto();
-        dto.setPlateNumber(vehicle.getPlateNumber());
-        dto.setModelYear(vehicle.getModelYear());
-        dto.setModelName(vehicle.getModelName());
-        dto.setVehicleWidth(vehicle.getVehicleWidth());
-        dto.setVehicleDepth(vehicle.getVehicleDepth());
-        dto.setType(vehicle.getType());
+        return new VehicleDto(
+                vehicle.getId(),
+                vehicle.getPlateNumber(),
+                vehicle.getModelYear(),
+                vehicle.getModelName(),
+                vehicle.getVehicleWidth(),
+                vehicle.getVehicleDepth(),
+                vehicle.getType(),
+                vehicle.getUser() != null ? vehicle.getUser().getId() : 0
+        );
+    }
 
-        return dto;
+    // Entity -> Response DTO
+    public static VehicleResponseDto toResponseDto(Vehicle vehicle) {
+        if (vehicle == null) return null;
+
+        return new VehicleResponseDto(
+                vehicle.getId(),
+                vehicle.getPlateNumber(),
+                vehicle.getModelYear(),
+                vehicle.getModelName(),
+                vehicle.getVehicleWidth(),
+                vehicle.getVehicleDepth(),
+                vehicle.getType(),
+                vehicle.getUser() != null ? vehicle.getUser().getId() : 0
+        );
     }
 }

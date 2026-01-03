@@ -3,10 +3,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.json.JSONObject;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,6 +20,7 @@ import lombok.Setter;
 @Entity(name = "idempotency_keys")
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class IdempotencyKey{
     @Id
     private UUID idempotency_key;

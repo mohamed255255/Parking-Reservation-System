@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.parking_reservation_system</groupId>
-	<artifactId>demo</artifactId>
+	<artifactId>MVP</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>demo</name>
-	<description>Demo project for Spring Boot</description>
+	<name>MVP</name>
+	<description>MVP project for Spring Boot app</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -121,7 +121,7 @@
 			<version>3.5.4</version>
 		</dependency>
 
-      <!-- https://mvnrepository.com/artifact/com.google.zxing/javase -->
+      <!--- QR code handling using /com.google.zxing/javase -->
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>javase</artifactId>

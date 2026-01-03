@@ -38,16 +38,16 @@ public class SlotController {
     private final SlotService slotService;
    
     @PostMapping
-    public ResponseEntity<String> createSlot(@RequestBody SlotDto slotDto) throws WriterException , IOException{
-        slotService.createSlot(slotDto);
-        return ResponseEntity.ok("Slot is added successfully");
+    public ResponseEntity<?> createSlot(@RequestBody SlotDto slotDto) throws WriterException , IOException{
+        var slotResponseDto = slotService.createSlot(slotDto);
+        return ResponseEntity.ok(slotResponseDto);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<Slot> getSlotById(@PathVariable("id") int id) {
-        Slot slot = slotService.getSlotById(id);
-        return ResponseEntity.ok(slot);
+    public ResponseEntity<?> getSlotById(@PathVariable("id") int id) {
+        var slotResponseDto = slotService.getSlotById(id);
+        return ResponseEntity.ok(slotResponseDto);
     }
 
 }

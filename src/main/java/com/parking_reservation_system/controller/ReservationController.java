@@ -37,14 +37,16 @@ public class ReservationController {
        @PreAuthorize("hasAnyRole('USER')")
        @PostMapping("/{vehicleId}")
        public ResponseEntity<?> createRequest(@RequestBody ReservationDto reservationDto , @PathVariable int vehicleId) {
-              Optional<Reservation> newReservation = reservationService.createRequest(reservationDto , vehicleId);                   
+            
+              var newReservation = reservationService.createRequest(reservationDto , vehicleId);                   
               if (newReservation.isEmpty())
                      return ResponseEntity.status(500).body("Failed to save the reservation");
+              
               
               double price = reservationService.calculateFees(newReservation.get()) ;
               
               Map<String, Object> bill = new HashMap<>();
-              bill.put("reservation", ReservationMapper.toDto(newReservation.get()));
+              bill.put("reservation", ReservationMapper.toResponseDto(newReservation.get()));
               bill.put("price", price);
 
               return ResponseEntity.status(201).body(bill);

@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.parking_reservation_system.dto.request.VehicleDto;
+import com.parking_reservation_system.dto.response.VehicleResponseDto;
 import com.parking_reservation_system.model.Vehicle;
 import com.parking_reservation_system.service.VehicleService;
 
@@ -26,39 +27,39 @@ public class VehicleController {
 
     // Create Vehicle in the system
     @PostMapping
-    public ResponseEntity<Vehicle> createVehicle(@RequestBody VehicleDto vehicleDto) {
-        Vehicle createdVehicle = vehicleService.addVehicleToTheSystem(vehicleDto);
+    public ResponseEntity<?> createVehicle(@RequestBody VehicleDto vehicleDto) {
+        VehicleResponseDto createdVehicle = vehicleService.addVehicleToTheSystem(vehicleDto);
         return ResponseEntity.ok(createdVehicle);
     }
     
     // Update Vehicle
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateVehicle(@RequestBody VehicleDto vehicleDto , @PathVariable int id) {
+    public ResponseEntity<?> updateVehicle(@RequestBody VehicleDto vehicleDto , @PathVariable int id) {
         vehicleService.updateVehicle(vehicleDto , id);
-        return ResponseEntity.noContent().build(); // 204 No Content
+        return ResponseEntity.ok("Vehicle is updated successfully");
     }
 
     // Delete Vehicle
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteVehicle(@PathVariable int id) {
+    public ResponseEntity<?> deleteVehicle(@PathVariable int id) {
         vehicleService.deleteVehicle(id);
-        return ResponseEntity.noContent().build(); // 204 No Content
+        return ResponseEntity.ok("Vehicle is deleted successfully");
     }
 
     // Get All Vehicles in the system (with pagination and sorting)
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<Page<Vehicle>> getAllVehicles(@RequestParam int pageNo  ,  @RequestParam int pageSize) {
+    public ResponseEntity<Page<?>> getAllVehicles(@RequestParam int pageNo  ,  @RequestParam int pageSize) {
 
         PageRequest pageRequest = PageRequest.of(pageNo, pageSize);
-        Page<Vehicle> vehicles = vehicleService.getAllVehicles(pageRequest);
+        Page<VehicleResponseDto> vehicles = vehicleService.getAllVehicles(pageRequest);
         return ResponseEntity.ok(vehicles);
     }
 
     // Get Vehicle by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Vehicle> getVehicleById(@PathVariable int id) {
-        Vehicle vehicle = vehicleService.getVehicleById(id);
+    public ResponseEntity<?> getVehicleById(@PathVariable int id) {
+        VehicleResponseDto vehicle = vehicleService.getVehicleById(id);
         return ResponseEntity.ok(vehicle);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.google.zxing.WriterException;
 import com.parking_reservation_system.dto.request.SlotDto;
 import com.parking_reservation_system.dto.request.VehicleDto;
+import com.parking_reservation_system.dto.response.SlotResponseDto;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
 import com.parking_reservation_system.mapper.SlotMapper;
 import com.parking_reservation_system.model.Garage;
@@ -33,30 +34,41 @@ public class SlotService {
     private final QRCodeService qrCodeService ;
 
  
-    public void createSlot(SlotDto slotDto)  throws IOException , WriterException{
+    public SlotResponseDto createSlot(SlotDto slotDto)  throws IOException , WriterException{
 
-        Slot   newSlot         = SlotMapper.toEntity(slotDto) ;
-        Garage existedGarage   = garageRepository.findById(slotDto.getGarage_id())
-        .orElseThrow(() -> new ResourceNotFoundException("Garage not found with id: " + slotDto.getGarage_id()));
+        Garage existedGarage   = garageRepository.findById(slotDto.garage_id())
+        .orElseThrow(() -> new ResourceNotFoundException("Garage not found with id: " + slotDto.garage_id()));
        
+        Slot   newSlot         = SlotMapper.toEntity(slotDto) ;
         newSlot.setGarage(existedGarage);
+
         String qrCodePath = qrCodeService.saveQRCodeImage(slotDto) ;
         newSlot.setQrCodeImagePath(qrCodePath);
-        slotRepository.save(newSlot);       
+
+        return SlotMapper.toResponseDto(slotRepository.save(newSlot));       
     }
 
 ///// to do :
-    public List<Slot> getUserSlots(){
-        User currentAuthUser = ((CustomUserDetails) SecurityContextHolder.getContext()
+    public List<SlotResponseDto> getUserSlots(){
+
+         User currentAuthUser = ((CustomUserDetails) SecurityContextHolder.getContext()
         .getAuthentication().getPrincipal()).getUser();
         
-        if(currentAuthUser == null) throw new ResourceNotFoundException("User is not found") ;
-        return slotRepository.getUserSlotsAndVehicles(currentAuthUser.getId());
+        if(currentAuthUser == null) 
+            throw new ResourceNotFoundException("User is not found") ;
+       
+        return slotRepository
+        .getUserSlotsAndVehicles(currentAuthUser.getId())
+        .stream()
+        .map(slot -> SlotMapper.toResponseDto(slot))
+        .toList();
         
     }
     /// admin 
-    public Slot getSlotById(int id){
-        return slotRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("slot not found with id: "+id)) ;
+    public SlotResponseDto getSlotById(int id){
+        return slotRepository.findById(id)
+               .map(slot -> SlotMapper.toResponseDto(slot))
+               .orElseThrow(()-> new ResourceNotFoundException("slot not found with id: "+id)) ;
     }
 
 

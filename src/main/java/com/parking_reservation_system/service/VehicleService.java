@@ -1,6 +1,7 @@
 package com.parking_reservation_system.service;
 import java.util.List;
 
+import org.springdoc.core.converters.models.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -8,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.parking_reservation_system.dto.request.VehicleDto;
+import com.parking_reservation_system.dto.response.VehicleResponseDto;
+import com.parking_reservation_system.exception.ResourceNotFoundException;
 import com.parking_reservation_system.mapper.VehicleMapper;
 import com.parking_reservation_system.model.User;
 import com.parking_reservation_system.model.Vehicle;
@@ -21,30 +24,31 @@ public class VehicleService {
 
      private final VehicleRepository vehicleRepository ; 
 
-     @Autowired
      public VehicleService(VehicleRepository vehicleRepository){
         this.vehicleRepository = vehicleRepository ;
      }
      
-     public Vehicle addVehicleToTheSystem(VehicleDto vehicleDto){
+     public VehicleResponseDto addVehicleToTheSystem(VehicleDto vehicleDto){
         Vehicle newVehicle = VehicleMapper.toEntity(vehicleDto) ;
         
         User currentAuthUser = ((CustomUserDetails) SecurityContextHolder.getContext()
                     .getAuthentication().getPrincipal()).getUser();
         
         newVehicle.setUser(currentAuthUser);
-        return vehicleRepository.save(newVehicle);
+        var response = VehicleMapper.toResponseDto(newVehicle);
+      
+        return response;
     }
 
    
     public void updateVehicle(VehicleDto vehicleDto , int id){
       vehicleRepository.updateVehicle(
-            vehicleDto.getPlateNumber(),
-            vehicleDto.getModelYear(),
-            vehicleDto.getModelName(),
-            vehicleDto.getVehicleWidth(),
-            vehicleDto.getVehicleDepth(),
-            vehicleDto.getType().name(),
+            vehicleDto.plateNumber(),
+            vehicleDto.modelYear(),
+            vehicleDto.modelName(),
+            vehicleDto.vehicleWidth(),
+            vehicleDto.vehicleDepth(),
+            vehicleDto.type().name(),
             id
         );    
     }
@@ -54,12 +58,14 @@ public class VehicleService {
     }
 
     
-    public Page<Vehicle> getAllVehicles(PageRequest pageRequest) {
-        return vehicleRepository.findAll(pageRequest);
+    public Page<VehicleResponseDto> getAllVehicles(PageRequest pageRequest) {
+    return vehicleRepository.findAll(pageRequest)
+            .map(VehicleMapper::toResponseDto);
     }
 
-    public Vehicle getVehicleById(int id) {
-        return vehicleRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Vehicle not found with ID: " + id));
+
+    public VehicleResponseDto getVehicleById(int id) {
+        return vehicleRepository.findById(id).map(VehicleMapper::toResponseDto)
+            .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with ID: " + id));
     }
 }
