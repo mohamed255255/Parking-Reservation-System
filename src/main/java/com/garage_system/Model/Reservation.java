@@ -1,4 +1,4 @@
-package com.garage_system.Model;
+package com.garage_system.model;
 
 import java.util.List;
 import java.time.LocalDateTime;

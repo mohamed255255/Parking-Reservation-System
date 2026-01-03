@@ -1,4 +1,4 @@
-package com.garage_system.Repository;
+package com.garage_system.repository;
 
 import java.util.List;
 
@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.garage_system.Model.Garage;
-import com.garage_system.Model.Slot;
+import com.garage_system.model.Garage;
+import com.garage_system.model.Slot;
 
 @Repository
 public interface GarageRepository extends JpaRepository<Garage, Integer> {

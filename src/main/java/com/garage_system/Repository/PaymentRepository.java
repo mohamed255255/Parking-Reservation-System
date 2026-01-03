@@ -1,11 +1,11 @@
-package com.garage_system.Repository;
+package com.garage_system.repository;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.garage_system.Model.Payment;
+import com.garage_system.model.Payment;
 @Repository
 public interface PaymentRepository  extends JpaRepository<Payment , UUID>  {
    

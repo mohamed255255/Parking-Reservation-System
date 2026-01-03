@@ -1,4 +1,4 @@
-package com.garage_system.Controller.payment ;
+package com.garage_system.controller.payment ;
 import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
@@ -18,13 +18,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.garage_system.DTO.request.ReservationDto;
-import com.garage_system.Model.Reservation;
-import com.garage_system.Model.User;
-import com.garage_system.Security.CustomUserDetails;
-import com.garage_system.Service.CustomUserDetailsService;
-import com.garage_system.Service.JWTService;
-import com.garage_system.Service.payment.PaymentService;
+import com.garage_system.dto.request.ReservationDto;
+import com.garage_system.model.Reservation;
+import com.garage_system.model.User;
+import com.garage_system.security.CustomUserDetails;
+import com.garage_system.service.CustomUserDetailsService;
+import com.garage_system.service.JWTService;
+import com.garage_system.service.payment.PaymentService;
 
 @RestController
 @RequestMapping("/api/payments")

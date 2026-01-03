@@ -1,4 +1,4 @@
-package com.garage_system.Security;
+package com.garage_system.security;
 
 import java.io.IOException;
 
@@ -10,8 +10,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.garage_system.Service.CustomUserDetailsService;
-import com.garage_system.Service.JWTService;
+import com.garage_system.service.CustomUserDetailsService;
+import com.garage_system.service.JWTService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

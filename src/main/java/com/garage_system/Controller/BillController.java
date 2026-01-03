@@ -1,4 +1,4 @@
-package com.garage_system.Controller;
+package com.garage_system.controller;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;

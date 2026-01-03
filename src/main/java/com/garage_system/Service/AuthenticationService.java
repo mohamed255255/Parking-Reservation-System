@@ -1,4 +1,4 @@
-package com.garage_system.Service;
+package com.garage_system.service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -10,17 +10,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.garage_system.DTO.request.LoginUserDto;
-import com.garage_system.DTO.request.VerificationDto;
-
-import com.garage_system.DTO.request.RegisterUserDto;
-import com.garage_system.DTO.request.ResetPasswordDto;
-import com.garage_system.Model.PasswordResetToken;
-import com.garage_system.Model.User;
-import com.garage_system.Repository.PasswordResetRepository;
-import com.garage_system.Repository.UserRepository;
+import com.garage_system.dto.request.LoginUserDto;
+import com.garage_system.dto.request.RegisterUserDto;
+import com.garage_system.dto.request.ResetPasswordDto;
+import com.garage_system.dto.request.VerificationDto;
 import com.garage_system.exception.ResourceNotFoundException;
 import com.garage_system.mapper.UserMapper;
+import com.garage_system.model.PasswordResetToken;
+import com.garage_system.model.User;
+import com.garage_system.repository.PasswordResetRepository;
+import com.garage_system.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 

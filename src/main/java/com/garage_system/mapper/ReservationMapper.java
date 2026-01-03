@@ -1,7 +1,7 @@
 package com.garage_system.mapper;
 
-import com.garage_system.DTO.request.ReservationDto;
-import com.garage_system.Model.Reservation;
+import com.garage_system.dto.request.ReservationDto;
+import com.garage_system.model.Reservation;
 
 public class ReservationMapper {
    

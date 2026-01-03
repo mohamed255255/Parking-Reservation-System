@@ -1,4 +1,4 @@
-package com.garage_system.Controller;
+package com.garage_system.controller;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.garage_system.DTO.request.SlotDto;
-import com.garage_system.DTO.request.VehicleDto;
-import com.garage_system.Model.Slot;
-import com.garage_system.Model.Vehicle;
-import com.garage_system.Service.QRCodeService;
-import com.garage_system.Service.SlotService;
+import com.garage_system.dto.request.SlotDto;
+import com.garage_system.dto.request.VehicleDto;
+import com.garage_system.model.Slot;
+import com.garage_system.model.Vehicle;
+import com.garage_system.service.QRCodeService;
+import com.garage_system.service.SlotService;
 import com.google.zxing.WriterException;
 
 import io.swagger.v3.oas.annotations.tags.Tag;

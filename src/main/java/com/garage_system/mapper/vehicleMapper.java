@@ -1,7 +1,7 @@
 package com.garage_system.mapper;
 
-import com.garage_system.DTO.request.VehicleDto;
-import com.garage_system.Model.Vehicle;
+import com.garage_system.dto.request.VehicleDto;
+import com.garage_system.model.Vehicle;
 
 public class VehicleMapper {
 

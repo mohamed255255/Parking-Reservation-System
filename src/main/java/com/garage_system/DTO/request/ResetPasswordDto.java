@@ -1,4 +1,4 @@
-package com.garage_system.DTO.request;
+package com.garage_system.dto.request;
 
 import com.garage_system.validator.MatchPasswordsValidation;
 

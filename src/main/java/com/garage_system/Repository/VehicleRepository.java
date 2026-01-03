@@ -1,4 +1,4 @@
-package com.garage_system.Repository;
+package com.garage_system.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +12,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.garage_system.Model.Vehicle;
+import com.garage_system.model.Vehicle;
 
 import jakarta.transaction.Transactional;
 

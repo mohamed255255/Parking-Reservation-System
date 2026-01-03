@@ -1,4 +1,4 @@
-package com.garage_system.Controller;
+package com.garage_system.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -8,9 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import com.garage_system.DTO.request.VehicleDto;
-import com.garage_system.Model.Vehicle;
-import com.garage_system.Service.VehicleService;
+import com.garage_system.dto.request.VehicleDto;
+import com.garage_system.model.Vehicle;
+import com.garage_system.service.VehicleService;
 
 @RestController
 @RequestMapping("/vehicle")

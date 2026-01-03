@@ -1,4 +1,4 @@
-package com.garage_system.Controller;
+package com.garage_system.controller;
 
 import java.util.Map;
 
@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.garage_system.DTO.request.LoginUserDto;
-import com.garage_system.DTO.request.RegisterUserDto;
-import com.garage_system.DTO.request.ResetPasswordDto;
-import com.garage_system.DTO.request.VerificationDto;
-import com.garage_system.Service.AuthenticationService;
+import com.garage_system.dto.request.LoginUserDto;
+import com.garage_system.dto.request.RegisterUserDto;
+import com.garage_system.dto.request.ResetPasswordDto;
+import com.garage_system.dto.request.VerificationDto;
+import com.garage_system.service.AuthenticationService;
 
 import jakarta.validation.Valid;
 

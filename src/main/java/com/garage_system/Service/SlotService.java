@@ -1,4 +1,4 @@
-package com.garage_system.Service;
+package com.garage_system.service;
 
 import java.io.IOException;
 import java.util.List;
@@ -7,18 +7,18 @@ import java.util.Map;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.garage_system.DTO.request.SlotDto;
-import com.garage_system.DTO.request.VehicleDto;
-import com.garage_system.Model.Garage;
-import com.garage_system.Model.Slot;
-import com.garage_system.Model.User;
-import com.garage_system.Model.Vehicle;
-import com.garage_system.Repository.GarageRepository;
-import com.garage_system.Repository.SlotRepository;
-import com.garage_system.Repository.VehicleRepository;
-import com.garage_system.Security.CustomUserDetails;
+import com.garage_system.dto.request.SlotDto;
+import com.garage_system.dto.request.VehicleDto;
 import com.garage_system.exception.ResourceNotFoundException;
 import com.garage_system.mapper.SlotMapper;
+import com.garage_system.model.Garage;
+import com.garage_system.model.Slot;
+import com.garage_system.model.User;
+import com.garage_system.model.Vehicle;
+import com.garage_system.repository.GarageRepository;
+import com.garage_system.repository.SlotRepository;
+import com.garage_system.repository.VehicleRepository;
+import com.garage_system.security.CustomUserDetails;
 import com.google.zxing.WriterException;
 
 import lombok.AllArgsConstructor;

@@ -2,8 +2,8 @@ package com.garage_system.mapper;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.garage_system.DTO.request.RegisterUserDto;
-import com.garage_system.Model.User;
+import com.garage_system.dto.request.RegisterUserDto;
+import com.garage_system.model.User;
 
 public class UserMapper {
     public static RegisterUserDto toDto(User user) {

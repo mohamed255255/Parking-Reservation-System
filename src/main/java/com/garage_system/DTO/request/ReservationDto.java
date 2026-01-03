@@ -1,8 +1,8 @@
-package com.garage_system.DTO.request;
+package com.garage_system.dto.request;
 
 import java.time.LocalTime;
 
-import com.garage_system.Model.Reservation;
+import com.garage_system.model.Reservation;
 
 import io.micrometer.common.lang.NonNull;
 import io.micrometer.common.lang.Nullable;

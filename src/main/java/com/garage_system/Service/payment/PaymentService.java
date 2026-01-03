@@ -1,4 +1,4 @@
-package com.garage_system.Service.payment;
+package com.garage_system.service.payment;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,12 +22,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
-import com.garage_system.DTO.request.ReservationDto;
-import com.garage_system.Model.IdempotencyKey;
-import com.garage_system.Model.Reservation;
-import com.garage_system.Model.User;
-import com.garage_system.Repository.IdempotencyKeyRepository;
-import com.garage_system.Security.CustomUserDetails;
+
+import com.garage_system.dto.request.ReservationDto;
+import com.garage_system.model.IdempotencyKey;
+import com.garage_system.model.Reservation;
+import com.garage_system.model.User;
+import com.garage_system.repository.IdempotencyKeyRepository;
+import com.garage_system.security.CustomUserDetails;
 
 import jakarta.persistence.LockModeType;
 

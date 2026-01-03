@@ -1,4 +1,4 @@
-package com.garage_system.Controller;
+package com.garage_system.controller;
 
 import java.util.List;
 
@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.garage_system.DTO.request.GarageDto;
-import com.garage_system.Model.Garage;
-import com.garage_system.Model.Slot;
-import com.garage_system.Service.GarageService;
+import com.garage_system.dto.request.GarageDto;
+import com.garage_system.model.Garage;
+import com.garage_system.model.Slot;
+import com.garage_system.service.GarageService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 

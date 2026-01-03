@@ -1,9 +1,9 @@
-package com.garage_system.DTO.request;
+package com.garage_system.dto.request;
 
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.garage_system.Model.Role;
+import com.garage_system.model.Role;
 import com.garage_system.validator.PhoneValidation;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

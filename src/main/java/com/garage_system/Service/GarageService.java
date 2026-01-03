@@ -1,4 +1,4 @@
-package com.garage_system.Service;
+package com.garage_system.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,12 +6,12 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.garage_system.DTO.request.GarageDto;
-import com.garage_system.Model.Garage;
-import com.garage_system.Model.Slot;
-import com.garage_system.Repository.GarageRepository;
+import com.garage_system.dto.request.GarageDto;
 import com.garage_system.exception.ResourceNotFoundException;
 import com.garage_system.mapper.GarageMapper;
+import com.garage_system.model.Garage;
+import com.garage_system.model.Slot;
+import com.garage_system.repository.GarageRepository;
 @Service
 public class GarageService {
     

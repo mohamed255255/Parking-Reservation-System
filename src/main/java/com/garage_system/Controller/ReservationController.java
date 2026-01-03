@@ -1,4 +1,4 @@
-package com.garage_system.Controller;
+package com.garage_system.controller;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.garage_system.DTO.request.ReservationDto;
-import com.garage_system.DTO.request.VehicleDto;
-import com.garage_system.Model.Reservation;
-import com.garage_system.Service.ReservationService;
-import com.garage_system.Service.SlotService;
+import com.garage_system.dto.request.ReservationDto;
+import com.garage_system.dto.request.VehicleDto;
 import com.garage_system.mapper.ReservationMapper;
+import com.garage_system.model.Reservation;
+import com.garage_system.service.ReservationService;
+import com.garage_system.service.SlotService;
 
 @RestController
 @RequestMapping("/reservation")

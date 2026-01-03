@@ -1,4 +1,4 @@
-package com.garage_system.Service;
+package com.garage_system.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;

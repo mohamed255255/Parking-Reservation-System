@@ -1,5 +1,6 @@
-package com.garage_system.Service;
-import  com.garage_system.Security.CustomUserDetails;
+package com.garage_system.service;
+import com.garage_system.dto.request.VehicleDto;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +9,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.garage_system.DTO.request.VehicleDto;
-import com.garage_system.Model.User;
-import com.garage_system.Model.Vehicle;
-import com.garage_system.Repository.VehicleRepository;
 import com.garage_system.mapper.VehicleMapper;
+import com.garage_system.model.User;
+import com.garage_system.model.Vehicle;
+import com.garage_system.repository.VehicleRepository;
+import com.garage_system.security.CustomUserDetails;
 
 import jakarta.persistence.EntityNotFoundException;
 

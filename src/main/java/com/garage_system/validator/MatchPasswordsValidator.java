@@ -1,5 +1,5 @@
 package com.garage_system.validator;
-import com.garage_system.DTO.request.ResetPasswordDto;
+import com.garage_system.dto.request.ResetPasswordDto;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

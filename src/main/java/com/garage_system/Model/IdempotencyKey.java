@@ -1,4 +1,4 @@
-package  com.garage_system.Model;
+package  com.garage_system.model;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

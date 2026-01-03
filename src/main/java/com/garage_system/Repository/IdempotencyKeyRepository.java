@@ -1,11 +1,13 @@
-package com.garage_system.Repository;
+package com.garage_system.repository;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Repository;
-import com.garage_system.Model.IdempotencyKey;
+
+import com.garage_system.model.IdempotencyKey;
+
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.Persistence;
 

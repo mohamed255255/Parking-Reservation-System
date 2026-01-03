@@ -1,6 +1,6 @@
-package com.garage_system.Service;
+package com.garage_system.service;
 
-import com.garage_system.DTO.request.SlotDto;
+import com.garage_system.dto.request.SlotDto;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.qrcode.QRCodeWriter;

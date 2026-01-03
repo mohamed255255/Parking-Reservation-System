@@ -1,6 +1,6 @@
-package com.garage_system.DTO.request;
+package com.garage_system.dto.request;
 
-import com.garage_system.Model.VehicleType;
+import com.garage_system.model.VehicleType;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

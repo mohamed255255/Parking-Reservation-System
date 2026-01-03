@@ -1,4 +1,4 @@
-package com.garage_system.Service;
+package com.garage_system.service;
 
 import java.util.Date;
 import java.util.HashMap;

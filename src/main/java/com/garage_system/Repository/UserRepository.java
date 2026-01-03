@@ -1,11 +1,11 @@
-package com.garage_system.Repository;
+package com.garage_system.repository;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.garage_system.Model.User;
+import com.garage_system.model.User;
 
 @Repository  
 public interface UserRepository extends JpaRepository<User, Integer> {

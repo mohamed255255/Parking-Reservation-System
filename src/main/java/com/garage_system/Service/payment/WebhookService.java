@@ -1,4 +1,4 @@
-package com.garage_system.Service.payment;
+package com.garage_system.service.payment;
 
 
 import java.nio.charset.StandardCharsets;
@@ -16,16 +16,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.garage_system.Model.Payment;
-import com.garage_system.Model.Reservation;
+import com.garage_system.model.Payment;
+import com.garage_system.model.Reservation;
+import com.garage_system.model.Payment.Method;
+import com.garage_system.model.Payment.Status;
+import com.garage_system.repository.PaymentRepository;
+import com.garage_system.repository.ReservationRepository;
+import com.garage_system.service.EmailService;
 
-import com.garage_system.Model.Payment.Method;
-import com.garage_system.Model.Payment.Status;
-
-
-import com.garage_system.Repository.PaymentRepository;
-import com.garage_system.Repository.ReservationRepository;
-import com.garage_system.Service.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor ;
 import org.slf4j.Logger;

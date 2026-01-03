@@ -1,12 +1,12 @@
-package com.garage_system.Repository;
+package com.garage_system.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.garage_system.Model.Reservation;
-import com.garage_system.Model.Slot;
+import com.garage_system.model.Reservation;
+import com.garage_system.model.Slot;
 
 public interface ReservationRepository  extends JpaRepository <Reservation , Integer> {
         

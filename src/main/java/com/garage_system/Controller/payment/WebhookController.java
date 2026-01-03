@@ -1,4 +1,4 @@
-package com.garage_system.Controller.payment;
+package com.garage_system.controller.payment;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -6,8 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.garage_system.service.payment.WebhookService;
+
 import java.util.Map;
-import com.garage_system.Service.payment.WebhookService;
 
 @RestController
 @RequestMapping("/api/webhook")

@@ -1,7 +1,7 @@
 package com.garage_system.mapper;
 
-import com.garage_system.DTO.request.SlotDto;
-import com.garage_system.Model.Slot;
+import com.garage_system.dto.request.SlotDto;
+import com.garage_system.model.Slot;
 
 public class SlotMapper {
      public static Slot toEntity(SlotDto dto) {

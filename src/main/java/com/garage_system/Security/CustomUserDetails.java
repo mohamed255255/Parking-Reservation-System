@@ -1,4 +1,4 @@
-package com.garage_system.Security;
+package com.garage_system.security;
 
 import java.util.Collection;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.garage_system.Model.User;
+import com.garage_system.model.User;
 public class CustomUserDetails implements UserDetails {
 
     private List<GrantedAuthority> authorities;
