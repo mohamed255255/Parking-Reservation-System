@@ -6,16 +6,22 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import com.google.zxing.qrcode.encoder.QRCode;
 import com.parking_reservation_system.dto.request.ReservationDto;
 import com.parking_reservation_system.dto.request.VehicleDto;
+import com.parking_reservation_system.dto.response.ReservationResponseDto;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
 import com.parking_reservation_system.mapper.ReservationMapper;
 import com.parking_reservation_system.mapper.VehicleMapper;
@@ -29,6 +35,7 @@ import com.parking_reservation_system.repository.SlotRepository;
 import com.parking_reservation_system.repository.UserRepository;
 import com.parking_reservation_system.repository.VehicleRepository;
 import com.parking_reservation_system.service.payment.PaymentService;
+import com.parking_reservation_system.specification.ReservationSpecs;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -45,23 +52,20 @@ public class ReservationService {
     private final SlotRepository slotRepository;
     private final UserRepository userRepository;
     private final QRCodeService qrCodeService ;
-    private final PaymentService paymentService ;
     private final VehicleRepository vehicleRepository ;
 
 
-    public double calculateFees(Reservation newReservation) {
-        LocalTime start = newReservation.getStartingTime();
-        LocalTime end   = newReservation.getEndingTime();
+    public double calculateFees(ReservationResponseDto newReservation) {
+        LocalTime start = newReservation.startingTime();
+        LocalTime end   = newReservation.endingTime();
         long minutes = Duration.between(start, end).toMinutes();
         double hours = Math.ceil((minutes / 60.0) * 100) / 100;
         return hourlyPrice * hours;
     }
     
-    public Optional<Reservation> createRequest(ReservationDto reservationDto , int vehicleId) {
+    public ReservationResponseDto createReservation(ReservationDto reservationDto , int vehicleId) {
        /// can i block two concurrent reservations 
-       
-        try {
-        
+
             User currentUser  =  userRepository.findById(reservationDto.user_id()).orElseThrow(() -> new ResourceNotFoundException("user id is not found in the DB"));
             Slot requiredSlot =  slotRepository.findById(reservationDto.slot_id()).orElseThrow(() -> new ResourceNotFoundException("slot id is not found in the DB"));
             Vehicle choosenVehicle =  vehicleRepository.findById(vehicleId).orElseThrow(() -> new ResourceNotFoundException("the vehicle is not found")) ;
@@ -78,17 +82,14 @@ public class ReservationService {
             newReservation.setUser(currentUser);
             newReservation.setGarage(requiredSlot.getGarage());
 
-            Reservation savedReservation = reservationRepository.save(newReservation);
+            var reservationEntity = reservationRepository.save(newReservation);
            
-            return Optional.of(savedReservation);
-        }catch (DataIntegrityViolationException ex) {
-            return (Optional.empty());
-            }
+            return ReservationMapper.toResponseDto(reservationEntity) ;
     }
 
-    
-    public String confirmReservation(byte[] imageBytes) throws IOException{
-        /// scan QR code
+    // this API should trigger the payment without it it is expired
+    public void confirmReservation(byte[] imageBytes) throws IOException{
+        // scan QR code
         String text = qrCodeService.readQRCode(imageBytes);
         // format ex : G1_S2
         String[] parts = text.split("_");
@@ -100,18 +101,41 @@ public class ReservationService {
         int slotNumber = Integer.parseInt(slotNumberStr);
         
         Slot slot = slotRepository.findBySlotNumber(slotNumber).get();
+        
         // get the tied reservation and check if it is active
-        var reservation = reservationRepository.findActiveReservation(garageId , slot.getId(), Reservation.Status.PENDING).orElseThrow(
+        reservationRepository.findActiveReservation(garageId , slot.getId(), Reservation.Status.PENDING)
+        .orElseThrow(
             () -> new ResourceNotFoundException("there is no reservation active for slot number : " + slotNumber + " garage id : " + garageId)
         );
     
-        // Redirect to payment page
-        return "reservation has been created" ;
-
+        // Redirect to payment page that has 
+        // pay button which will transfer the user to the gateway IFrame
     }
 
 
 
+    public Page<ReservationResponseDto> getUserReservations(
+            Integer userId,
+            Integer slotId,
+            Integer garageId,
+            Reservation.Status status,
+            LocalDateTime start,
+            LocalDateTime end,
+            int page,
+            int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Specification<Reservation> spec = Specification
+                .where(ReservationSpecs.hasUser(userId))
+                .and(ReservationSpecs.hasSlotId(slotId))
+                .and(ReservationSpecs.hasGarageId(garageId))
+                .and(ReservationSpecs.hasStatus(status))
+                .and(ReservationSpecs.betweenTime(start, end));
+
+        return reservationRepository.findAll(spec, pageable)
+                .map(ReservationMapper::toResponseDto);
+    }
 
 
 

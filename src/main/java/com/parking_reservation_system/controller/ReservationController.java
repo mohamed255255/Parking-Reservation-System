@@ -1,13 +1,14 @@
 package com.parking_reservation_system.controller;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Io;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,11 +18,20 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.parking_reservation_system.dto.request.ReservationDto;
-import com.parking_reservation_system.dto.request.VehicleDto;
+import com.parking_reservation_system.dto.response.ReservationResponseDto;
 import com.parking_reservation_system.mapper.ReservationMapper;
+import com.parking_reservation_system.model.Garage;
 import com.parking_reservation_system.model.Reservation;
+import com.parking_reservation_system.model.Slot;
+import com.parking_reservation_system.security.CustomUserDetails;
 import com.parking_reservation_system.service.ReservationService;
-import com.parking_reservation_system.service.SlotService;
+import com.parking_reservation_system.dto.response.ApiResponse ;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
+import ch.qos.logback.core.model.processor.PhaseIndicator;
+
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @RestController
 @RequestMapping("/reservation")
@@ -36,37 +46,57 @@ public class ReservationController {
 
        @PreAuthorize("hasAnyRole('USER')")
        @PostMapping("/{vehicleId}")
-       public ResponseEntity<?> createRequest(@RequestBody ReservationDto reservationDto , @PathVariable int vehicleId) {
+       public ApiResponse<?> createReservation(@RequestBody ReservationDto reservationDto , @PathVariable int vehicleId) {
             
-              var newReservation = reservationService.createRequest(reservationDto , vehicleId);                   
-              if (newReservation.isEmpty())
-                     return ResponseEntity.status(500).body("Failed to save the reservation");
-              
-              
-              double price = reservationService.calculateFees(newReservation.get()) ;
+              ReservationResponseDto newReservation = reservationService.createReservation(reservationDto , vehicleId);                   
+              double price  = reservationService.calculateFees(newReservation) ;
               
               Map<String, Object> bill = new HashMap<>();
-              bill.put("reservation", ReservationMapper.toResponseDto(newReservation.get()));
+              bill.put("reservation", newReservation);
               bill.put("price", price);
-
-              return ResponseEntity.status(201).body(bill);
+              return ApiResponse.success(bill);
 
        }
-
 
        @PreAuthorize("hasAnyRole('USER')")
        @PostMapping("/confirmation")
-       public ResponseEntity<?> confirmReservation(@RequestParam("file") MultipartFile  file) throws IOException{
-          String IFrameLink = reservationService.confirmReservation(file.getBytes()) ;
-          Map<String, String> response = new HashMap<>();
-          response.put("message", "Your reservation has been confirmed successfully, now your parking time started");
-          response.put("paymentLink", IFrameLink);
-
-return ResponseEntity.ok(response);
+       public ApiResponse<?> confirmReservation(@RequestParam("file") MultipartFile  file) throws IOException{
+          reservationService.confirmReservation(file.getBytes()) ;
+          return ApiResponse.success("reservation has been confirmed , redirect to the payment page");
        }
 
-       /// get my reservations as user paginated as user and support filters
+       @PreAuthorize("hasAnyRole('USER')")
+       @GetMapping("/user")
+       public ApiResponse<?> getUserReservations(
+            
+              @AuthenticationPrincipal CustomUserDetails user,
+              @RequestParam(defaultValue = "0") int page,
+              @RequestParam(defaultValue = "10") int size,
+              @RequestParam(required = false) int slot_id,
+              @RequestParam(required = false) int garage_id,
+              @RequestParam(required = false) Reservation.Status status,
+              @RequestParam(required = false) LocalDateTime startingTime,
+              @RequestParam(required = false) LocalDateTime endingTime) {
+                     
+              return ApiResponse.success(reservationService.getUserReservations(
+                     user.getId(),
+                     slot_id,
+                     garage_id,
+                     status,
+                     startingTime,
+                     endingTime,
+                     page,
+                     size
+              ));
+       }
+       
+     
        // @PreAuthorize("hasAnyRole('ADMIN')")
-       /// get all reservations as admin in the system paginated and support filters for Admin
+      
+       // get all reservations as admin in the system paginated and support filters for Admin
+       // @PreAuthorize("hasAnyRole('USER')")
 
+       // delete resv as admin
+       // @PreAuthorize("hasAnyRole('USER')")
+       // update reservation as admin
 }
