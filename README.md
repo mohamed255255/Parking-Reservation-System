@@ -28,22 +28,22 @@ Admin have full control over garage and slot creation , user details, reservatio
   - Admin generates QR codes for every created slot to comfirm arrival
   - Users only see slots that fit their vehicle size
 
-- ⏳ **Real-Time Notifications**  
+- ⏳ **Real-Time Notifications** (on going) 
   - Users can request "remind me later" when slots are unavailable  
-  - Implemented using **schedulers** to send **emails** when parking slots become available
 
 - 🚗 **Reservation**
   - **Creating a Reservation**
     - Users can create a reservation for any available parking slot
     - New reservations are created with **PENDING** status ⏳
+    - Solved concurrent reservation problem
     - Users can view all their reservations in one place 📋
   - **Payment Process**
     - When users arrive at the physical location and scan the QR code (each QR code represents a specific **slot number + garage ID**), they are redirected to a payment iframe
     - Upon successful payment submission, the reservation status changes to **CONFIRMED** ✅
   - **Reservation Expiration**
-    - A reservation will automatically expire if:
+    - Using **schedulers** the reservation will automatically expire if:
       - Payment is not completed within **30 minutes** of creation ⏱️
-      - **3 failed payment transactions** occur ❌
+      - **5 minutes** after payemnt 
 
 - 💳 **Payment & Billing**
   - **Fee Calculation**
@@ -51,7 +51,7 @@ Admin have full control over garage and slot creation , user details, reservatio
   - **Payment Integration**
     - Secure **PayMob** integration for digital payments
     - Features include:
-      - Idempotency handling to prevent duplicate charges
+      - IdempotencyKey table and database lock to prevent duplicate charges 
       - HMAC verification for enhanced security
   - **Payment Confirmation**
     - Automated email receipts are sent to users after successful payment
