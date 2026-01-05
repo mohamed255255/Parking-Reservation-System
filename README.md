@@ -28,7 +28,7 @@ Admin have full control over garage and slot creation , user details, reservatio
   - Admin generates QR codes for every created slot to comfirm arrival
   - Users only see slots that fit their vehicle size
 
-- ⏳ **Real-Time Notifications** (on going) 
+- ⏳ **Real-Time Notifications** **(on going)** 
   - Users can request "remind me later" when slots are unavailable  
 
 - 🚗 **Reservation**
@@ -65,10 +65,12 @@ Admin have full control over garage and slot creation , user details, reservatio
     -  used @Transactional for dependent steps and data integrety
     -  used validations for columns in the entity layer
     -  used join fetch to prevent n+1 problems
+    -  specification interface for dynamic filtering 
 
  - **Future features**
-     - scale throgh : break the services into microservicse , rabbit mq for notifications , add K8s
+     - scale throgh : break the services into microservicse , use a message queue for notifications , add K8s
      - create Refund for the canceled payment
+     - basic notification in monolith  
      - add Angular later for admin dashboard and user UI
 
 ## 🛠️ Tech Stack  
