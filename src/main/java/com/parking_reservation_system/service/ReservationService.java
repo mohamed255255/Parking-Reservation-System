@@ -8,9 +8,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import com.google.zxing.qrcode.encoder.QRCode;
@@ -28,8 +31,11 @@ import com.parking_reservation_system.repository.ReservationRepository;
 import com.parking_reservation_system.repository.SlotRepository;
 import com.parking_reservation_system.repository.UserRepository;
 import com.parking_reservation_system.repository.VehicleRepository;
+import com.parking_reservation_system.security.CustomUserDetails;
 import com.parking_reservation_system.service.payment.PaymentService;
 
+import ch.qos.logback.classic.LoggerContext;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
@@ -43,11 +49,12 @@ public class ReservationService {
   
     private final ReservationRepository reservationRepository;
     private final SlotRepository slotRepository;
-    private final UserRepository userRepository;
     private final QRCodeService qrCodeService ;
-    private final PaymentService paymentService ;
     private final VehicleRepository vehicleRepository ;
+    private final SlotService slotService ;
 
+
+    private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
     public double calculateFees(Reservation newReservation) {
         LocalTime start = newReservation.getStartingTime();
@@ -57,33 +64,41 @@ public class ReservationService {
         return hourlyPrice * hours;
     }
     
-    public Optional<Reservation> createRequest(ReservationDto reservationDto , int vehicleId) {
-       /// can i block two concurrent reservations 
-       
+    @Transactional
+    public Optional<Reservation> createRequest(
+        CustomUserDetails userDetails ,
+        ReservationDto reservationDto ,
+        int vehicleId) {   
+
         try {
-        
-            User currentUser  =  userRepository.findById(reservationDto.user_id()).orElseThrow(() -> new ResourceNotFoundException("user id is not found in the DB"));
-            Slot requiredSlot =  slotRepository.findById(reservationDto.slot_id()).orElseThrow(() -> new ResourceNotFoundException("slot id is not found in the DB"));
-            Vehicle choosenVehicle =  vehicleRepository.findById(vehicleId).orElseThrow(() -> new ResourceNotFoundException("the vehicle is not found")) ;
+    
+            Slot requiredSlot      =  slotRepository.findByIdWithALock(reservationDto.slot_id())
+            .orElseThrow(() -> new ResourceNotFoundException("this slot is not found in the slots table"));
+           
+            Vehicle choosenVehicle =  vehicleRepository.findById(vehicleId)
+            .orElseThrow(() -> new ResourceNotFoundException("this vehicle is not found at the vechicles table")) ;
 
             if(requiredSlot.getVehicle() != null){
                     throw new RuntimeException("this slot is already occupied") ;
             }
+            /// if there is a problem here the whole reservation service will rollback
+            slotService.addVehicleToAnEmptySlot( reservationDto.slot_id() , vehicleId);
 
             Reservation newReservation = ReservationMapper.toEntity(reservationDto);
-            // place the vehicle on the slot
+          
             requiredSlot.setVehicle(choosenVehicle);
-            // link the data 
-            newReservation.setSlot(requiredSlot);
-            newReservation.setUser(currentUser);
-            newReservation.setGarage(requiredSlot.getGarage());
 
+            newReservation.setSlot(requiredSlot);
+            newReservation.setUser(userDetails.getUser());
+            newReservation.setGarage(requiredSlot.getGarage());
+    
             Reservation savedReservation = reservationRepository.save(newReservation);
            
             return Optional.of(savedReservation);
-        }catch (DataIntegrityViolationException ex) {
-            return (Optional.empty());
+        }catch (Exception ex) {
+             throw new RuntimeException(ex.getMessage());
             }
+
     }
 
     

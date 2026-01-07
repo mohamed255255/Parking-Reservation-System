@@ -14,8 +14,6 @@ public class SlotMapper {
         slot.setSlotNumber(dto.slot_number());
         slot.setSlotWidth(dto.slotWidth());
         slot.setSlotDepth(dto.slotDepth());
-        slot.setStartTime(dto.startTime());
-        slot.setEndingTime(dto.endingTime());
         // If needed, set slot.setGarage(...) or slot.setVehicle(...)
         return slot;
     }
@@ -28,8 +26,6 @@ public class SlotMapper {
                 slot.getSlotNumber(),
                 slot.getSlotWidth(),
                 slot.getSlotDepth(),
-                slot.getStartTime(),
-                slot.getEndingTime(),
                 slot.getGarage().getId(),
                 slot.getVehicle() != null ? slot.getVehicle().getId() : 0
         );
@@ -43,8 +39,6 @@ public class SlotMapper {
                 slot.getSlotNumber(),
                 slot.getSlotWidth(),
                 slot.getSlotDepth(),
-                slot.getStartTime(),
-                slot.getEndingTime(),
                 slot.getGarage().getId(),
                 slot.getVehicle() != null ? slot.getVehicle().getId() : null
         );

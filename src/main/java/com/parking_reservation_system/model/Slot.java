@@ -39,14 +39,6 @@ public class Slot {
     @Column(nullable = false)
     private double slotDepth;
 
-    @Column(nullable = false)
-    @CreationTimestamp
-    private LocalDateTime startTime ;
-
-    @Column(nullable = false)
-    @UpdateTimestamp
-    private LocalDateTime endingTime ;
-
     @Column(name = "qrcode_path"   , nullable = false)
     private String qrCodeImagePath ;
    

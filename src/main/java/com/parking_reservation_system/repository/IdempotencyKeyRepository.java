@@ -13,7 +13,7 @@ import jakarta.persistence.Persistence;
 
 public interface IdempotencyKeyRepository extends JpaRepository<IdempotencyKey , UUID> {
   
-   // @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<IdempotencyKey> findById(UUID key);
 
     void deleteByCreatedAtBefore(LocalDateTime time);

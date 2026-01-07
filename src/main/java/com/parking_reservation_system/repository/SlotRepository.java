@@ -4,20 +4,20 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.parking_reservation_system.model.Reservation;
 import com.parking_reservation_system.model.Slot;
 
+import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 
 @Repository
 public interface SlotRepository extends JpaRepository<Slot, Integer> {
   
-    
-    // @Query("SELECT s from slots s where user")
-    //List<Slot> findByUserId();
     @Transactional
     @Query("""
         SELECT s
@@ -32,4 +32,8 @@ public interface SlotRepository extends JpaRepository<Slot, Integer> {
     @Query("SELECT s from Slot s where s.slotNumber=:slotNumber") 
     Optional<Slot> findBySlotNumber(int slotNumber);
 
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select s from Slot s where s.id = :id")
+    Optional<Slot> findByIdWithALock(@Param("id") int id);
 } 

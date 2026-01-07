@@ -33,7 +33,7 @@ public class SlotService {
     private final VehicleRepository vehicleRepository ;
     private final QRCodeService qrCodeService ;
 
- 
+ /// admin
     public SlotResponseDto createSlot(SlotDto slotDto)  throws IOException , WriterException{
 
         Garage existedGarage   = garageRepository.findById(slotDto.garage_id())
@@ -64,7 +64,7 @@ public class SlotService {
         .toList();
         
     }
-    /// admin 
+
     public SlotResponseDto getSlotById(int id){
         return slotRepository.findById(id)
                .map(slot -> SlotMapper.toResponseDto(slot))
@@ -72,8 +72,10 @@ public class SlotService {
     }
 
 
-    public Map<?,?> addVehicleToAnEmptySlot(int slotId , Vehicle vehicle){
+    public void addVehicleToAnEmptySlot(int slotId , int vehicleId){
         Slot slot = slotRepository.findById(slotId).get();
+        Vehicle vehicle = vehicleRepository.findById(vehicleId).get() ;
+
         boolean isEmpty = slot.getVehicle() == null;
         if(isEmpty){
              if(vehicle.getVehicleDepth() <= slot.getSlotDepth() && vehicle.getVehicleWidth()<=slot.getSlotWidth()){
@@ -82,14 +84,13 @@ public class SlotService {
                       .orElseThrow(() -> new ResourceNotFoundException("Vehicle is not found"));
                    
                      slot.setVehicle(myVehicle);
-                     slotRepository.save(slot);
-                    
-                     return Map.of( 201 , "vehicle is added successfully to slot number " + slotId );
+                     slotRepository.save(slot); 
+                     return ; 
              }else{
-                   return Map.of(400 , "the vehicle dimensions don't fit properly")   ;
+                   throw new RuntimeException("the vehicle dimensions don't fit properly")   ;
              }
         }
-          return Map.of(409 , "the slot number " + slotId + " is busy")   ;
+         throw new RuntimeException("the slot number " + slotId + " is busy") ;  
     }
 
 

@@ -25,8 +25,7 @@ public class ReservationMapper {
                 entity.getStartingTime(),
                 entity.getEndingTime(),
                 entity.getSlot().getId(),
-                entity.getGarage().getId(),
-                entity.getUser().getId()
+                entity.getGarage().getId()
         );
     }
 

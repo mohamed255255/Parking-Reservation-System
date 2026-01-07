@@ -15,9 +15,6 @@ public record ReservationDto(
 
         int slot_id,
 
-        int garage_id,
-
-        @NotNull(message = "user_id is required")
-        int user_id
+        int garage_id
 
 ) {}

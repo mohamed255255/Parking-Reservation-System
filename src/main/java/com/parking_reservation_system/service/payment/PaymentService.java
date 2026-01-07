@@ -90,12 +90,7 @@ public class PaymentService {
     }
 
     @Transactional
-    protected String createPaymentOrder(
-            String token,
-            BigDecimal price,
-            int reservationId,
-            UUID key
-    ){
+    protected String createPaymentOrder(String token,BigDecimal price,int reservationId,UUID key){
 
     Optional<IdempotencyKey> recordOpt = getIdempotencyKey(key);
         
@@ -107,14 +102,15 @@ public class PaymentService {
             }
     }
         IdempotencyKey record = recordOpt.orElseGet(() -> {
-      
+         //// transaction is still active's lock still active too
             IdempotencyKey newRecord = new IdempotencyKey();
             newRecord.setIdempotency_key(key);
             newRecord.setStatus("PROCESSING");
             newRecord.setPayload("{}");
             newRecord.setCreatedAt(LocalDateTime.now());
             
-            return idempotencyKeyRepository.save(newRecord);
+            return idempotencyKeyRepository.save(newRecord); 
+            /// end of transaction
       });
 
     try {
