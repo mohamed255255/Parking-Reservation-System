@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Positive;
 
 public record GarageDto(
 
-        int id,
+        Integer id,
 
         @NotBlank(message = "name can not be empty")
         String name,
@@ -17,5 +17,5 @@ public record GarageDto(
         boolean isActive,
 
         @Positive(message = "capacity of the garage should be positive value")
-        int capacity
+        Integer capacity
 ) {}

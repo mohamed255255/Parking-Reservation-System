@@ -6,19 +6,25 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
-
 import com.google.zxing.qrcode.encoder.QRCode;
 import com.parking_reservation_system.dto.request.ReservationDto;
 import com.parking_reservation_system.dto.request.VehicleDto;
+import com.parking_reservation_system.dto.response.ReservationResponseDto;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
 import com.parking_reservation_system.mapper.ReservationMapper;
 import com.parking_reservation_system.mapper.VehicleMapper;
@@ -27,12 +33,15 @@ import com.parking_reservation_system.model.Reservation;
 import com.parking_reservation_system.model.Slot;
 import com.parking_reservation_system.model.User;
 import com.parking_reservation_system.model.Vehicle;
+import com.parking_reservation_system.repository.GarageRepository;
+import com.parking_reservation_system.model.Reservation.Status;
 import com.parking_reservation_system.repository.ReservationRepository;
 import com.parking_reservation_system.repository.SlotRepository;
 import com.parking_reservation_system.repository.UserRepository;
 import com.parking_reservation_system.repository.VehicleRepository;
 import com.parking_reservation_system.security.CustomUserDetails;
 import com.parking_reservation_system.service.payment.PaymentService;
+import com.parking_reservation_system.specification.ReservationSpecs;
 
 import ch.qos.logback.classic.LoggerContext;
 import jakarta.transaction.Transactional;
@@ -43,6 +52,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
+
+    private final GarageRepository garageRepository;
+
     // since it is mvp project i put hourlyPricec in env file
     @Value("${parking.price.hourly}")
     private int hourlyPrice;
@@ -56,9 +68,11 @@ public class ReservationService {
 
     private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
-    public double calculateFees(Reservation newReservation) {
-        LocalTime start = newReservation.getStartingTime();
-        LocalTime end   = newReservation.getEndingTime();
+
+
+    public double calculateFees(ReservationResponseDto newReservation) {
+        LocalTime start = newReservation.startingTime();
+        LocalTime end   = newReservation.endingTime();
         long minutes = Duration.between(start, end).toMinutes();
         double hours = Math.ceil((minutes / 60.0) * 100) / 100;
         return hourlyPrice * hours;
@@ -102,7 +116,7 @@ public class ReservationService {
     }
 
     
-    public String confirmReservation(byte[] imageBytes) throws IOException{
+    public void confirmReservation(byte[] imageBytes) throws IOException{
         /// scan QR code
         String text = qrCodeService.readQRCode(imageBytes);
         // format ex : G1_S2
@@ -115,25 +129,112 @@ public class ReservationService {
         int slotNumber = Integer.parseInt(slotNumberStr);
         
         Slot slot = slotRepository.findBySlotNumber(slotNumber).get();
+        
         // get the tied reservation and check if it is active
-        var reservation = reservationRepository.findActiveReservation(garageId , slot.getId(), Reservation.Status.PENDING).orElseThrow(
+        reservationRepository.findActiveReservation(garageId , slot.getId(), Reservation.Status.PENDING)
+        .orElseThrow(
             () -> new ResourceNotFoundException("there is no reservation active for slot number : " + slotNumber + " garage id : " + garageId)
         );
     
-        // Redirect to payment page
-        return "reservation has been created" ;
-
+        // Redirect to payment page that has 
+        // pay button which will transfer the user to the gateway IFrame
     }
 
 
 
+    public Page<ReservationResponseDto> getUserReservations(
+            Integer userId,
+            Integer slotId,
+            Integer garageId,
+            Reservation.Status status,
+            LocalDateTime start,
+            LocalDateTime end,
+            int page,
+            int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Specification<Reservation> spec = Specification
+                .where(ReservationSpecs.hasUser(userId))
+                .and(ReservationSpecs.hasSlotId(slotId))
+                .and(ReservationSpecs.hasGarageId(garageId))
+                .and(ReservationSpecs.hasStatus(status))
+                .and(ReservationSpecs.betweenTime(start, end));
+
+        return reservationRepository.findAll(spec, pageable)
+                .map(ReservationMapper::toResponseDto);
+    }
 
 
 
+    public Page<ReservationResponseDto> getAllReservations(
+            Integer slotId,
+            Integer garageId,
+            Reservation.Status status,
+            LocalDateTime start,
+            LocalDateTime end,
+            int page,
+            int size
+    ){
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Specification<Reservation> spec = Specification
+                .where(ReservationSpecs.hasSlotId(slotId))
+                .and(ReservationSpecs.hasGarageId(garageId))
+                .and(ReservationSpecs.hasStatus(status))
+                .and(ReservationSpecs.betweenTime(start, end));
+
+        return reservationRepository.findAll(spec, pageable)
+                .map(ReservationMapper::toResponseDto);
+    }
 
 
+    public void deleteReservation(Integer id) {
+        if (!reservationRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Reservation not found with id " + id);
+        }
+        reservationRepository.deleteById(id);
+    }
 
+   
+    @Transactional
+    public ReservationResponseDto patchReservation(Integer id, ReservationDto dto) {
 
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
 
+        if (dto.slot_id() != null) {
+            Slot slot = slotRepository.findById(dto.slot_id())
+                    .orElseThrow(() -> new ResourceNotFoundException("Slot not found"));
+            reservation.setSlot(slot);
+        }
+
+        if (dto.garage_id() != null) {
+            Garage garage = garageRepository.findById(dto.garage_id())
+                    .orElseThrow(() -> new ResourceNotFoundException("Garage not found"));
+            reservation.setGarage(garage);
+        }
+
+        if (dto.startingTime() != null) {
+            reservation.setStartingTime(null);(dto.startingTime());
+        }
+
+        if (dto.endingTime() != null) {
+            reservation.setEndingTime(dto.endingTime());
+        }
+
+        Reservation updated = reservationRepository.save(reservation);
+        return ReservationMapper.toResponseDto(updated);
+    }
 
 }
+
+
+
+
+
+
+
+
+
+

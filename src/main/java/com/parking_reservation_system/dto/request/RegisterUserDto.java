@@ -13,7 +13,7 @@ import jakarta.validation.constraints.Size;
 
 public record RegisterUserDto(
 
-        int id,
+        Integer id,
 
         @NotBlank(message = "empty names are not allowed")
         String name,

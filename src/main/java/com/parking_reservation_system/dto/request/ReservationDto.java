@@ -1,20 +1,22 @@
 package com.parking_reservation_system.dto.request;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 
 public record ReservationDto(
 
-        int id,
+        Integer id,
 
-        @Past(message = "you cant reserve in a previous date")
-        LocalTime startingTime,
+        @Past(message = "you can't reserve in a previous date")
+        LocalDateTime startingTime,
 
-        LocalTime endingTime,
 
-        int slot_id,
+        LocalDateTime endingTime,
 
-        int garage_id
+        Integer slot_id,
+
+        Integer garage_id
 
 ) {}

@@ -34,6 +34,6 @@ public record VehicleDto(
         VehicleType type,
 
         @NotNull(message = "a vehicle should be tied to user")
-        int user_id
+        Integer user_id
 
 ) {}

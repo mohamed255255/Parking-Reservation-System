@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 
 public record LoginUserDto(
 
-        int id,
+        Integer id,
 
         @Email(message = "Email format is invalid")
         String email,

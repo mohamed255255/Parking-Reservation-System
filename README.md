@@ -28,22 +28,22 @@ Admin have full control over garage and slot creation , user details, reservatio
   - Admin generates QR codes for every created slot to comfirm arrival
   - Users only see slots that fit their vehicle size
 
-- ⏳ **Real-Time Notifications**  
+- ⏳ **Real-Time Notifications** **(on going)** 
   - Users can request "remind me later" when slots are unavailable  
-  - Implemented using **schedulers** to send **emails** when parking slots become available
 
 - 🚗 **Reservation**
   - **Creating a Reservation**
     - Users can create a reservation for any available parking slot
     - New reservations are created with **PENDING** status ⏳
+    - Solved concurrent reservation problems (if multiple users demanded the same parking slot)
     - Users can view all their reservations in one place 📋
   - **Payment Process**
     - When users arrive at the physical location and scan the QR code (each QR code represents a specific **slot number + garage ID**), they are redirected to a payment iframe
     - Upon successful payment submission, the reservation status changes to **CONFIRMED** ✅
   - **Reservation Expiration**
-    - A reservation will automatically expire if:
+    - Using **schedulers** the reservation will automatically expire if:
       - Payment is not completed within **30 minutes** of creation ⏱️
-      - **3 failed payment transactions** occur ❌
+      - **5 minutes** after confirmation (QR scanning) if the payemnt kept on failing or canceled
 
 - 💳 **Payment & Billing**
   - **Fee Calculation**
@@ -51,7 +51,7 @@ Admin have full control over garage and slot creation , user details, reservatio
   - **Payment Integration**
     - Secure **PayMob** integration for digital payments
     - Features include:
-      - Idempotency handling to prevent duplicate charges
+      - IdempotencyKey table and database lock to prevent duplicate charges 
       - HMAC verification for enhanced security
   - **Payment Confirmation**
     - Automated email receipts are sent to users after successful payment
@@ -65,10 +65,12 @@ Admin have full control over garage and slot creation , user details, reservatio
     -  used @Transactional for dependent steps and data integrety
     -  used validations for columns in the entity layer
     -  used join fetch to prevent n+1 problems
+    -  specification interface for dynamic filtering 
 
  - **Future features**
-     - scale throgh : break the services into microservicse , rabbit mq for notifications , add K8s
+     - scale throgh : break the services into microservicse , use a message queue for notifications , add K8s
      - create Refund for the canceled payment
+     - basic notification in monolith  
      - add Angular later for admin dashboard and user UI
 
 ## 🛠️ Tech Stack  

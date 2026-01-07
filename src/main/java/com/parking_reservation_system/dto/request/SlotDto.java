@@ -8,7 +8,7 @@ import jakarta.validation.constraints.AssertTrue;
 
 public record SlotDto(
 
-        int slot_number,
+        Integer slot_number,
 
         @NotNull
         @Positive(message = "Slot width must be positive")
@@ -18,9 +18,9 @@ public record SlotDto(
         @Positive(message = "Slot depth must be positive")
         Double slotDepth,
 
-        int garage_id,
+        Integer garage_id,
 
-        int vehicle_id
+        Integer vehicle_id
 
 ) {
 
