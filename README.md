@@ -35,7 +35,7 @@ Admin have full control over garage and slot creation , user details, reservatio
   - **Creating a Reservation**
     - Users can create a reservation for any available parking slot
     - New reservations are created with **PENDING** status ⏳
-    - Solved concurrent reservation problem
+    - Solved concurrent reservation problems (if multiple users demanded the same parking slot)
     - Users can view all their reservations in one place 📋
   - **Payment Process**
     - When users arrive at the physical location and scan the QR code (each QR code represents a specific **slot number + garage ID**), they are redirected to a payment iframe
