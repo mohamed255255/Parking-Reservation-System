@@ -43,7 +43,7 @@ Admin have full control over garage and slot creation , user details, reservatio
   - **Reservation Expiration**
     - Using **schedulers** the reservation will automatically expire if:
       - Payment is not completed within **30 minutes** of creation ⏱️
-      - **5 minutes** after payemnt 
+      - **5 minutes** after confirmation (QR scanning) if the payemnt kept on failing or canceled
 
 - 💳 **Payment & Billing**
   - **Fee Calculation**
