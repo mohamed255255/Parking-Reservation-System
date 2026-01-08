@@ -1,51 +1,35 @@
 package com.parking_reservation_system.service;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
-import com.google.zxing.qrcode.encoder.QRCode;
+
 import com.parking_reservation_system.dto.request.ReservationDto;
-import com.parking_reservation_system.dto.request.VehicleDto;
 import com.parking_reservation_system.dto.response.ReservationResponseDto;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
 import com.parking_reservation_system.mapper.ReservationMapper;
-import com.parking_reservation_system.mapper.VehicleMapper;
 import com.parking_reservation_system.model.Garage;
 import com.parking_reservation_system.model.Reservation;
 import com.parking_reservation_system.model.Slot;
-import com.parking_reservation_system.model.User;
 import com.parking_reservation_system.model.Vehicle;
 import com.parking_reservation_system.repository.GarageRepository;
-import com.parking_reservation_system.model.Reservation.Status;
 import com.parking_reservation_system.repository.ReservationRepository;
 import com.parking_reservation_system.repository.SlotRepository;
-import com.parking_reservation_system.repository.UserRepository;
 import com.parking_reservation_system.repository.VehicleRepository;
 import com.parking_reservation_system.security.CustomUserDetails;
-import com.parking_reservation_system.service.payment.PaymentService;
 import com.parking_reservation_system.specification.ReservationSpecs;
 
-import ch.qos.logback.classic.LoggerContext;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 
@@ -70,16 +54,16 @@ public class ReservationService {
 
 
 
-    public double calculateFees(ReservationResponseDto newReservation) {
-        LocalTime start = newReservation.startingTime();
-        LocalTime end   = newReservation.endingTime();
+    public double calculateFees(ReservationResponseDto reservation) {
+        LocalDateTime start = reservation.startingTime();
+        LocalDateTime end   = reservation.endingTime();
         long minutes = Duration.between(start, end).toMinutes();
         double hours = Math.ceil((minutes / 60.0) * 100) / 100;
         return hourlyPrice * hours;
     }
     
     @Transactional
-    public Optional<Reservation> createRequest(
+    public ReservationResponseDto createReservation(
         CustomUserDetails userDetails ,
         ReservationDto reservationDto ,
         int vehicleId) {   
@@ -92,9 +76,10 @@ public class ReservationService {
             Vehicle choosenVehicle =  vehicleRepository.findById(vehicleId)
             .orElseThrow(() -> new ResourceNotFoundException("this vehicle is not found at the vechicles table")) ;
 
-            if(requiredSlot.getVehicle() != null){
-                    throw new RuntimeException("this slot is already occupied") ;
-            }
+            /// check vehicle ownership
+            if(choosenVehicle.getUser() != userDetails.getUser())
+                 throw new ResourceNotFoundException("the user does not possess this vehicle") ;
+          
             /// if there is a problem here the whole reservation service will rollback
             slotService.addVehicleToAnEmptySlot( reservationDto.slot_id() , vehicleId);
 
@@ -105,13 +90,12 @@ public class ReservationService {
             newReservation.setSlot(requiredSlot);
             newReservation.setUser(userDetails.getUser());
             newReservation.setGarage(requiredSlot.getGarage());
-    
             Reservation savedReservation = reservationRepository.save(newReservation);
-           
-            return Optional.of(savedReservation);
+            return ReservationMapper.toResponseDto(savedReservation);
+
         }catch (Exception ex) {
              throw new RuntimeException(ex.getMessage());
-            }
+        }
 
     }
 
@@ -212,11 +196,12 @@ public class ReservationService {
         if (dto.garage_id() != null) {
             Garage garage = garageRepository.findById(dto.garage_id())
                     .orElseThrow(() -> new ResourceNotFoundException("Garage not found"));
+            
             reservation.setGarage(garage);
         }
 
         if (dto.startingTime() != null) {
-            reservation.setStartingTime(null);(dto.startingTime());
+            reservation.setStartingTime(dto.startingTime());
         }
 
         if (dto.endingTime() != null) {

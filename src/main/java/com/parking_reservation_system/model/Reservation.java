@@ -1,8 +1,7 @@
 package com.parking_reservation_system.model;
 
-import java.util.List;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -62,9 +61,9 @@ public class Reservation {
     private List<Payment> payments ;
 
 
-    private LocalTime startingTime;
+    private LocalDateTime startingTime;
 
-    private LocalTime endingTime;
+    private LocalDateTime endingTime;
     
     
     @Column(nullable = false)

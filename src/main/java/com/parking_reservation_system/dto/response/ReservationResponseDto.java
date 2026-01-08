@@ -1,11 +1,11 @@
 package com.parking_reservation_system.dto.response;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 public record ReservationResponseDto(
         int id,
-        LocalTime startingTime,
-        LocalTime endingTime,
+        LocalDateTime startingTime,
+        LocalDateTime endingTime,
         int slotId,
         int garageId,
         int userId,

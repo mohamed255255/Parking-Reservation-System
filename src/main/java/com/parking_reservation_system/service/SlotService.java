@@ -2,14 +2,12 @@ package com.parking_reservation_system.service;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.zxing.WriterException;
 import com.parking_reservation_system.dto.request.SlotDto;
-import com.parking_reservation_system.dto.request.VehicleDto;
 import com.parking_reservation_system.dto.response.SlotResponseDto;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
 import com.parking_reservation_system.mapper.SlotMapper;
@@ -90,7 +88,7 @@ public class SlotService {
                    throw new RuntimeException("the vehicle dimensions don't fit properly")   ;
              }
         }
-         throw new RuntimeException("the slot number " + slotId + " is busy") ;  
+         throw new RuntimeException("the slot number " + slotId + " is already busy") ;  
     }
 
 
