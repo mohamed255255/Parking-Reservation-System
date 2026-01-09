@@ -20,25 +20,25 @@ Admin have full control over garage and slot creation , user details, reservatio
 ## Features  
 
 -  **Authentication & Authorization**  
-  - Role-based access (Admin/User) using Spring Security + JWT  
-  - Password reset , email verification  and Two-Factor Authentication (2FA)  
+   - Role-based access (Admin/User) using Spring Security + JWT  
+   - Password reset , email verification  and Two-Factor Authentication (2FA)  
 
 -  **Garage & Slot Management**  
-  - Admin can create garages , define slot dimensions.
-  - Admin generates QR codes for every created slot to comfirm arrival
-  - Users only see slots that fit their vehicle size
+   - Admin can create garages , define slot dimensions.
+   - Admin generates QR codes for every created slot to comfirm arrival
+   - Users only see slots that fit their vehicle size
 
 -  **Real-Time Notifications** **(---- On going ----)** 
-  - Users can request "remind me later" when slots are unavailable and get notified
+   - Users can request "remind me later" when slots are unavailable and get notified
 
 -  **Reservation**
-  - **Creating a Reservation**
-    - Users can create a reservation for any available parking slot
-    - New reservations are created with **PENDING** status ⏳
-    - Solved concurrent reservation problems (if multiple users demanded the same parking slot)
-    - Users can view all their reservations in one place 📋
-    - When user finishes parking the slot will be released
-
+   - **Creating a Reservation**
+     - Users can create a reservation for any available parking slot
+     - New reservations are created with **PENDING** status ⏳
+     - Solved concurrent reservation problems (if multiple users demanded the same parking slot)
+     - Users can view all their reservations in one place 📋
+     - When user finishes parking the slot will be released
+ 
   - **Payment Process**
     - When users arrive at the physical location and scan the QR code (each QR code represents a specific **slot number + garage ID**), they are redirected to a payment iframe
     - Upon successful payment submission, the reservation status changes to **CONFIRMED** 
