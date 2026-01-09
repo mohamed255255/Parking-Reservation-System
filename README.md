@@ -57,12 +57,12 @@ Admin have full control over garage and slot creation , user details, reservatio
     - Features include:
       - IdempotencyKey table and database lock to prevent duplicate charges 
       - HMAC verification for enhanced security
-  - **Payment Confirmation**
-    - Automated email receipts are sent to users after successful payment
+     - **Payment Confirmation**
+      - Automated email receipts are sent to users after successful payment
 -  **Deployment & Reliability**  
-  - Dockerized for deployment readiness
-  - used github actions for CI / CD
-  - Unit tested with JUnit5 & Mockito
+   - Dockerized for deployment readiness
+   - used github actions for CI / CD
+   - Unit tested with JUnit5 & Mockito
     
  -  **Database**  
     -  designed DB schema that follows normalization for optimized queries and indexes
