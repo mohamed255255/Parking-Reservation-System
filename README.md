@@ -42,7 +42,7 @@ Admin have full control over garage and slot creation , user details, reservatio
     - Upon successful payment submission, the reservation status changes to **CONFIRMED** ✅
   - **Reservation Expiration**
     - Using **schedulers** the reservation will automatically expire if:
-      - Payment is not completed within **30 minutes** of creation ⏱️
+      - Payment is not completed within **30 minutes** of creation (I put an index on the created_at as we frequently scan it)
       - **5 minutes** after confirmation (QR scanning) if the payemnt kept on failing or canceled
 
 - 💳 **Payment & Billing**
