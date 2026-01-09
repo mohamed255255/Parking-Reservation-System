@@ -176,6 +176,8 @@ public void processPaymentCallback(Map<String, Object> payload) {
         reservation.setStatus(Reservation.Status.COMPLETED); // Only complete if successful
     } else {
         payment.setStatus(Status.FAILED);
+        reservation.setStatus(Reservation.Status.FAILED); // Only complete if successful
+
     }
 
     // 3. Persist and Notify

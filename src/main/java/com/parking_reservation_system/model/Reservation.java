@@ -72,7 +72,9 @@ public class Reservation {
 
     public  enum Status {
         PENDING ,
-        COMPLETED
+        COMPLETED,
+        EXPIRED,
+        FAILED
     }
 
 

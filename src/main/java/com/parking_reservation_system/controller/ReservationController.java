@@ -86,7 +86,6 @@ public class ReservationController {
               ));
        }
        
-      
         @PreAuthorize("hasAnyRole('ADMIN')")
         @GetMapping("/all")
         public ApiResponse<?> getAllReservations(

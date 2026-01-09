@@ -114,11 +114,10 @@ public class ReservationService {
         
         Slot slot = slotRepository.findBySlotNumber(slotNumber).get();
         
-        // get the tied reservation and check if it is active
-        reservationRepository.findActiveReservation(garageId , slot.getId(), Reservation.Status.PENDING)
-        .orElseThrow(
-            () -> new ResourceNotFoundException("there is no reservation active for slot number : " + slotNumber + " garage id : " + garageId)
-        );
+        // get the tied reservation and check if it is active only it will ignore expired anyways
+        boolean exists = reservationRepository.findActiveReservation(garageId , slot.getId(), Reservation.Status.PENDING);
+        if(!exists)
+              new ResourceNotFoundException("there is no reservation active for slot number : " + slotNumber + " garage id : " + garageId);
     
         // Redirect to payment page that has 
         // pay button which will transfer the user to the gateway IFrame
