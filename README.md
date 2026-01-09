@@ -20,56 +20,38 @@ Admin have full control over garage and slot creation , user details, reservatio
 ## Features  
 
 -  **Authentication & Authorization**  
-   - Role-based access (Admin/User) using Spring Security + JWT  
-   - Password reset , email verification  and Two-Factor Authentication (2FA)  
+   - Implemented JWT-based authentication with role-based authorization (Admin/User)
+   - Built secure flows for email verification, password reset, and two-factor authentication (2FA) 
 
 -  **Garage & Slot Management**  
-   - Admin can create garages , define slot dimensions.
-   - Admin generates QR codes for every created slot to comfirm arrival
+   - Admin manage garages and define parking slot dimensions
+   - Admin can generate QR codes per slot to confirm user arrival
    - Users only see slots that fit their vehicle size
 
 -  **Real-Time Notifications** **(---- On going ----)** 
    - Users can request "remind me later" when slots are unavailable and get notified
 
--  **Reservation**
-   - **Creating a Reservation**
-        - Users can create a reservation for any available parking slot
-        - New reservations are created with **PENDING** status 
-        - Solved concurrent reservation problems (if multiple users demanded the same parking slot)
-        - Users can view all their reservations in one place 
-        - When user finishes parking the slot will be released
-    
-  - **Payment Process**
-       - When users arrive at the physical location and scan the QR code (each QR code represents a specific **slot number + garage ID**), they are redirected to a payment iframe
-       - Upon successful payment submission, the reservation status changes to **CONFIRMED** 
-       - Failed payments changes reservation to **FAILED** and release the slot immediately 
+- **Creating a Reservation**
+     - Implemented reservation lifecycle with PENDING, CONFIRMED, FAILED state
+     - Solved concurrent reservation conflicts using database-level locking (multiple users demand the same parking slot)
+     - Users can view all their reservations in one place 
+     - When user finishes parking the slot will be released
+     - Using **schedulers** the reservation will automatically expire if:
+      - Payment is not completed within **30 minutes** of creation (I put an index on the created_at as we frequently scan it)  
+       
+ - **Payment & Billing**
+    - Integrated PayMob payment gateway with secure HMAC verification
+    - Implemented idempotency using a dedicated table and DB pesmistic locking to prevent duplicate charges
+    - When users arrive at the physical location and scan the QR code (each QR code represents a specific **slot number + garage ID**), they are redirected to a payment iframe
+    - Calculated parking fees dynamically based on stay duration
+    - Sent automated email receipts upon successful 
+    - Failed payments changes reservation to **FAILED** and release the slot immediately
       
-  - **Reservation Expiration**
-       - Using **schedulers** the reservation will automatically expire if:
-         - Payment is not completed within **30 minutes** of creation (I put an index on the created_at as we frequently scan it)
-  
-
--  **Payment & Billing**
-    - **Fee Calculation**
-       - Parking fees are calculated based on stay duration
- - **Payment Integration**
-    - Secure **PayMob** integration for digital payments
-    - Features include:
-      - IdempotencyKey table and database lock to prevent duplicate charges 
-      - HMAC verification for enhanced security
-     - **Payment Confirmation**
-      - Automated email receipts are sent to users after successful payment
 -  **Deployment & Reliability**  
    - Dockerized for deployment readiness
    - used github actions for CI / CD
    - Unit tested with JUnit5 & Mockito
     
- -  **Database**  
-    -  designed DB schema that follows normalization for optimized queries and indexes
-    -  used @Transactional for dependent steps and data integrety
-    -  used validations for columns in the entity layer
-    -  used join fetch to prevent n+1 problems
-    -  specification interface for dynamic filtering 
 
 ##  Tech Stack  
 
@@ -80,23 +62,22 @@ Admin have full control over garage and slot creation , user details, reservatio
 - **Testing:** JUnit5, Mockito  
 - **CI/CD:** Github actions
 
-##  Architecutre / Design Patterns Used  
+##  System Design & Reliability
 
-- **Clean architecture**
-- **DTOs** for requests and responses to decouple persistence models from exposed APIs, improving security, readability, and maintainability of the codebase.
-- **Global exception handling** 
-- **Strategy Design Pattern** : allowing seamless integration of any kind of paymet gateways
-
-
+- Applied Clean Architecture principles and DTO-based API boundaries
+- Used Strategy Pattern to support multiple payment gateways
+- Implemented global exception handling for consistent API responses
+- Optimized database access using normalization, indexing, join fetch to prevent n + 1 problems, and dynamic specifications 
+- Ensured data integrity using @transactional 
 
 ##  Swagger documentation
 
 ## Future features
 
-  - create Refund for the canceled payment
+  - Refund support for canceled payments
   - basic notification for monolithic level  
   - add Angular later for admin dashboard and user UI
-  - add "extend parking duration" with another payment request and update in the current reservation info
+  - add "Extend parking duration" with another payment request and update in the current reservation info
   - scale through :
      -  Breaking the services into microservicse
      -  Use a message queue for notifications 
