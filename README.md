@@ -19,19 +19,19 @@ Admin have full control over garage and slot creation , user details, reservatio
 
 ## Features  
 
-- 🔐 **Authentication & Authorization**  
+-  **Authentication & Authorization**  
   - Role-based access (Admin/User) using Spring Security + JWT  
   - Password reset , email verification  and Two-Factor Authentication (2FA)  
 
-- 🏢 **Garage & Slot Management**  
+-  **Garage & Slot Management**  
   - Admin can create garages , define slot dimensions.
   - Admin generates QR codes for every created slot to comfirm arrival
   - Users only see slots that fit their vehicle size
 
-- ⏳ **Real-Time Notifications** **(---- On going ----)** 
+-  **Real-Time Notifications** **(---- On going ----)** 
   - Users can request "remind me later" when slots are unavailable and get notified
 
-- 🚗 **Reservation**
+-  **Reservation**
   - **Creating a Reservation**
     - Users can create a reservation for any available parking slot
     - New reservations are created with **PENDING** status ⏳
@@ -49,7 +49,7 @@ Admin have full control over garage and slot creation , user details, reservatio
       - Payment is not completed within **30 minutes** of creation (I put an index on the created_at as we frequently scan it)
   
 
-- 💳 **Payment & Billing**
+-  **Payment & Billing**
   - **Fee Calculation**
     - Parking fees are calculated based on stay duration
   - **Payment Integration**
@@ -59,7 +59,7 @@ Admin have full control over garage and slot creation , user details, reservatio
       - HMAC verification for enhanced security
   - **Payment Confirmation**
     - Automated email receipts are sent to users after successful payment
-- 📦 **Deployment & Reliability**  
+-  **Deployment & Reliability**  
   - Dockerized for deployment readiness
   - used github actions for CI / CD
   - Unit tested with JUnit5 & Mockito
@@ -82,7 +82,7 @@ Admin have full control over garage and slot creation , user details, reservatio
         -  Add kubernetes
 
 
-## 🛠️ Tech Stack  
+##  Tech Stack  
 
 - **Backend:** Spring Boot, Spring Security, JWT, REST API  
 - **Database:** PostgreSQL  
