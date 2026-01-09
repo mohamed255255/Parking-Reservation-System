@@ -72,11 +72,15 @@ Admin have full control over garage and slot creation , user details, reservatio
     -  specification interface for dynamic filtering 
 
  - **Future features**
-     - scale throgh : break the services into microservicse , use a message queue for notifications , add K8s
      - create Refund for the canceled payment
-     - basic notification in monolith  
+     - basic notification for monolithic level  
      - add Angular later for admin dashboard and user UI
-     - add "extend parking duration" with another payment request and update in the current reservation info 
+     - add "extend parking duration" with another payment request and update in the current reservation info
+     - scale through :
+        -  Breaking the services into microservicse
+        -  Use a message queue for notifications 
+        -  Add kubernetes
+
 
 ## 🛠️ Tech Stack  
 
