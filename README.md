@@ -28,7 +28,7 @@ Admin have full control over garage and slot creation , user details, reservatio
   - Admin generates QR codes for every created slot to comfirm arrival
   - Users only see slots that fit their vehicle size
 
-- ⏳ **Real-Time Notifications** **(on going)** 
+- ⏳ **Real-Time Notifications** **(---- On going ----)** 
   - Users can request "remind me later" when slots are unavailable  
 
 - 🚗 **Reservation**
