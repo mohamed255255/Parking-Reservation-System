@@ -34,9 +34,9 @@ Admin have full control over garage and slot creation , user details, reservatio
 -  **Reservation**
    - **Creating a Reservation**
      - Users can create a reservation for any available parking slot
-     - New reservations are created with **PENDING** status ⏳
+     - New reservations are created with **PENDING** status 
      - Solved concurrent reservation problems (if multiple users demanded the same parking slot)
-     - Users can view all their reservations in one place 📋
+     - Users can view all their reservations in one place 
      - When user finishes parking the slot will be released
  
   - **Payment Process**
@@ -71,17 +71,6 @@ Admin have full control over garage and slot creation , user details, reservatio
     -  used join fetch to prevent n+1 problems
     -  specification interface for dynamic filtering 
 
- - **Future features**
-     - create Refund for the canceled payment
-     - basic notification for monolithic level  
-     - add Angular later for admin dashboard and user UI
-     - add "extend parking duration" with another payment request and update in the current reservation info
-     - scale through :
-        -  Breaking the services into microservicse
-        -  Use a message queue for notifications 
-        -  Add kubernetes
-
-
 ##  Tech Stack  
 
 - **Backend:** Spring Boot, Spring Security, JWT, REST API  
@@ -91,7 +80,7 @@ Admin have full control over garage and slot creation , user details, reservatio
 - **Testing:** JUnit5, Mockito  
 - **CI/CD:** Github actions
 
-## 🔹 Architecutre / Design Patterns Used  
+##  Architecutre / Design Patterns Used  
 
 - **Clean architecture**
 - **DTOs** for requests and responses to decouple persistence models from exposed APIs, improving security, readability, and maintainability of the codebase.
@@ -101,6 +90,17 @@ Admin have full control over garage and slot creation , user details, reservatio
 
 
 ##  Swagger documentation
+
+## Future features
+
+  - create Refund for the canceled payment
+  - basic notification for monolithic level  
+  - add Angular later for admin dashboard and user UI
+  - add "extend parking duration" with another payment request and update in the current reservation info
+  - scale through :
+     -  Breaking the services into microservicse
+     -  Use a message queue for notifications 
+     -  Add kubernetes
 
 
 
