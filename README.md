@@ -37,13 +37,17 @@ Admin have full control over garage and slot creation , user details, reservatio
     - New reservations are created with **PENDING** status ⏳
     - Solved concurrent reservation problems (if multiple users demanded the same parking slot)
     - Users can view all their reservations in one place 📋
+    - When user finishes parking the slot will be released
+
   - **Payment Process**
     - When users arrive at the physical location and scan the QR code (each QR code represents a specific **slot number + garage ID**), they are redirected to a payment iframe
-    - Upon successful payment submission, the reservation status changes to **CONFIRMED** ✅
+    - Upon successful payment submission, the reservation status changes to **CONFIRMED** 
+    - Failed payments changes reservation to **FAILED** and release the slot immediately 
+      
   - **Reservation Expiration**
     - Using **schedulers** the reservation will automatically expire if:
       - Payment is not completed within **30 minutes** of creation (I put an index on the created_at as we frequently scan it)
-      - **5 minutes** after confirmation (QR scanning) if the payemnt kept on failing or canceled
+  
 
 - 💳 **Payment & Billing**
   - **Fee Calculation**
@@ -72,6 +76,7 @@ Admin have full control over garage and slot creation , user details, reservatio
      - create Refund for the canceled payment
      - basic notification in monolith  
      - add Angular later for admin dashboard and user UI
+     - add "extend parking duration" with another payment request and update in the current reservation info 
 
 ## 🛠️ Tech Stack  
 
