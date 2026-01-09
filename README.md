@@ -45,7 +45,7 @@ Admin have full control over garage and slot creation , user details, reservatio
     - When users arrive at the physical location and scan the QR code (each QR code represents a specific **slot number + garage ID**), they are redirected to a payment iframe
     - Calculated parking fees dynamically based on stay duration
     - Sent automated email receipts for the payment status 
-    - Failed payments changes reservation to **FAILED** and release the slot immediately
+    - Failed payments changes reservation status to **FAILED** and release the slot immediately
       
 -  **Deployment & Reliability**  
    - Dockerized for deployment readiness
