@@ -29,7 +29,7 @@ Admin have full control over garage and slot creation , user details, reservatio
   - Users only see slots that fit their vehicle size
 
 - ⏳ **Real-Time Notifications** **(---- On going ----)** 
-  - Users can request "remind me later" when slots are unavailable and get notified when it's avaiable
+  - Users can request "remind me later" when slots are unavailable and get notified
 
 - 🚗 **Reservation**
   - **Creating a Reservation**
