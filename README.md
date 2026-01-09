@@ -33,26 +33,26 @@ Admin have full control over garage and slot creation , user details, reservatio
 
 -  **Reservation**
    - **Creating a Reservation**
-     - Users can create a reservation for any available parking slot
-     - New reservations are created with **PENDING** status 
-     - Solved concurrent reservation problems (if multiple users demanded the same parking slot)
-     - Users can view all their reservations in one place 
-     - When user finishes parking the slot will be released
- 
+        - Users can create a reservation for any available parking slot
+        - New reservations are created with **PENDING** status 
+        - Solved concurrent reservation problems (if multiple users demanded the same parking slot)
+        - Users can view all their reservations in one place 
+        - When user finishes parking the slot will be released
+    
   - **Payment Process**
-    - When users arrive at the physical location and scan the QR code (each QR code represents a specific **slot number + garage ID**), they are redirected to a payment iframe
-    - Upon successful payment submission, the reservation status changes to **CONFIRMED** 
-    - Failed payments changes reservation to **FAILED** and release the slot immediately 
+       - When users arrive at the physical location and scan the QR code (each QR code represents a specific **slot number + garage ID**), they are redirected to a payment iframe
+       - Upon successful payment submission, the reservation status changes to **CONFIRMED** 
+       - Failed payments changes reservation to **FAILED** and release the slot immediately 
       
   - **Reservation Expiration**
-    - Using **schedulers** the reservation will automatically expire if:
-      - Payment is not completed within **30 minutes** of creation (I put an index on the created_at as we frequently scan it)
+       - Using **schedulers** the reservation will automatically expire if:
+         - Payment is not completed within **30 minutes** of creation (I put an index on the created_at as we frequently scan it)
   
 
 -  **Payment & Billing**
-  - **Fee Calculation**
-    - Parking fees are calculated based on stay duration
-  - **Payment Integration**
+    - **Fee Calculation**
+       - Parking fees are calculated based on stay duration
+ - **Payment Integration**
     - Secure **PayMob** integration for digital payments
     - Features include:
       - IdempotencyKey table and database lock to prevent duplicate charges 
