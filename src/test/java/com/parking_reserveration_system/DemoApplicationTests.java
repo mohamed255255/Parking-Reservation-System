@@ -1,4 +1,4 @@
-package com.garage_system.demo;
+package com.parking_reserveration_system;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
