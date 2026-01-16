@@ -11,5 +11,9 @@ import com.parking_reservation_system.model.Slot;
 
 @Repository
 public interface GarageRepository extends JpaRepository<Garage, Integer> {
-    List<Slot> findByGarageId(int garageId);
+    
+
+
+
+  
 } 

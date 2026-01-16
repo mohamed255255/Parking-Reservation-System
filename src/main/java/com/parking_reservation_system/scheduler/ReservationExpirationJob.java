@@ -16,7 +16,7 @@ public class ReservationExpirationJob {
     private final ReservationRepository reservationRepository ;
     
 
-    @Scheduled(fixedRate = 30, timeUnit = TimeUnit.MINUTES)
+  //  @Scheduled(fixedRate = 30, timeUnit = TimeUnit.MINUTES)
     public void expirePendingReservations() {
           /// Transactional steps
           /// indexed scan on created_at column 

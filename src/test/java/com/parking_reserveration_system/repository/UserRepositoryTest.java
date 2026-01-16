@@ -22,7 +22,7 @@ public class UserRepositoryTest {
         User user = new User(null, "mido" , "test@gmail.com" , "123");
         userRepository.save(user);
         /// when
-       boolean expected = userRepository.existsByEmail("test@gmail.com");
+        boolean expected = userRepository.existsByEmail("test@gmail.com");
         /// then 
         assertThat(expected).isTrue();
 

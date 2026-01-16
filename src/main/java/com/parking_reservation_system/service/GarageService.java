@@ -15,14 +15,17 @@ import com.parking_reservation_system.mapper.SlotMapper;
 import com.parking_reservation_system.model.Garage;
 import com.parking_reservation_system.model.Slot;
 import com.parking_reservation_system.repository.GarageRepository;
+import com.parking_reservation_system.repository.SlotRepository;
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class GarageService {
     
     private final GarageRepository garageRepository;
+    private final SlotRepository slotRepository ;
 
-    public GarageService(GarageRepository garageRepository) {
-        this.garageRepository = garageRepository;
-    }
+
 
     public GarageResponseDto createGarage(GarageDto garageDto) {
         Garage garage     = GarageMapper.toEntity(garageDto) ;
@@ -64,7 +67,7 @@ public class GarageService {
     }
 
     public List<SlotResponseDto> getSlotsForThatGarage(int garageId) {
-         return garageRepository.findByGarageId(garageId)
+         return slotRepository.findAllSlots(garageId)
         .stream()
         .map( slot -> SlotMapper.toResponseDto(slot))
         .toList(); 

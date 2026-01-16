@@ -26,10 +26,12 @@ public interface ReservationRepository  extends JpaRepository <Reservation , Int
        Reservation.Status status
     );
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE Reservation r SET r.status = 'EXPIRED' " +
-           "WHERE r.status = 'PENDING' AND r.createdAt <= CURRENT_TIMESTAMP - INTERVAL '30 minutes'")
-    int expirePendingReservations();
+       @Transactional
+       @Modifying
+       @Query(value = "UPDATE reservation r " +
+                     "SET r.status = 'EXPIRED' " +
+                     "WHERE r.status = 'PENDING' AND r.created_at <= CURRENT_TIMESTAMP - INTERVAL '30 minutes'", 
+              nativeQuery = true)
+       int expirePendingReservations();
 
 }

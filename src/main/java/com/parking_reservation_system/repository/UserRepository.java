@@ -15,13 +15,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByVerificationCode(String code);
 
-    // i could also leave it as existsByEmail(string email) both ways works
-    @Query("""
-           select case when count(u) > 0 then 
-           true else false end 
-           from User u
-           where u.email =:email         
-           """)
+    // I could also leave it as existsByEmail(string email) both ways works
     boolean existsByEmail(@Param("email") String email);
  
 }

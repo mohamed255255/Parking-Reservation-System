@@ -60,10 +60,10 @@ public class Reservation {
     @OneToMany(mappedBy = "reservation")
     private List<Payment> payments ;
 
-
     private LocalDateTime startingTime;
 
     private LocalDateTime endingTime;
+
     
     
     @Column(nullable = false)
