@@ -29,9 +29,7 @@ public interface SlotRepository extends JpaRepository<Slot, Integer> {
 
     List<Slot> getUserSlotsAndVehicles(int userId);
     
-    @Query("SELECT s from Slot s where s.slotNumber=:slotNumber") 
     Optional<Slot> findBySlotNumber(int slotNumber);
-
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from Slot s where s.id = :id")

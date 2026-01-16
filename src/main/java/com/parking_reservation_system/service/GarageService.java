@@ -33,7 +33,7 @@ public class GarageService {
     }
 
     public List<GarageResponseDto> getAllGaragesList() {
-    return garageRepository.getAllGarages().stream()
+    return garageRepository.findAll().stream()
             .map(garage -> GarageMapper.toResponseDto(garage)) 
             .toList(); 
     }
@@ -64,7 +64,7 @@ public class GarageService {
     }
 
     public List<SlotResponseDto> getSlotsForThatGarage(int garageId) {
-         return garageRepository.findAllSlots(garageId)
+         return garageRepository.findByGarageId(garageId)
         .stream()
         .map( slot -> SlotMapper.toResponseDto(slot))
         .toList(); 

@@ -44,15 +44,13 @@ public class AuthenticationService {
 
 
      public RegisterUserResponseDto RegisterUser(RegisterUserDto userDto) {
-          User user = UserMapper.toUser(userDto, passwordEncoder);    
-        
-          Optional<User> existingUser = userRepository.findByEmail(userDto.email());
-          /// to do : return custom exception later
-          if(existingUser.isPresent()){ 
+          boolean check =  userRepository.existsByEmail(userDto.email());
+          if(check){ 
               throw new  DataIntegrityViolationException("User already registered");
           }
-          String code = String.format( "%05d" , RANDOM.nextInt(100_000)) ;
 
+          String code = String.format( "%05d" , RANDOM.nextInt(100_000)) ;
+          User user = UserMapper.toUser(userDto, passwordEncoder);    
           user.setVerificationCode(code);
           user.setVerified(false);
           user.setExpirationTime(LocalDateTime.now().plusMinutes(15));

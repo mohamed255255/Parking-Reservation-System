@@ -11,11 +11,5 @@ import com.parking_reservation_system.model.Slot;
 
 @Repository
 public interface GarageRepository extends JpaRepository<Garage, Integer> {
-    
-    @Query("select g from Garage g")
-    List<Garage> getAllGarages();
-
-    @Query("SELECT s FROM Slot s WHERE s.garage.id = :garageId")
-    List<Slot> findAllSlots(int garageId);
-  
+    List<Slot> findByGarageId(int garageId);
 } 

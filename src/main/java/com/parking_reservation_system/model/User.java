@@ -30,7 +30,7 @@ import lombok.Setter;
 @EntityListeners(AuditingEntityListener.class)
 public class User {
 
-    public User(int id, String name, String email, String password) {
+    public User(Integer id, String name, String email, String password) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -39,7 +39,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private int id;
+    private Integer id;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

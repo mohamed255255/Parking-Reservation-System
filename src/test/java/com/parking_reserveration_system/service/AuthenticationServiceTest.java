@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import com.parking_reservation_system.dto.request.LoginUserDto;
 import com.parking_reservation_system.dto.request.RegisterUserDto;
+import com.parking_reservation_system.repository.UserRepository;
 import com.parking_reservation_system.service.AuthenticationService;
 
 @DataJpaTest
@@ -15,7 +16,9 @@ public class AuthenticationServiceTest {
 
     @Autowired
     AuthenticationService service;
-
+    
+    @Autowired
+    UserRepository userRepositoryTest ;
 
    /* @Test
    void RegisterUserServiceTest (){
@@ -26,19 +29,19 @@ public class AuthenticationServiceTest {
     @Test
     void loginUserTest(){
         testLoginWithWrongPassword();
-      //  testLoginWithWrongEmail();
+       //  testLoginWithWrongEmail();
        // testLoginWithWrongPassword();
     }
     @Test
      void  resetPasswordTests(){
        // testResetPasswordGeneratesToken();
-      //  testResetPasswordInvalidEmail();
+       //  testResetPasswordInvalidEmail();
        // testResetPasswordExpiredToken();
     }
     @Test
      void emailVerificationTests(){
-      //  testVerifyEmailWithValidToken();
-      //  testVerifyEmailWithExpiredToken();
+       //  testVerifyEmailWithValidToken();
+       //  testVerifyEmailWithExpiredToken();
        // testVerifyEmailAlreadyVerified();
     }
 
