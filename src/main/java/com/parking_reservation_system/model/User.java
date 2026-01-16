@@ -30,11 +30,12 @@ import lombok.Setter;
 @EntityListeners(AuditingEntityListener.class)
 public class User {
 
-    public User(Integer id, String name, String email, String password) {
+    public User(Integer id, String name, String email, String password , String phone) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.phone = phone ;
     }
 
     @Id

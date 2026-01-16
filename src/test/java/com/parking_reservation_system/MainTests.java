@@ -1,10 +1,10 @@
-package com.parking_reserveration_system;
+package com.parking_reservation_system;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DemoApplicationTests {
+class MainTests{
 
 	@Test
 	void contextLoads() {

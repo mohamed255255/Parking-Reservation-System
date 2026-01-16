@@ -1,4 +1,4 @@
-package com.parking_reserveration_system.service;
+package com.parking_reservation_system.service;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

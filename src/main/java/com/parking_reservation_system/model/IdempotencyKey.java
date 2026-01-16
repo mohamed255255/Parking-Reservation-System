@@ -15,11 +15,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.PrePersist;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity(name = "idempotency_keys")
 @Getter
 @Setter
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class IdempotencyKey{
     @Id
@@ -28,7 +30,7 @@ public class IdempotencyKey{
     @Column(nullable = false)
     private String status ;
 
-    @Column(nullable = false, columnDefinition = "jsonb")
+    @Column(nullable = false, columnDefinition = "text")
     private String payload;
 
     private String response_body ; 

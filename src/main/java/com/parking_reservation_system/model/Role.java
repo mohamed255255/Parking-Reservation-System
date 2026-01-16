@@ -13,12 +13,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 @Entity
 @Table(name = "roles")
 @Setter
 @Getter
 @EntityListeners(AuditingEntityListener.class)
+
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

@@ -17,11 +17,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 @Setter
 @Getter
 @Entity
 @Table(name = "password_reset_tokens")
+@NoArgsConstructor
+
 @EntityListeners(AuditingEntityListener.class)
 public class PasswordResetToken {
     
