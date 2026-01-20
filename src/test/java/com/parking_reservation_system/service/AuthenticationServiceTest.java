@@ -24,6 +24,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.parking_reservation_system.dto.request.EmailVerificationDto;
+import com.parking_reservation_system.dto.request.LoginUserDto;
 import com.parking_reservation_system.dto.request.RegisterUserDto;
 import com.parking_reservation_system.dto.request.ResetPasswordDto;
 import com.parking_reservation_system.dto.response.EmailVerificationResponseDto;
@@ -104,6 +105,7 @@ class AuthenticationServiceTest {
             verify(emailService).sendVerificationEmail(eq(dto.email()), anyString());
     }
 
+    
     @Test
     void registerUser_emailAlreadyExists_throwsException() {
         // Given
@@ -213,7 +215,7 @@ void verifyUser_successful() {
         
         verify(userRepository).findByEmail(email);
     }
-/* 
+
     @Test
     void createResetToken_successful() {
         // Given
@@ -238,35 +240,14 @@ void verifyUser_successful() {
         verify(passwordResetRepository).save(any(PasswordResetToken.class));
     }
 
-    @Test
-    void createResetToken_deletesExistingToken() {
-        // Given
-        User user = new User();
-        user.setId(1);
-        
-        PasswordResetToken existingToken = new PasswordResetToken();
-        existingToken.setId(100);
-
-        when(passwordResetRepository.findByUserId(user.getId()))
-            .thenReturn(Optional.of(existingToken));
-        when(passwordResetRepository.save(any(PasswordResetToken.class)))
-            .thenAnswer(invocation -> invocation.getArgument(0));
-
-        // When
-        PasswordResetToken token = authService.createResetToken(user);
-
-        // Then
-        assertThat(token).isNotNull();
-        verify(passwordResetRepository).delete(existingToken);
-        verify(passwordResetRepository).save(any(PasswordResetToken.class));
-    }
 
     @Test
     void loginUser_successful() {
-        // Given
+        // Arrange
         String email = "test@gmail.com";
         String password = "123";
         
+        LoginUserDto dto = new LoginUserDto(null, email, password) ;
         User user = new User();
         user.setId(1);
         user.setEmail(email);
@@ -276,17 +257,17 @@ void verifyUser_successful() {
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(authManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
             .thenReturn(null);
-        when(jwtService.generateToken(user)).thenReturn("jwt-token");
+        when(jwtService.generateToken(user.getEmail())).thenReturn("jwt-token");
 
-        // When
-        String token = authService.loginUser(email, password);
+        // Act
+        String token = authService.loginUser(dto);
 
-        // Then
+        // Assert
         assertThat(token).isEqualTo("jwt-token");
         
         verify(userRepository).findByEmail(email);
         verify(authManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(jwtService).generateToken(user);
+        verify(jwtService).generateToken(user.getEmail());
     }
 
     @Test
@@ -294,7 +275,8 @@ void verifyUser_successful() {
         // Given
         String email = "test@gmail.com";
         String password = "123";
-        
+        LoginUserDto dto = new LoginUserDto(null, email, password) ;
+
         User user = new User();
         user.setEmail(email);
         user.setVerified(false);
@@ -302,7 +284,7 @@ void verifyUser_successful() {
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
         // When & Then
-        assertThrows(RuntimeException.class, () -> authService.loginUser(email, password));
+        assertThrows(RuntimeException.class, () -> authService.loginUser(dto));
         
         verify(userRepository).findByEmail(email);
         verify(authManager, never()).authenticate(any());
@@ -313,7 +295,7 @@ void verifyUser_successful() {
         // Given
         String email = "test@gmail.com";
         String password = "wrongpassword";
-        
+        LoginUserDto loginUserDto = new LoginUserDto(null, email, password) ;
         User user = new User();
         user.setEmail(email);
         user.setVerified(true);
@@ -323,7 +305,7 @@ void verifyUser_successful() {
             .thenThrow(new BadCredentialsException("Invalid credentials"));
 
         // When & Then
-        assertThrows(BadCredentialsException.class, () -> authService.loginUser(email, password));
+        assertThrows(BadCredentialsException.class, () -> authService.loginUser(loginUserDto));
         
         verify(authManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(jwtService, never()).generateToken(any());
@@ -335,6 +317,7 @@ void verifyUser_successful() {
         String email = "test@gmail.com";
         String token = "reset-token";
         String newPassword = "newPassword123";
+        ResetPasswordDto ResetPasswordDto = new ResetPasswordDto(email, newPassword, newPassword) ;
         
         User user = new User();
         user.setId(1);
@@ -366,7 +349,8 @@ void verifyUser_successful() {
         String email = "test@gmail.com";
         String token = "expired-token";
         String newPassword = "newPassword123";
-        
+        ResetPasswordDto ResetPasswordDto = new ResetPasswordDto(email, newPassword, newPassword) ;
+
         User user = new User();
         user.setId(1);
         user.setEmail(email);
@@ -381,7 +365,7 @@ void verifyUser_successful() {
 
         // When & Then
         assertThrows(RuntimeException.class, () -> 
-            authService.resetPassword(email, token, newPassword));
+            authService.resetPassword(ResetPasswordDto, token));
         
         verify(userRepository, never()).save(any(User.class));
         verify(passwordResetRepository, never()).delete(any());
@@ -393,7 +377,8 @@ void verifyUser_successful() {
         String email = "test@gmail.com";
         String token = "invalid-token";
         String newPassword = "newPassword123";
-        
+        ResetPasswordDto ResetPasswordDto = new ResetPasswordDto(email, newPassword, newPassword) ;
+
         User user = new User();
         user.setEmail(email);
 
@@ -402,7 +387,7 @@ void verifyUser_successful() {
 
         // When & Then
         assertThrows(RuntimeException.class, () -> 
-            authService.resetPassword(email, token, newPassword));
+            authService.resetPassword(ResetPasswordDto , token));
         
         verify(userRepository, never()).save(any(User.class));
     }
@@ -411,6 +396,7 @@ void verifyUser_successful() {
     void sendVerificationEmail_doesNotSendRealEmail() {
         // Given
         RegisterUserDto dto = new RegisterUserDto(
+            null ,
             "Mido",
             "test@gmail.com",
             "123",
@@ -440,5 +426,5 @@ void verifyUser_successful() {
     }
 
 
-    */
+    
 }
