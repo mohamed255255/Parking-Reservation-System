@@ -329,7 +329,7 @@ void verifyUser_successful() {
         resetToken.setExpiryDate(LocalDateTime.now().plusHours(1));
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
-        when(passwordResetRepository.findByToken(token)).thenReturn(Optional.of(resetToken));
+        when(passwordResetRepository.findByUserId(1)).thenReturn(Optional.of(resetToken));
         when(passwordEncoder.encode(newPassword)).thenReturn("encodedNewPassword");
 
         // When
@@ -337,7 +337,7 @@ void verifyUser_successful() {
 
         // Then
         verify(userRepository).findByEmail(email);
-        verify(passwordResetRepository).findByToken(token);
+        verify(passwordResetRepository).findByUserId(1);
         verify(passwordEncoder).encode(newPassword);
         verify(userRepository).save(argThat(u -> u.getPassword().equals("encodedNewPassword")));
         verify(passwordResetRepository).delete(resetToken);
