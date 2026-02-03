@@ -1,6 +1,7 @@
 package com.parking_reservation_system.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,11 +47,11 @@ public class Garage {
 
     @Column(nullable = false)
     @CreationTimestamp
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
    
     @Column(nullable = false)
     @UpdateTimestamp
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
     /// we code to interface not to concrete classes to achieve polymorphism
     @OneToMany(mappedBy = "garage")

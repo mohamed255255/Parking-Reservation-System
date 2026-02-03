@@ -1,9 +1,5 @@
 package com.parking_reservation_system.model;
 
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
@@ -29,7 +25,7 @@ public class Slot {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
-
+    // represents physical signs on the ground
     @Column(name = "slot_number")
     private int slotNumber ;
 
@@ -53,7 +49,9 @@ public class Slot {
     @OneToOne(mappedBy = "slot")
     private Reservation reservation ;
 
-    public Slot(double slotWidth, double slotDepth) {
+    public Slot(int id , int slotNumber , double slotWidth, double slotDepth) {
+        this.id = id;
+        this.slotNumber = slotNumber;
         this.slotWidth = slotWidth;
         this.slotDepth = slotDepth;
     }

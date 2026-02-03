@@ -79,8 +79,7 @@ public class SlotService {
              if(vehicle.getVehicleDepth() <= slot.getSlotDepth() && vehicle.getVehicleWidth()<=slot.getSlotWidth()){
                    
                 Vehicle myVehicle = vehicleRepository.findById(vehicle.getId())
-                      .orElseThrow(() -> new ResourceNotFoundException("Vehicle is not found"));
-                   
+                     .orElseThrow(() -> new ResourceNotFoundException("Vehicle is not found"));              
                      slot.setVehicle(myVehicle);
                      slotRepository.save(slot); 
                      return ; 
