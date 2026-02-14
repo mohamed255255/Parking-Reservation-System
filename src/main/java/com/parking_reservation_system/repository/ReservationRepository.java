@@ -1,5 +1,6 @@
 package com.parking_reservation_system.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,12 +27,26 @@ public interface ReservationRepository  extends JpaRepository <Reservation , Int
        Reservation.Status status
     );
 
-       @Transactional
-       @Modifying
-       @Query(value = "UPDATE reservation r " +
-                     "SET r.status = 'EXPIRED' " +
-                     "WHERE r.status = 'PENDING' AND r.created_at <= CURRENT_TIMESTAMP - INTERVAL '30 minutes'", 
-              nativeQuery = true)
-       int expirePendingReservations();
+    @Transactional
+    @Modifying
+    @Query(
+        value = "UPDATE Reservation " +
+                "SET status = 'EXPIRED' " +
+                "WHERE status = 'PENDING' " +
+                "AND created_at <= CURRENT_TIMESTAMP - INTERVAL '30 minutes'",
+            nativeQuery = true
+        )
+        int expirePendingReservations();
 
+
+
+   /// we can index ending_time here in the table
+   @Query("""
+       SELECT r
+       FROM Reservation r
+       JOIN r.slot s
+       WHERE r.endingTime <= CURRENT_TIMESTAMP
+       AND r.endingTime >= CURRENT_DATE
+    """)
+    List<Reservation> findEndedReservationsToday();
 }

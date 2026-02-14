@@ -6,7 +6,6 @@ import com.parking_reservation_system.model.Slot;
 
 public class SlotMapper {
 
-    // Request DTO -> Entity
     public static Slot toEntity(SlotDto dto) {
         if (dto == null) return null;
 

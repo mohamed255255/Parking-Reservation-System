@@ -32,7 +32,7 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+         http
         .csrf(csrf -> csrf.disable())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
@@ -46,20 +46,11 @@ public class SecurityConfiguration {
             "/api/webhook/**"  ,
             "/test/pay"
 
-        ).permitAll().anyRequest().authenticated()
-        )
+        ).permitAll().anyRequest().authenticated() )
         .addFilterBefore(JwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
         
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(customUserDetailsService); 
-        provider.setPasswordEncoder(passwordEncoder());       
-        return provider;
-    }
- 
     @Bean
     public  AuthenticationManager AuthenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

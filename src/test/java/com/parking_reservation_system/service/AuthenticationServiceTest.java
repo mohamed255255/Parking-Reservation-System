@@ -35,7 +35,6 @@ import com.parking_reservation_system.model.PasswordResetToken;
 import com.parking_reservation_system.repository.PasswordResetRepository;
 import com.parking_reservation_system.repository.UserRepository;
 
-
 class AuthenticationServiceTest {
 
     @InjectMocks

@@ -89,6 +89,25 @@ public class PaymentService {
         return response.getString("token");
     }
 
+    public Optional<IdempotencyKey> getIdempotencyKey(UUID key) {
+        return idempotencyKeyRepository.findById(key).map(
+            record -> {
+               if ("COMPLETED".equals(record.getStatus())) return record;
+            
+                boolean isZombie = record.getCreatedAt().isBefore(LocalDateTime.now().minusSeconds(60));
+                if (!isZombie && "PROCESSING".equals(record.getStatus())) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Payment already processing");
+                }
+            
+                // Reset zombie
+                record.setCreatedAt(LocalDateTime.now());
+                record.setStatus("PROCESSING");
+                return idempotencyKeyRepository.save(record);
+
+        });
+    }
+
+
     @Transactional
     protected String createPaymentOrder(String token,BigDecimal price,int reservationId,UUID key){
 
@@ -101,17 +120,17 @@ public class PaymentService {
                 return record.getResponse_body();
             }
     }
-        IdempotencyKey record = recordOpt.orElseGet(() -> {
-         //// transaction is still active's lock still active too
-            IdempotencyKey newRecord = new IdempotencyKey();
-            newRecord.setIdempotency_key(key);
-            newRecord.setStatus("PROCESSING");
-            newRecord.setPayload("{}");
-            newRecord.setCreatedAt(LocalDateTime.now());
-            
-            return idempotencyKeyRepository.save(newRecord); 
-            /// end of transaction
-      });
+    IdempotencyKey record = recordOpt.orElseGet(() -> {
+        //// transaction is still active's lock still active too
+        IdempotencyKey newRecord = new IdempotencyKey();
+        newRecord.setIdempotency_key(key);
+        newRecord.setStatus("PROCESSING");
+        newRecord.setPayload("{}");
+        newRecord.setCreatedAt(LocalDateTime.now());
+        
+        return idempotencyKeyRepository.save(newRecord); 
+        /// end of transaction
+    });
 
     try {
         int amountCents =
@@ -207,24 +226,7 @@ public class PaymentService {
             }
     }
     
-    public Optional<IdempotencyKey> getIdempotencyKey(UUID key) {
-        return idempotencyKeyRepository.findById(key).map(
-            record -> {
-               if ("COMPLETED".equals(record.getStatus())) return record;
-            
-            boolean isZombie = record.getCreatedAt().isBefore(LocalDateTime.now().minusSeconds(60));
-            if (!isZombie && "PROCESSING".equals(record.getStatus())) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Payment already processing");
-            }
-            
-            // Reset zombie
-            record.setCreatedAt(LocalDateTime.now());
-            record.setStatus("PROCESSING");
-            return idempotencyKeyRepository.save(record);
-
-        });
-    }
-
+ 
     public JSONObject getNeededDataFromPayload(JSONObject response){
         JSONObject payload = new JSONObject();
         payload.put("payment_id", response.optInt("id"));
