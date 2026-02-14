@@ -229,21 +229,39 @@ public void processPaymentCallback(Map<String, Object> payload) {
     idempotencyKeyRepository.save(key);
 }
 
-       
- 
-public JSONObject getNeededDataFromPayload(Map<String, Object> responseMap , int reservation_id , UUID IdempotencyKey) {
+public JSONObject getNeededDataFromPayload(Map<String, Object> responseMap ,  int reservation_id , UUID IdempotencyKey) {
     JSONObject payload = new JSONObject();
-    
     Map<String, Object> obj = (Map<String, Object>) responseMap.get("obj");
-    
+    Map<String, Object> order = (Map<String, Object>) obj.get("order");
+    Map<String, Object> sourceData = (Map<String, Object>) obj.get("source_data");
+    Map<String, Object> data = (Map<String, Object>) obj.get("data");
+    List<Map<String, Object>> items = (List<Map<String, Object>>) order.get("items");
+    // Extract payment info
     payload.put("payment_id", obj.get("id"));
     payload.put("amount_cents", obj.get("amount_cents"));
+    payload.put("amount", ((Integer) obj.get("amount_cents")) / 100.0);  
     payload.put("currency", obj.get("currency"));
     payload.put("success", obj.get("success"));
     payload.put("is_auth", obj.get("is_auth"));
     payload.put("is_capture", obj.get("is_capture"));
     payload.put("is_refunded", obj.get("is_refunded"));
     payload.put("is_voided", obj.get("is_voided"));
+    payload.put("is_3d_secure", obj.get("is_3d_secure"));
+    payload.put("created_at", obj.get("created_at")); 
+    // order info
+    payload.put("order_id", order.get("id"));
+    payload.put("payment_status", order.get("payment_status")); 
+    //card info 
+    JSONObject cardInfo = new JSONObject();
+    cardInfo.put("last_4_digits", sourceData.get("pan"));
+    cardInfo.put("type", sourceData.get("sub_type"));
+    payload.put("card_info", cardInfo);
+    // transaction details 
+    payload.put("transaction_id", data.get("merchant_txn_ref"));
+    payload.put("receipt_no", data.get("receipt_no"));
+    payload.put("authorization_code", data.get("authorize_id"));
+    payload.put("card_type", data.get("card_type"));
+    payload.put("message", data.get("message")); 
     payload.put("reservation id" , reservation_id);
     payload.put("idempotency key" , IdempotencyKey) ;
     return payload;
