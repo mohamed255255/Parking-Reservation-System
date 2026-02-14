@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.parking_reservation_system.model.IdempotencyKey;
 import com.parking_reservation_system.model.Payment;
 import com.parking_reservation_system.model.Reservation;
+import com.parking_reservation_system.model.Slot;
 import com.parking_reservation_system.model.Payment.Method;
 import com.parking_reservation_system.model.Payment.Status;
 import com.parking_reservation_system.repository.IdempotencyKeyRepository;
@@ -195,7 +196,10 @@ public void processPaymentCallback(Map<String, Object> payload) {
     } else {
         payment.setStatus(Status.FAILED);
         reservation.setStatus(Reservation.Status.FAILED); // Only complete if successful
-
+        /// release the slot in failed payments
+        Slot slot = reservation.getSlot();
+        slot.setVehicle(null);
+        /// we dont need save as change will be persisted once the transaction is commited
     }
 
     // 3. Persist and Notify
