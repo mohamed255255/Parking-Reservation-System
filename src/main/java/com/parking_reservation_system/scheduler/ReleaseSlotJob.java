@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import com.parking_reservation_system.repository.ReservationRepository;
 import com.parking_reservation_system.repository.SlotRepository;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 class ReleaseSlotJob {

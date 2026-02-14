@@ -23,7 +23,7 @@ import com.parking_reservation_system.model.User;
 import com.parking_reservation_system.repository.PasswordResetRepository;
 import com.parking_reservation_system.repository.UserRepository;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 

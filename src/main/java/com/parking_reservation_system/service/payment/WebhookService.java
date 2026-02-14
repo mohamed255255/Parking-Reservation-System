@@ -29,7 +29,7 @@ import com.parking_reservation_system.repository.ReservationRepository;
 import com.parking_reservation_system.service.EmailService;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor ;
+import lombok.RequiredArgsConstructor;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;

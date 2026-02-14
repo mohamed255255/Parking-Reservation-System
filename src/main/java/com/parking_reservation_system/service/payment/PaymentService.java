@@ -79,8 +79,13 @@ public class PaymentService {
     public String initiateCardPayment(int reservationId , UUID idempotencyKey ) {
       
         // Security/Logic Check: Ensure reservation exists before doing anything
-        reservationRepository.findById(reservationId).orElseThrow(() -> new RuntimeException("CRITICAL: Reservation " + reservationId + " is not found"));
-         Optional<IdempotencyKey> recordOpt = getIdempotencyKey(idempotencyKey);
+        var reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new RuntimeException("CRITICAL: Reservation " + reservationId + " is not found"));
+        // if the sent reservation EXPIRED or COMPLETED or FAILED cant proceed to pay
+        if (reservation.getStatus() != Reservation.Status.PENDING) {
+            throw new RuntimeException("CRITICAL: Reservation " + reservationId + " is not pending");
+        }
+
+        Optional<IdempotencyKey> recordOpt = getIdempotencyKey(idempotencyKey);
          if (recordOpt.isPresent()) {
             IdempotencyKey record = recordOpt.get(); 
             if ("COMPLETED".equals(record.getStatus())) 

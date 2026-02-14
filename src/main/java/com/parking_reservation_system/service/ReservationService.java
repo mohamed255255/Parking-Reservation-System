@@ -29,7 +29,7 @@ import com.parking_reservation_system.repository.VehicleRepository;
 import com.parking_reservation_system.security.CustomUserDetails;
 import com.parking_reservation_system.specification.ReservationSpecs;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import com.parking_reservation_system.model.IdempotencyKey;
 
 import jakarta.persistence.LockModeType;
-import jakarta.persistence.Persistence;
 import jakarta.transaction.Transactional;
 
 public interface IdempotencyKeyRepository extends JpaRepository<IdempotencyKey , UUID> {
