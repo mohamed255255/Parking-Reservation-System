@@ -37,7 +37,9 @@ Admin have full control over garage and slot creation , user details, reservatio
      - Users can view all their reservations in one place 
      - When user finishes parking the slot will be released
      - Using **schedulers** the reservation will automatically expire if:
-      - Payment is not completed within **30 minutes** of creation (I put an index on the created_at as we frequently scan it)  
+      - Payment is not completed within **30 minutes** of creation (I put an index on the created_at as we frequently scan it)
+      - I also created ReleaseSlotJob to check the ending time for every active reservation today , every 3 min if user did not extend his duration
+       then release the target slots automatically
        
  - **Payment & Billing**
     - Integrated PayMob payment gateway with secure HMAC verification
