@@ -76,8 +76,9 @@ public class ReservationService {
             Vehicle choosenVehicle =  vehicleRepository.findById(vehicleId)
             .orElseThrow(() -> new ResourceNotFoundException("this vehicle is not found at the vechicles table")) ;
 
+            logger.error(choosenVehicle.getUser().getId()+ "\n" + userDetails.getUser().getId() );
             /// check vehicle ownership
-            if(choosenVehicle.getUser() != userDetails.getUser())
+            if(choosenVehicle.getUser().getId() != userDetails.getUser().getId())
                  throw new ResourceNotFoundException("the user does not possess this vehicle") ;
           
             /// if there is a problem here the whole reservation service will rollback

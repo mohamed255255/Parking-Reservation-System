@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,10 +29,12 @@ import com.parking_reservation_system.model.IdempotencyKey;
 import com.parking_reservation_system.model.Reservation;
 import com.parking_reservation_system.model.User;
 import com.parking_reservation_system.repository.IdempotencyKeyRepository;
+import com.parking_reservation_system.repository.ReservationRepository;
 import com.parking_reservation_system.security.CustomUserDetails;
 
 import jakarta.persistence.LockModeType;
 
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -57,24 +60,46 @@ public class PaymentService {
 
 
     private final IdempotencyKeyRepository idempotencyKeyRepository;
-    
-    public PaymentService(IdempotencyKeyRepository idempotencyKeyRepository){
+    private final ReservationRepository reservationRepository ;
+
+    public PaymentService(ReservationRepository reservationRepository , IdempotencyKeyRepository idempotencyKeyRepository){
        this.idempotencyKeyRepository = idempotencyKeyRepository ;
+       this.reservationRepository = reservationRepository ;
     }
 
-
+    /*
+    after I added @transactional at the initiatecardPayment (parent)
+    I prevented the error 
+    [ERROR: cannot execute SELECT FOR NO KEY UPDATE in a read-only transaction]
+    since the children have Transactional but the parent dont
+    # Some databases (like Postgres) still allow SELECT, 
+    but any write or lock that requires a transaction fails.
+    */
+    @Transactional
     public String initiateCardPayment(int reservationId , UUID idempotencyKey ) {
-       
-        var principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (principal instanceof String) { 
-            return "Please log in to initiate payment.";
-        }
-
+      
+        // Security/Logic Check: Ensure reservation exists before doing anything
+        reservationRepository.findById(reservationId).orElseThrow(() -> new RuntimeException("CRITICAL: Reservation " + reservationId + " is not found"));
+         Optional<IdempotencyKey> recordOpt = getIdempotencyKey(idempotencyKey);
+         if (recordOpt.isPresent()) {
+            IdempotencyKey record = recordOpt.get(); 
+            if ("COMPLETED".equals(record.getStatus())) 
+              return record.getResponse_body();
+            
+        }else{
+          //// transaction is still active's lock still active too
+           IdempotencyKey newRecord = new IdempotencyKey();
+           newRecord.setIdempotency_key(idempotencyKey);
+           newRecord.setStatus("PROCESSING");
+           newRecord.setPayload("{}");
+           newRecord.setCreatedAt(LocalDateTime.now());
+           idempotencyKeyRepository.save(newRecord); 
+        };
+        
         BigDecimal price = BigDecimal.valueOf(100);
-
         String token      = authenticate();
         String orderId    = createPaymentOrder(token, price , reservationId ,  idempotencyKey);
+        System.out.println("============================ order id  : " + orderId +"=======================================");
         String paymentKey = generatePaymentKey(token, orderId, price);
         return "https://accept.paymob.com/api/acceptance/iframes/"
                 + iframeId + "?payment_token=" + paymentKey;
@@ -109,29 +134,7 @@ public class PaymentService {
 
 
     @Transactional
-    protected String createPaymentOrder(String token,BigDecimal price,int reservationId,UUID key){
-
-    Optional<IdempotencyKey> recordOpt = getIdempotencyKey(key);
-        
-    if (recordOpt.isPresent()) {
-            IdempotencyKey record = recordOpt.get();
-            
-            if ("COMPLETED".equals(record.getStatus())) {
-                return record.getResponse_body();
-            }
-    }
-    IdempotencyKey record = recordOpt.orElseGet(() -> {
-        //// transaction is still active's lock still active too
-        IdempotencyKey newRecord = new IdempotencyKey();
-        newRecord.setIdempotency_key(key);
-        newRecord.setStatus("PROCESSING");
-        newRecord.setPayload("{}");
-        newRecord.setCreatedAt(LocalDateTime.now());
-        
-        return idempotencyKeyRepository.save(newRecord); 
-        /// end of transaction
-    });
-
+    protected String createPaymentOrder(String token,BigDecimal price,int reservationId, UUID key){
     try {
         int amountCents =
                 price.multiply(BigDecimal.valueOf(100)).intValueExact();
@@ -146,24 +149,15 @@ public class PaymentService {
         JSONObject oneItem = new JSONObject();
         oneItem.put("name", "Parking Slot");
         oneItem.put("amount_cents", amountCents);
-        oneItem.put("description", "reservationId_"+reservationId);
+        oneItem.put("description", "reservationId_"+reservationId+","+"Idempotencykey_"+key);
         items.put(oneItem);
        
         body.put("items", items);
 
         JSONObject apiResponse = postJson(orderUrl, body);
     
-        JSONObject payload = getNeededDataFromPayload(apiResponse);
-
         String orderId =  String.valueOf(apiResponse.getInt("id"));
-
-        // Update idempotency record this line hit the DB second time after insertion for update 
-        // i want to send one single query
-        record.setPayload(payload.toString());
-        record.setResponse_body(orderId);
-        record.setResponse_code(200);
-        record.setStatus("COMPLETED");
-        idempotencyKeyRepository.save(record);
+  
         return orderId ;
 
     } catch (Exception e) {
@@ -173,7 +167,7 @@ public class PaymentService {
 
 
     private String generatePaymentKey(String token, String orderId, BigDecimal price) {
-       
+        
         User currentAuthUser = ((CustomUserDetails) SecurityContextHolder.getContext()
                         .getAuthentication().getPrincipal()).getUser();
 
@@ -227,18 +221,5 @@ public class PaymentService {
     }
     
  
-    public JSONObject getNeededDataFromPayload(JSONObject response){
-        JSONObject payload = new JSONObject();
-        payload.put("payment_id", response.optInt("id"));
-        payload.put("amount_cents", response.optInt("amount_cents"));
-        payload.put("currency", response.optString("currency"));
-        payload.put("success", response.optBoolean("success"));
-        payload.put("is_auth", response.optBoolean("is_auth"));
-        payload.put("is_capture", response.optBoolean("is_capture"));
-        payload.put("is_refunded", response.optBoolean("is_refunded"));
-        payload.put("is_voided", response.optBoolean("is_voided"));
-        payload.put("items", response.getJSONArray("items"));
-        return payload ;
-    }
 
 }

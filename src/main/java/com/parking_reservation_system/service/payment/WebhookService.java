@@ -4,9 +4,11 @@ package com.parking_reservation_system.service.payment;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -16,16 +18,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.parking_reservation_system.model.IdempotencyKey;
 import com.parking_reservation_system.model.Payment;
 import com.parking_reservation_system.model.Reservation;
 import com.parking_reservation_system.model.Payment.Method;
 import com.parking_reservation_system.model.Payment.Status;
+import com.parking_reservation_system.repository.IdempotencyKeyRepository;
 import com.parking_reservation_system.repository.PaymentRepository;
 import com.parking_reservation_system.repository.ReservationRepository;
 import com.parking_reservation_system.service.EmailService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor ;
+
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +46,7 @@ public class WebhookService{
     private final PaymentRepository paymentRepository;
     private final ReservationRepository reservationRepository ;
     private final EmailService emailService ;
-
+    private final IdempotencyKeyRepository idempotencyKeyRepository ;
  
 
     // Additional helper methods like HMAC verification can be added here
@@ -80,8 +86,7 @@ public class WebhookService{
 
         return concatenated.toString();
     }
-
-
+ 
     private String calculateHmac(String data, String secretKey) {
         try {
             Mac sha512Hmac = Mac.getInstance("HmacSHA512");
@@ -151,17 +156,30 @@ public void processPaymentCallback(Map<String, Object> payload) {
     
     // 1. Extract Reservation & Transaction Info
     Map<String, Object> item = items.get(0);
-    String desc = item.get("description").toString();
-    int reservationId = Integer.parseInt(desc.substring(desc.lastIndexOf('_') + 1));
-    
-    // Security/Logic Check: Ensure reservation exists before doing anything
-    Reservation reservation = reservationRepository.findById(reservationId)
-            .orElseThrow(() -> new RuntimeException("CRITICAL: Reservation " + reservationId + " not found"));
+    String description = item.get("description").toString();
+    // appended data from payment 
+    Map<String, String> extractedData = new HashMap<>();
 
+    // Split by comma first
+    String[] parts = description.split(",");
+
+   for (String part : parts) {
+       String[] keyValue = part.split("_", 2); // split into 2 parts only
+      if (keyValue.length == 2) {
+         String key = keyValue[0].trim();   // reservation
+         String value = keyValue[1].trim(); // X
+         extractedData.put(key, value);
+      }
+    }
+    int reservationId = Integer.parseInt(extractedData.get("reservationId"));
+    UUID idempotencyKey = UUID.fromString(extractedData.get("Idempotencykey"));
+   
+    Reservation reservation = reservationRepository.findById(reservationId).get();
+           
     // 2. Build Payment Entity
     Payment payment = new Payment();
     payment.setReservation(reservation);
-    payment.setTransaction_id(obj.get("id").toString());
+    payment.setProvider_transaction_id(obj.get("id").toString());
     payment.setAmount(Integer.parseInt(obj.get("amount_cents").toString()));
 
     // Map Method (Simplified check)
@@ -201,10 +219,35 @@ public void processPaymentCallback(Map<String, Object> payload) {
 
     // 4. Send payment details as notification 
     emailService.sendMail(to, subject, mailBody);
+
+    /// upate idempotency key
+    var key = idempotencyKeyRepository.findById(idempotencyKey).get();
+    key.setPayload(payload.toString());
+    key.setResponse_body(getNeededDataFromPayload(payload , reservationId , idempotencyKey).toString());
+    key.setResponse_code(200);
+    key.setStatus("COMPLETED");
+    idempotencyKeyRepository.save(key);
 }
 
        
  
+public JSONObject getNeededDataFromPayload(Map<String, Object> responseMap , int reservation_id , UUID IdempotencyKey) {
+    JSONObject payload = new JSONObject();
+    
+    Map<String, Object> obj = (Map<String, Object>) responseMap.get("obj");
+    
+    payload.put("payment_id", obj.get("id"));
+    payload.put("amount_cents", obj.get("amount_cents"));
+    payload.put("currency", obj.get("currency"));
+    payload.put("success", obj.get("success"));
+    payload.put("is_auth", obj.get("is_auth"));
+    payload.put("is_capture", obj.get("is_capture"));
+    payload.put("is_refunded", obj.get("is_refunded"));
+    payload.put("is_voided", obj.get("is_voided"));
+    payload.put("reservation id" , reservation_id);
+    payload.put("idempotency key" , IdempotencyKey) ;
+    return payload;
+}
 
 
 }

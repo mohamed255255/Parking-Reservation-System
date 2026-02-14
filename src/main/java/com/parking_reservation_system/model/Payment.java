@@ -34,7 +34,7 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID paymentId;
 
-    private String transaction_id ;
+    private String provider_transaction_id ;
     
     @NotNull
     private double amount ;
