@@ -80,11 +80,6 @@ public class PaymentService {
       
         // Security/Logic Check: Ensure reservation exists before doing anything
         var reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new RuntimeException("CRITICAL: Reservation " + reservationId + " is not found"));
-        // if the sent reservation EXPIRED or COMPLETED or FAILED cant proceed to pay
-        if (reservation.getStatus() != Reservation.Status.PENDING) {
-            throw new RuntimeException("CRITICAL: Reservation " + reservationId + " is not pending");
-        }
-
         Optional<IdempotencyKey> recordOpt = getIdempotencyKey(idempotencyKey);
          if (recordOpt.isPresent()) {
             IdempotencyKey record = recordOpt.get(); 
@@ -101,6 +96,11 @@ public class PaymentService {
            idempotencyKeyRepository.save(newRecord); 
         };
         
+        // if the sent reservation EXPIRED or COMPLETED or FAILED cant proceed to pay
+        if (reservation.getStatus() != Reservation.Status.PENDING) {
+            throw new RuntimeException("CRITICAL: Reservation " + reservationId + " is not pending");
+        }
+
         BigDecimal price = BigDecimal.valueOf(100);
         String token      = authenticate();
         String orderId    = createPaymentOrder(token, price , reservationId ,  idempotencyKey);
