@@ -1,11 +1,5 @@
 package com.parking_reservation_system.model;
 
-import java.time.LocalDate;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -17,10 +11,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Setter
@@ -34,7 +32,7 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
 
-    @Column(unique = true , nullable = false)
+    @Column(unique = true, nullable = false)
     private String plateNumber;
 
     @Column(nullable = false)
@@ -57,15 +55,14 @@ public class Vehicle {
     private Slot slot;
 
     @ManyToOne
-    @JoinColumn(name = "user_id" , nullable = false) 
-    private User user ;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(nullable = false)
     @CreationTimestamp
     private LocalDate createdAt;
-   
+
     @Column(nullable = false)
     @UpdateTimestamp
     private LocalDate updatedAt;
-  
 }

@@ -1,13 +1,5 @@
 package com.parking_reservation_system.model;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -19,9 +11,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity(name = "Users")
 @Setter
@@ -30,12 +28,12 @@ import lombok.Setter;
 @EntityListeners(AuditingEntityListener.class)
 public class User {
 
-    public User(Integer id, String name, String email, String password , String phone) {
+    public User(Integer id, String name, String email, String password, String phone) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.phone = phone ;
+        this.phone = phone;
     }
 
     @Id
@@ -44,53 +42,51 @@ public class User {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-        name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles;
 
     public List<Role> getRoles() {
         return roles;
     }
+
     public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
 
     @Column(nullable = false)
     private String name;
-    
-    @Column(unique = true , nullable = false)
+
+    @Column(unique = true, nullable = false)
     private String email;
-   
+
     @Column(nullable = false)
     private String password;
-  
+
     @Column(nullable = false)
-    private String phone ;
-   
+    private String phone;
+
     @Column(name = "verification_code")
-    private String verificationCode ;
+    private String verificationCode;
 
     @Column(name = "code_expiration_time")
     private LocalDateTime expirationTime;
-   
-    @Column(name = "is_verified" , columnDefinition ="boolean default false")
-    private boolean isVerified ;
- 
+
+    @Column(name = "is_verified", columnDefinition = "boolean default false")
+    private boolean isVerified;
+
     @Column(nullable = false)
     @CreationTimestamp
     private LocalDate createdAt;
-   
+
     @Column(nullable = false)
     @UpdateTimestamp
     private LocalDate updatedAt;
 
     @OneToMany(mappedBy = "user")
-    private List<Reservation> reservationList ;
+    private List<Reservation> reservationList;
 
     @OneToMany(mappedBy = "user")
-    private List<Vehicle> vehicles ;
-
-  
+    private List<Vehicle> vehicles;
 }

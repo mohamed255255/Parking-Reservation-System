@@ -1,8 +1,8 @@
 package com.parking_reservation_system.specification;
 
-import org.springframework.data.jpa.domain.Specification;
 import com.parking_reservation_system.model.Reservation;
 import java.time.LocalDateTime;
+import org.springframework.data.jpa.domain.Specification;
 
 public class ReservationSpecs {
 
@@ -31,8 +31,7 @@ public class ReservationSpecs {
             if (start == null && end == null) return null;
             if (start != null && end != null)
                 return builder.between(root.get("startingTime"), start, end);
-            if (start != null)
-                return builder.greaterThanOrEqualTo(root.get("startingTime"), start);
+            if (start != null) return builder.greaterThanOrEqualTo(root.get("startingTime"), start);
             return builder.lessThanOrEqualTo(root.get("endingTime"), end);
         };
     }

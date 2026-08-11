@@ -2,13 +2,11 @@ package com.parking_reservation_system.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
 import java.util.regex.Pattern;
 
 class PhoneValidator implements ConstraintValidator<PhoneValidation, String> {
 
-    private static final Pattern PHONE_PATTERN =
-        Pattern.compile("^(?:\\+20|0)?1[0-2,5]\\d{8}$");
+    private static final Pattern PHONE_PATTERN = Pattern.compile("^(?:\\+20|0)?1[0-2,5]\\d{8}$");
 
     @Override
     public boolean isValid(String phoneNumber, ConstraintValidatorContext context) {
@@ -19,5 +17,4 @@ class PhoneValidator implements ConstraintValidator<PhoneValidation, String> {
 
         return PHONE_PATTERN.matcher(phoneNumber).matches();
     }
-
 }

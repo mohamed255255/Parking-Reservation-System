@@ -1,13 +1,5 @@
 package com.parking_reservation_system.model;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -19,9 +11,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name = "payments")
@@ -34,15 +31,13 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID paymentId;
 
-    private String provider_transaction_id ;
-    
-    @NotNull
-    private double amount ;
+    private String provider_transaction_id;
+
+    @NotNull private double amount;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private Status status;
-
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -60,14 +55,12 @@ public class Payment {
         E_WALLET
     }
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+    @CreatedDate private LocalDateTime createdAt;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
- 
+    @LastModifiedDate private LocalDateTime updatedAt;
+
     @ManyToOne
     @NotNull
     @JoinColumn(name = "reservation_id")
-    private Reservation reservation ;
+    private Reservation reservation;
 }

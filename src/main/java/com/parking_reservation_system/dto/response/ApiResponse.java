@@ -1,12 +1,8 @@
-package com.parking_reservation_system.dto.response ;
+package com.parking_reservation_system.dto.response;
+
 import java.time.LocalDateTime;
 
-public record ApiResponse<T>(
-    boolean success,
-    String message,
-    T data,
-    LocalDateTime timestamp
-) {
+public record ApiResponse<T>(boolean success, String message, T data, LocalDateTime timestamp) {
     public static <T> ApiResponse<T> success(T data) {
         return new ApiResponse<>(true, "Operation successful", data, LocalDateTime.now());
     }

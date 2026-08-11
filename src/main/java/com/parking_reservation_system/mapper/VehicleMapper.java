@@ -6,7 +6,6 @@ import com.parking_reservation_system.model.Vehicle;
 
 public class VehicleMapper {
 
-    // Request DTO -> Entity
     public static Vehicle toEntity(VehicleDto dto) {
         if (dto == null) return null;
 
@@ -17,11 +16,9 @@ public class VehicleMapper {
         vehicle.setVehicleWidth(dto.vehicleWidth());
         vehicle.setVehicleDepth(dto.vehicleDepth());
         vehicle.setType(dto.type());
-        // you may want to set vehicle.setUser(...) if user info is available
         return vehicle;
     }
 
-    // Entity -> Request DTO (if needed)
     public static VehicleDto toDto(Vehicle vehicle) {
         if (vehicle == null) return null;
 
@@ -33,11 +30,9 @@ public class VehicleMapper {
                 vehicle.getVehicleWidth(),
                 vehicle.getVehicleDepth(),
                 vehicle.getType(),
-                vehicle.getUser() != null ? vehicle.getUser().getId() : 0
-        );
+                vehicle.getUser() != null ? vehicle.getUser().getId() : 0);
     }
 
-    // Entity -> Response DTO
     public static VehicleResponseDto toResponseDto(Vehicle vehicle) {
         if (vehicle == null) return null;
 
@@ -49,7 +44,6 @@ public class VehicleMapper {
                 vehicle.getVehicleWidth(),
                 vehicle.getVehicleDepth(),
                 vehicle.getType(),
-                vehicle.getUser() != null ? vehicle.getUser().getId() : 0
-        );
+                vehicle.getUser() != null ? vehicle.getUser().getId() : 0);
     }
 }

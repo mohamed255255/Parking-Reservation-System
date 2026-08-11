@@ -1,12 +1,5 @@
 package com.parking_reservation_system.model;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -16,38 +9,42 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 @Setter
 @Getter
 @Entity
 @Table(name = "password_reset_tokens")
 @NoArgsConstructor
-
 @EntityListeners(AuditingEntityListener.class)
 public class PasswordResetToken {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
 
-    @Column(name = "token" , unique = true , nullable = false) 
-    private String token ;
+    @Column(name = "token", unique = true, nullable = false)
+    private String token;
 
     @OneToOne
-    @JoinColumn(name="user_id" , nullable= false)
-    private User user ;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(nullable = false )
-    private LocalDateTime expiryDate ;
+    @Column(nullable = false)
+    private LocalDateTime expiryDate;
 
     @Column(nullable = false)
     @CreationTimestamp
     private LocalDate createdAt;
-   
+
     @Column(nullable = false)
     @UpdateTimestamp
     private LocalDate updatedAt;
-
 }
