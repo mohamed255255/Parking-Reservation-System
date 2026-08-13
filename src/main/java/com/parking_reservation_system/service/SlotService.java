@@ -3,6 +3,7 @@ package com.parking_reservation_system.service;
 import com.google.zxing.WriterException;
 import com.parking_reservation_system.dto.request.SlotDto;
 import com.parking_reservation_system.dto.response.SlotResponseDto;
+import com.parking_reservation_system.exception.QRCodeGenerationException;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
 import com.parking_reservation_system.mapper.SlotMapper;
 import com.parking_reservation_system.model.Garage;
@@ -28,7 +29,7 @@ public class SlotService {
     private final VehicleRepository vehicleRepository;
     private final QRCodeService qrCodeService;
 
-    public SlotResponseDto createSlot(SlotDto slotDto) throws IOException, WriterException {
+    public SlotResponseDto createSlot(SlotDto slotDto) {
 
         Garage existedGarage =
                 garageRepository
@@ -42,9 +43,14 @@ public class SlotService {
         Slot newSlot = SlotMapper.toEntity(slotDto);
         newSlot.setGarage(existedGarage);
 
-        String qrCodePath = qrCodeService.saveQRCodeImage(slotDto);
-        newSlot.setQrCodeImagePath(qrCodePath);
-
+        try {
+                String qrCodePath = qrCodeService.saveQRCodeImage(slotDto);
+                newSlot.setQrCodeImagePath(qrCodePath);
+  
+        } catch (IOException | WriterException e) {
+                throw new QRCodeGenerationException( "failed to create QR code for the slot " , e) ;
+        }
+      
         return SlotMapper.toResponseDto(slotRepository.save(newSlot));
     }
 

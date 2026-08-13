@@ -1,11 +1,12 @@
 package com.parking_reservation_system.controller;
 
-import com.google.zxing.WriterException;
 import com.parking_reservation_system.dto.request.SlotDto;
+import com.parking_reservation_system.dto.response.SlotResponseDto;
 import com.parking_reservation_system.service.SlotService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.IOException;
 import lombok.AllArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,16 +26,15 @@ public class SlotController {
     private final SlotService slotService;
 
     @PostMapping
-    public ResponseEntity<?> createSlot(@RequestBody SlotDto slotDto)
-            throws WriterException, IOException {
+    public ResponseEntity<SlotResponseDto> createSlot(@RequestBody SlotDto slotDto) {
         var slotResponseDto = slotService.createSlot(slotDto);
-        return ResponseEntity.ok(slotResponseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(slotResponseDto);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getSlotById(@PathVariable("id") int id) {
-        var slotResponseDto = slotService.getSlotById(id);
+    public ResponseEntity<SlotResponseDto> getSlotById(@PathVariable("id") int id) {
+        SlotResponseDto slotResponseDto = slotService.getSlotById(id);
         return ResponseEntity.ok(slotResponseDto);
     }
 }

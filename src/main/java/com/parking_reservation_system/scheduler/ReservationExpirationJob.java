@@ -14,8 +14,8 @@ public class ReservationExpirationJob {
 
     @Scheduled(fixedRate = 30, timeUnit = TimeUnit.MINUTES)
     public void expirePendingReservations() {
-        /// Transactional steps
-        /// indexed scan on created_at column
+        ///  Transactional steps
+        ///  indexed scan on created_at column
         ///  if the status is pending and created_at is before now-30min
         ///  we update it to expired
         reservationRepository.expirePendingReservations();

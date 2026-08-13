@@ -9,20 +9,18 @@ import org.springframework.stereotype.Component;
 @Component
 class RoleSeeder implements CommandLineRunner {
 
-    @PersistenceContext private EntityManager em;
+    @PersistenceContext private EntityManager entityManager;
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        // Check if any rows exist in roles table
         Long count =
-                ((Number) em.createNativeQuery("SELECT COUNT(*) FROM roles").getSingleResult())
+                ((Number) entityManager.createNativeQuery("SELECT COUNT(*) FROM roles").getSingleResult())
                         .longValue();
 
         if (count == 0) {
-            // Insert default roles
-            em.createNativeQuery("INSERT INTO roles (id, name) VALUES (1, 'USER')").executeUpdate();
-            em.createNativeQuery("INSERT INTO roles (id, name) VALUES (2, 'ADMIN')")
+            entityManager.createNativeQuery("INSERT INTO roles (id, name) VALUES (1, 'USER')").executeUpdate();
+            entityManager.createNativeQuery("INSERT INTO roles (id, name) VALUES (2, 'ADMIN')")
                     .executeUpdate();
             System.out.println("Roles seeded successfully!");
             System.out.println("USER ---> 1   ,   ADMIN ----> 2");
