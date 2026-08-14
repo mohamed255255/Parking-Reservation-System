@@ -31,7 +31,7 @@ public class SlotService {
     private final VehicleRepository vehicleRepository ;
     private final QRCodeService qrCodeService ;
 
- /// admin
+
     public SlotResponseDto createSlot(SlotDto slotDto)  throws IOException , WriterException{
 
         Garage existedGarage   = garageRepository.findById(slotDto.garage_id())
@@ -46,7 +46,7 @@ public class SlotService {
         return SlotMapper.toResponseDto(slotRepository.save(newSlot));       
     }
 
-///// to do :
+
     public List<SlotResponseDto> getUserSlots(){
 
          User currentAuthUser = ((CustomUserDetails) SecurityContextHolder.getContext()

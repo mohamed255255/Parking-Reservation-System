@@ -1,10 +1,7 @@
 package com.parking_reservation_system.dto.request;
 
-import java.time.LocalDateTime;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.AssertTrue;
 
 public record SlotDto(
 
@@ -12,11 +9,11 @@ public record SlotDto(
 
         @NotNull
         @Positive(message = "Slot width must be positive")
-        Double slotWidth,
+        int slotWidth,
 
         @NotNull
         @Positive(message = "Slot depth must be positive")
-        Double slotDepth,
+        int slotDepth,
 
         Integer garage_id,
 
