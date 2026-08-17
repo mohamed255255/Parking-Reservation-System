@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public record SlotDto(
-
         Integer slot_number,
 
         @NotNull
@@ -16,9 +15,4 @@ public record SlotDto(
         int slotDepth,
 
         Integer garage_id,
-
-        Integer vehicle_id
-
-) {
-
-}
+        Integer vehicle_id) {}

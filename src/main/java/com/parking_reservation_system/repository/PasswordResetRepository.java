@@ -1,12 +1,11 @@
 package com.parking_reservation_system.repository;
-import java.util.Optional;
-
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.parking_reservation_system.model.PasswordResetToken;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PasswordResetRepository  extends  JpaRepository <PasswordResetToken , Integer>{
+public interface PasswordResetRepository extends JpaRepository<PasswordResetToken, Integer> {
     Optional<PasswordResetToken> findByToken(String token);
-    Optional<PasswordResetToken> findByUserId(int UserId);
 
+    Optional<PasswordResetToken> findByUserId(int UserId);
 }

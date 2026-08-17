@@ -10,5 +10,4 @@ public record VehicleResponseDto(
         double vehicleWidth,
         double vehicleDepth,
         VehicleType type,
-        int userId
-) {}
+        int userId) {}

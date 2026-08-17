@@ -1,17 +1,16 @@
 package com.parking_reservation_system.service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.crypto.SecretKey;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 
 @Service
 public class JWTService {
@@ -32,11 +31,7 @@ public class JWTService {
 
     // Extract all claims (payload)
     public Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                   .setSigningKey(getSigningKey())
-                   .build()
-                   .parseClaimsJws(token)
-                   .getBody();
+        return Jwts.parser().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
     }
 
     // Extract expiration date from token
@@ -60,13 +55,12 @@ public class JWTService {
         Map<String, Object> claims = new HashMap<>(); // optional extra info
 
         return Jwts.builder()
-                   .setClaims(claims)
-                   .setSubject(username)
-                   .setIssuedAt(new Date(System.currentTimeMillis()))
-                   .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 30)) // 30 hours
-                   .signWith(getSigningKey()) // modern jjwt 0.12.x
-                   .compact();
+                .setClaims(claims)
+                .setSubject(username)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(
+                        new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 30)) // 30 hours
+                .signWith(getSigningKey()) // modern jjwt 0.12.x
+                .compact();
     }
-
-
 }

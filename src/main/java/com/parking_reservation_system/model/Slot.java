@@ -1,7 +1,5 @@
 package com.parking_reservation_system.model;
 
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -14,6 +12,7 @@ import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Setter
 @Getter
@@ -25,9 +24,9 @@ public class Slot {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
-    // represents physical signs on the ground
+
     @Column(name = "slot_number")
-    private int slotNumber ;
+    private int slotNumber;
 
     @Column(nullable = false)
     private double slotWidth;
@@ -35,21 +34,21 @@ public class Slot {
     @Column(nullable = false)
     private double slotDepth;
 
-    @Column(name = "qrcode_path"   , nullable = false)
-    private String qrCodeImagePath ;
-   
+    @Column(name = "qrcode_path", nullable = false)
+    private String qrCodeImagePath;
+
     @ManyToOne
-    @JoinColumn(name = "garage_id" , nullable = false)
+    @JoinColumn(name = "garage_id", nullable = false)
     private Garage garage;
 
     @OneToOne
-    @JoinColumn(name = "vehicle_id" , nullable = true)
+    @JoinColumn(name = "vehicle_id", nullable = true)
     private Vehicle vehicle;
 
     @OneToOne(mappedBy = "slot")
-    private Reservation reservation ;
+    private Reservation reservation;
 
-    public Slot(int id , int slotNumber , double slotWidth, double slotDepth) {
+    public Slot(int id, int slotNumber, double slotWidth, double slotDepth) {
         this.id = id;
         this.slotNumber = slotNumber;
         this.slotWidth = slotWidth;

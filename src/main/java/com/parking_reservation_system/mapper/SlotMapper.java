@@ -13,11 +13,9 @@ public class SlotMapper {
         slot.setSlotNumber(dto.slot_number());
         slot.setSlotWidth(dto.slotWidth());
         slot.setSlotDepth(dto.slotDepth());
-        // If needed, set slot.setGarage(...) or slot.setVehicle(...)
         return slot;
     }
 
-    // Entity -> Request DTO (if you still need it)
     public static SlotDto toDto(Slot slot) {
         if (slot == null) return null;
 
@@ -26,11 +24,9 @@ public class SlotMapper {
                 slot.getSlotWidth(),
                 slot.getSlotDepth(),
                 slot.getGarage().getId(),
-                slot.getVehicle() != null ? slot.getVehicle().getId() : 0
-        );
+                slot.getVehicle() != null ? slot.getVehicle().getId() : 0);
     }
 
-    // Entity -> Response DTO
     public static SlotResponseDto toResponseDto(Slot slot) {
         if (slot == null) return null;
 
@@ -39,7 +35,6 @@ public class SlotMapper {
                 slot.getSlotWidth(),
                 slot.getSlotDepth(),
                 slot.getGarage().getId(),
-                slot.getVehicle() != null ? slot.getVehicle().getId() : null
-        );
+                slot.getVehicle() != null ? slot.getVehicle().getId() : null);
     }
 }

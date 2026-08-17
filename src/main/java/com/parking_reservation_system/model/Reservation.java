@@ -1,12 +1,5 @@
 package com.parking_reservation_system.model;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -19,10 +12,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Setter
@@ -35,7 +33,6 @@ public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
-
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -52,30 +49,26 @@ public class Reservation {
     @Column(nullable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
-   
+
     @Column(nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "reservation")
-    private List<Payment> payments ;
+    private List<Payment> payments;
 
     private LocalDateTime startingTime;
 
     private LocalDateTime endingTime;
 
-    
-    
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     public Status status;
 
-    public  enum Status {
-        PENDING ,
+    public enum Status {
+        PENDING,
         COMPLETED,
         EXPIRED,
         FAILED
     }
-
-
 }

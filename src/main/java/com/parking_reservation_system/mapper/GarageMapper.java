@@ -1,8 +1,8 @@
 package com.parking_reservation_system.mapper;
 
 import com.parking_reservation_system.dto.request.GarageDto;
-import com.parking_reservation_system.model.Garage;
 import com.parking_reservation_system.dto.response.GarageResponseDto;
+import com.parking_reservation_system.model.Garage;
 
 public class GarageMapper {
 
@@ -10,7 +10,7 @@ public class GarageMapper {
         if (dto == null) return null;
 
         Garage garage = new Garage();
-        garage.setName(dto.name());       
+        garage.setName(dto.name());
         garage.setLocation(dto.location());
         garage.setCapactiy(dto.capacity());
         garage.setActive(dto.isActive());
@@ -26,8 +26,7 @@ public class GarageMapper {
                 garage.getName(),
                 garage.getLocation(),
                 garage.isActive(),
-                garage.getCapactiy()
-        );
+                garage.getCapactiy());
     }
 
     public static GarageResponseDto toResponseDto(Garage garage) {
@@ -38,7 +37,6 @@ public class GarageMapper {
                 garage.getName(),
                 garage.getLocation(),
                 garage.isActive(),
-                garage.getCapactiy()
-        );
+                garage.getCapactiy());
     }
 }

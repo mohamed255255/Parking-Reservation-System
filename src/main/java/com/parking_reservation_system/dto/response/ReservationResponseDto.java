@@ -9,5 +9,4 @@ public record ReservationResponseDto(
         int slotId,
         int garageId,
         int userId,
-        String status // Reservation.Status enum converted to string
-) {}
+        String status) {}
