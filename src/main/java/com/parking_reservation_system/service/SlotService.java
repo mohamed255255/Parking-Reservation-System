@@ -43,18 +43,13 @@ public class SlotService {
         Slot newSlot = SlotMapper.toEntity(slotDto);
         newSlot.setGarage(existedGarage);
 
-        try {
-                String qrCodePath = qrCodeService.saveQRCodeImage(slotDto);
-                newSlot.setQrCodeImagePath(qrCodePath);
+        String qrCodePath = qrCodeService.saveQRCodeImage(slotDto);
+        newSlot.setQrCodeImagePath(qrCodePath);
   
-        } catch (IOException | WriterException e) {
-                throw new QRCodeGenerationException( "failed to create QR code for the slot " , e) ;
-        }
-      
+     
         return SlotMapper.toResponseDto(slotRepository.save(newSlot));
     }
 
-///// to do :
     public List<SlotResponseDto> getUserSlots(){
 
         User currentAuthUser =

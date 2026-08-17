@@ -10,6 +10,8 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.parking_reservation_system.dto.request.SlotDto;
+import com.parking_reservation_system.exception.QRCodeGenerationException;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -68,21 +70,22 @@ public class QRCodeService {
         }
     }
 
-    public String saveQRCodeImage(SlotDto slotDto) throws IOException, WriterException {
+    public String saveQRCodeImage(SlotDto slotDto) {
+    String toBeEncodedText = "G" + slotDto.garage_id() + "_S" + slotDto.slot_number();
+    Path qrCodeDir = Paths.get(qrCodeDirectory).toAbsolutePath().normalize();
+    String fileName = "G" + slotDto.garage_id() + "_S" + slotDto.slot_number() + ".png";
+    Path targetLocation = qrCodeDir.resolve(fileName);
 
-        String toBeEncodedText = "G" + slotDto.garage_id() + "_S" + slotDto.slot_number();
-
-        Path qrCodeDir = Paths.get(qrCodeDirectory).toAbsolutePath().normalize();
+    try {
         Files.createDirectories(qrCodeDir);
-
-        String fileName = "G" + slotDto.garage_id() + "_S" + slotDto.slot_number() + ".png";
-
-        Path targetLocation = qrCodeDir.resolve(fileName);
-
         if (!Files.exists(targetLocation)) {
             byte[] qrCodeBytes = generateQRCode(toBeEncodedText);
             Files.write(targetLocation, qrCodeBytes);
         }
         return qrCodeDirectory + fileName;
+    } catch (IOException | WriterException e) {
+        throw new QRCodeGenerationException("Failed to create QR code for the slot", e);
     }
+   }
+   
 }

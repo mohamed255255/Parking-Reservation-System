@@ -21,17 +21,20 @@ import com.parking_reservation_system.model.Role;
 import com.parking_reservation_system.model.User;
 import com.parking_reservation_system.repository.PasswordResetRepository;
 import com.parking_reservation_system.repository.UserRepository;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+@ExtendWith(MockitoExtension.class)
 class AuthenticationServiceTest {
 
     @InjectMocks private AuthenticationService authService;
@@ -48,11 +51,6 @@ class AuthenticationServiceTest {
 
     @Mock private PasswordResetRepository passwordResetRepository;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
     void registerUser_successful() {
         // Given
@@ -65,11 +63,8 @@ class AuthenticationServiceTest {
                         "01001111111",
                         List.of(new Role("USER")));
 
-        /// like in math we say let existsByemail = false
         when(userRepository.existsByEmail(dto.email())).thenReturn(false);
-        /// let passwordEncoder.encode() = encodedPassword
         when(passwordEncoder.encode(dto.password())).thenReturn("encodedPassword");
-        /// let userRepository save user u with id = 1 and return the u
         when(userRepository.save(any(User.class)))
                 .thenAnswer(
                         invocation -> {
@@ -78,18 +73,14 @@ class AuthenticationServiceTest {
                             return u;
                         });
 
-        /// When : this logic called mockito will subsitute with the above lines of code
-        /// which  represents a happy path on purpose
+       
         RegisterUserResponseDto response = authService.RegisterUser(dto);
 
-        // Then
-        // check the returned values meets the right standards
         assertThat(response).isNotNull();
         assertThat(response.id()).isEqualTo(1);
         assertThat(response.email()).isEqualTo(dto.email());
         assertThat(response.name()).isEqualTo(dto.name());
-        /// verify using mockito that every logic every compnent is called without exceptions or
-        // errors
+      
         verify(userRepository).existsByEmail(dto.email());
         verify(passwordEncoder).encode(dto.password());
         verify(userRepository).save(any(User.class));
@@ -98,7 +89,6 @@ class AuthenticationServiceTest {
 
     @Test
     void registerUser_emailAlreadyExists_throwsException() {
-        // Given
         RegisterUserDto dto =
                 new RegisterUserDto(
                         null,
@@ -110,7 +100,6 @@ class AuthenticationServiceTest {
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(true);
 
-        // When & Then
         assertThrows(RuntimeException.class, () -> authService.RegisterUser(dto));
 
         verify(userRepository).existsByEmail(dto.email());
@@ -120,7 +109,6 @@ class AuthenticationServiceTest {
 
     @Test
     void verifyUser_successful() {
-        // Given
         String email = "test@gmail.com";
         String ExistedCode = "12345";
 
@@ -137,10 +125,8 @@ class AuthenticationServiceTest {
         when(userRepository.save(any(User.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        // When
         EmailVerificationResponseDto response = authService.verifyUser(dto);
 
-        // Then
         assertTrue(user.isVerified());
         assertEquals(email, response.email());
         assertEquals(ExistedCode, response.verificationCode());
@@ -150,7 +136,6 @@ class AuthenticationServiceTest {
 
     @Test
     void verifyUser_invalidVerificationCode_throwsException() {
-        // Given
         String email = "test@gmail.com";
         String inputWrongCode = "99999";
 
@@ -163,7 +148,6 @@ class AuthenticationServiceTest {
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(testUser));
 
-        // When & Then
         assertThrows(RuntimeException.class, () -> authService.verifyUser(dto));
 
         verify(userRepository).findByEmail(email);
@@ -172,7 +156,6 @@ class AuthenticationServiceTest {
 
     @Test
     void verifyUser_expiredVerificationCode_throwsException() {
-        // Given
         String email = "test@gmail.com";
         String code = "12345";
         EmailVerificationDto dto = new EmailVerificationDto(code, email);
@@ -184,7 +167,6 @@ class AuthenticationServiceTest {
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(testUser));
 
-        // When & Then
         assertThrows(RuntimeException.class, () -> authService.verifyUser(dto));
 
         verify(userRepository).findByEmail(email);
@@ -193,16 +175,11 @@ class AuthenticationServiceTest {
 
     @Test
     void verifyUser_userNotFound_throwsException() {
-        // Given
         String email = "notfound@gmail.com";
         String code = "12345";
         EmailVerificationDto dto = new EmailVerificationDto(code, email);
-
         when(userRepository.findByEmail(email)).thenReturn(null);
-
-        // When & Then
         assertThrows(RuntimeException.class, () -> authService.verifyUser(dto));
-
         verify(userRepository).findByEmail(email);
     }
 
@@ -407,11 +384,7 @@ class AuthenticationServiceTest {
         authService.RegisterUser(dto);
 
         // Then
-        // Verify that emailService.sendVerificationEmail was called
-        // but because emailService is mocked, no real email is sent
         verify(emailService).sendVerificationEmail(eq(dto.email()), anyString());
 
-        // You can also verify it was called exactly once
-        verify(emailService, times(1)).sendVerificationEmail(anyString(), anyString());
     }
 }
