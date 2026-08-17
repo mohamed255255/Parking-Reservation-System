@@ -29,10 +29,10 @@ public class Slot {
     private int slotNumber;
 
     @Column(nullable = false)
-    private double slotWidth;
+    private int slotWidth;
 
     @Column(nullable = false)
-    private double slotDepth;
+    private int slotDepth;
 
     @Column(name = "qrcode_path", nullable = false)
     private String qrCodeImagePath;
@@ -48,7 +48,7 @@ public class Slot {
     @OneToOne(mappedBy = "slot")
     private Reservation reservation;
 
-    public Slot(int id, int slotNumber, double slotWidth, double slotDepth) {
+    public Slot(int id, int slotNumber, int slotWidth, int slotDepth) {
         this.id = id;
         this.slotNumber = slotNumber;
         this.slotWidth = slotWidth;

@@ -16,8 +16,8 @@ public class SlotTestFactory {
 
         Slot slot = new Slot();
         slot.setSlotNumber(random.nextInt(1, 500));
-        slot.setSlotWidth(2.2 + (random.nextDouble() * 0.8));
-        slot.setSlotDepth(5.0 + (random.nextDouble() * 2.0));
+        slot.setSlotWidth(2 + (random.nextInt() * 1));
+        slot.setSlotDepth(5 + (random.nextInt() * 2));
         slot.setQrCodeImagePath("/images/qrcodes/slot_" + uuid + ".png");
         slot.setGarage(garage != null ? garage : new Garage());
         return slot;
