@@ -28,9 +28,6 @@ Admin have full control over garage and slot creation , user details, reservatio
    - Admin can generate QR codes per slot to confirm user arrival
    - Users only see slots that fit their vehicle size
 
--  **Real-Time Notifications** **(---- On going ----)** 
-   - Users can request "remind me later" when slots are unavailable and get notified
-
 - **Creating a Reservation**
      - Implemented reservation lifecycle with PENDING, CONFIRMED, FAILED state
      - Solved concurrent reservation conflicts using database-level locking (multiple users demand the same parking slot)
