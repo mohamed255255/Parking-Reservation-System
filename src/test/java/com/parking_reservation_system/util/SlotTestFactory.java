@@ -15,9 +15,10 @@ public class SlotTestFactory {
         String uuid = UUID.randomUUID().toString().substring(0, 8);
 
         Slot slot = new Slot();
+        slot.setId(2);
         slot.setSlotNumber(random.nextInt(1, 500));
-        slot.setSlotWidth(2 + (random.nextInt() * 1));
-        slot.setSlotDepth(5 + (random.nextInt() * 2));
+        slot.setSlotWidth(500);
+        slot.setSlotDepth(200);
         slot.setQrCodeImagePath("/images/qrcodes/slot_" + uuid + ".png");
         slot.setGarage(garage != null ? garage : new Garage());
         return slot;

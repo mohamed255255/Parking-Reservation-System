@@ -1,9 +1,7 @@
 package com.parking_reservation_system.service;
 
-import com.google.zxing.WriterException;
 import com.parking_reservation_system.dto.request.SlotDto;
 import com.parking_reservation_system.dto.response.SlotResponseDto;
-import com.parking_reservation_system.exception.QRCodeGenerationException;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
 import com.parking_reservation_system.mapper.SlotMapper;
 import com.parking_reservation_system.model.Garage;
@@ -14,7 +12,6 @@ import com.parking_reservation_system.repository.GarageRepository;
 import com.parking_reservation_system.repository.SlotRepository;
 import com.parking_reservation_system.repository.VehicleRepository;
 import com.parking_reservation_system.security.CustomUserDetails;
-import java.io.IOException;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -78,6 +75,7 @@ public class SlotService {
         Vehicle vehicle = vehicleRepository.findById(vehicleId).get();
 
         boolean isEmpty = slot.getVehicle() == null;
+        ///TODO : can we remove neseted IFs since we can have isEMpty as short circuit
         if (isEmpty) {
             if (vehicle.getVehicleDepth() <= slot.getSlotDepth()
                     && vehicle.getVehicleWidth() <= slot.getSlotWidth()) {
@@ -96,6 +94,8 @@ public class SlotService {
                 throw new RuntimeException("the vehicle dimensions don't fit properly");
             }
         }
+        /// TODO : investigate best practice here we return RUn time or create Bussiness exception ?
+        /// TODO : return the cause 
         throw new RuntimeException("the slot number " + slotId + " is already busy");
     }
 }

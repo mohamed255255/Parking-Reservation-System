@@ -24,7 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/reservation")
-@PreAuthorize("hasAnyRole('USER','ADMIN')")
+/// TODO : is this redundant , anyone can reserve as longa as he is authenticated ? 
+@PreAuthorize("hasAnyRole('USER','ADMIN')") 
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -38,7 +39,7 @@ public class ReservationController {
     public ApiResponse<?> createReservation(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody ReservationDto reservationDto,
-            @PathVariable int vehicleId) {
+            @PathVariable int vehicleId) { //// TODO : what happen if we pass null inspect the exception ?
 
         var reservationResponseDto =
                 reservationService.createReservation(userDetails, reservationDto, vehicleId);

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -115,5 +116,26 @@ public class SlotServiceTest {
         assertNotNull(response);
         assertEquals(1, response.size());
     }
+
+    @Test
+    void should_add_vehicle_to_empty_slot() {
+        // Given
+        Garage garage = new Garage();
+        garage.setId(1);
+
+        Vehicle dummyVehicle = VehicleTestFactory.createTestVehicleForUser(new User());
+
+        Slot dummySlot = SlotTestFactory.createEmptySlot(garage);
+
+        when(slotRepository.findById(dummySlot.getId())).thenReturn(Optional.of(dummySlot));
+        when(vehicleRepository.findById(dummyVehicle.getId())).thenReturn(Optional.of(dummyVehicle));
+
+        // When
+        slotService.addVehicleToAnEmptySlot(dummySlot.getId(), dummyVehicle.getId());
+
+        // Then
+        assertEquals(dummyVehicle, dummySlot.getVehicle()); 
+        verify(slotRepository, times(1)).save(dummySlot);   
+   }
 
 }

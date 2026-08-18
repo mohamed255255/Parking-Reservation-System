@@ -46,6 +46,7 @@ public class ReservationService {
 
     private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
+    /// TODO : avoid magic number , and double values for fees should be int or BigInt
     public double calculateFees(ReservationResponseDto reservation) {
         LocalDateTime start = reservation.startingTime();
         LocalDateTime end = reservation.endingTime();
@@ -58,6 +59,7 @@ public class ReservationService {
     public ReservationResponseDto createReservation(
             CustomUserDetails userDetails, ReservationDto reservationDto, int vehicleId) {
 
+        /// TODO : reservationDTO could be null so add constarint @Non null for all fields objects in sys 
         try {
 
             Slot requiredSlot =
@@ -77,7 +79,9 @@ public class ReservationService {
                                                     "this vehicle is not found at the vechicles table"));
 
             logger.error(choosenVehicle.getUser().getId() + "\n" + userDetails.getUser().getId());
-            /// check vehicle ownership
+          
+            /// TODO : !Objects.equals(choosenVehicle.getUser().getId(), userDetails.getUser().getId()) because
+            /// you compare object addresses not the actual values 
             if (choosenVehicle.getUser().getId() != userDetails.getUser().getId())
                 throw new ResourceNotFoundException("the user does not possess this vehicle");
 
@@ -93,8 +97,8 @@ public class ReservationService {
             newReservation.setGarage(requiredSlot.getGarage());
             Reservation savedReservation = reservationRepository.save(newReservation);
             return ReservationMapper.toResponseDto(savedReservation);
-
-        } catch (Exception ex) {
+      //// TODO : remove it , Redundant Catching an exception ex : ResournceNotFoundExcep to Re-Throwing Runtime exception
+        } catch (Exception ex) { 
             throw new RuntimeException(ex.getMessage());
         }
     }
@@ -124,8 +128,7 @@ public class ReservationService {
                             + " garage id : "
                             + garageId);
 
-        // Redirect to payment page that has
-        // pay button which will transfer the user to the gateway IFrame
+        // Redirect to payment page after Scanning QR code
     }
 
     public Page<ReservationResponseDto> getUserReservations(

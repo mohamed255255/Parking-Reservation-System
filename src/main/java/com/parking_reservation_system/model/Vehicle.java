@@ -42,10 +42,10 @@ public class Vehicle {
     private String modelName;
 
     @Column(nullable = false)
-    private double vehicleWidth;
+    private int vehicleWidth;
 
     @Column(nullable = false)
-    private double vehicleDepth;
+    private int vehicleDepth;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
