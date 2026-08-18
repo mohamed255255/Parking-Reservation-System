@@ -75,7 +75,7 @@ Admin have full control over garage and slot creation , user details, reservatio
 
   - Refund support for canceled payments
   - basic notification for monolithic level  
-  - add Angular later for admin dashboard and user UI
+  - add React later for admin dashboard and user UI
   - add "Extend parking duration" with another payment request and update in the current reservation info
   - scale through :
      -  Breaking the services into microservicse
