@@ -28,17 +28,14 @@ Admin have full control over garage and slot creation , user details, reservatio
    - Admin can generate QR codes per slot to confirm user arrival
    - Users only see slots that fit their vehicle size
 
--  **Real-Time Notifications** **(---- On going ----)** 
-   - Users can request "remind me later" when slots are unavailable and get notified
-
 - **Creating a Reservation**
      - Implemented reservation lifecycle with PENDING, CONFIRMED, FAILED state
      - Solved concurrent reservation conflicts using database-level locking (multiple users demand the same parking slot)
      - Users can view all their reservations in one place 
      - When user finishes parking the slot will be released
      - Using **schedulers** the reservation will automatically expire if:
-        - Payment is not completed within **30 minutes** of creation (I put an index on the created_at as we frequently scan it)
-        - I also created ReleaseSlotJob to check the ending time for every active reservation today , every 3 min if user did not extend his duration
+        - Payment is not completed within **30 minutes** from reservation (I put an index on the created_at as we frequently scan it)
+        - I also created ReleaseSlotJob to check the ending time for every active **paid** reservation today , every 3 min if user did not extend his duration
           then release the target slots automatically
        
  - **Payment & Billing**
@@ -78,7 +75,7 @@ Admin have full control over garage and slot creation , user details, reservatio
 
   - Refund support for canceled payments
   - basic notification for monolithic level  
-  - add Angular later for admin dashboard and user UI
+  - add React later for admin dashboard and user UI
   - add "Extend parking duration" with another payment request and update in the current reservation info
   - scale through :
      -  Breaking the services into microservicse
