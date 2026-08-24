@@ -9,9 +9,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 
+
+///TODO :  @NonNull "Special characters/numbers are not allowed" with regexp
+
 public record RegisterUserDto(
-        Integer id,
-        @NotBlank(message = "empty names are not allowed") String name,
+        Integer id,  //// TODO : remove the id , it is enough you get from DB
+        @NotBlank(message = "empty names are not allowed") String name, /// TODO : add constraint for "Only Latin characters are allowed",
+
         @Email(message = "Email format is invalid") String email,
         @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
                 @NotBlank(message = "password cant be filled with whitespace / null / empty")

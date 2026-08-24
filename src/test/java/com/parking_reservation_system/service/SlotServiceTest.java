@@ -125,17 +125,50 @@ public class SlotServiceTest {
 
         Vehicle dummyVehicle = VehicleTestFactory.createTestVehicleForUser(new User());
 
-        Slot dummySlot = SlotTestFactory.createEmptySlot(garage);
-
+        Slot dummySlot = SlotTestFactory.createEmptyLargeSlot(garage);
+        
+        // When
         when(slotRepository.findById(dummySlot.getId())).thenReturn(Optional.of(dummySlot));
         when(vehicleRepository.findById(dummyVehicle.getId())).thenReturn(Optional.of(dummyVehicle));
 
-        // When
         slotService.addVehicleToAnEmptySlot(dummySlot.getId(), dummyVehicle.getId());
-
         // Then
         assertEquals(dummyVehicle, dummySlot.getVehicle()); 
         verify(slotRepository, times(1)).save(dummySlot);   
    }
+
+   @Test 
+   void should_fail_when_vehicle_exceeds_slot_dimensions() {
+          Slot smallSlot = SlotTestFactory.createEmptySmallSlot(new Garage()); 
+          Vehicle vehicle = VehicleTestFactory.createTestVehicleForUser(new User());
+
+          when(slotRepository.findById(smallSlot.getId())).thenReturn(Optional.of(smallSlot));
+          when(vehicleRepository.findById(vehicle.getId())).thenReturn(Optional.of(vehicle));
+
+          assertThrows(RuntimeException.class, 
+              () -> slotService.addVehicleToAnEmptySlot(smallSlot.getId(), vehicle.getId()));
+
+          // VERIFY SIDE EFFECT (Database shouldn't persist invalid state)
+           verify(slotRepository, never()).save(any());
+         }
+
+    @Test 
+    void should_fail_adding_vehicle_to_busy_slot() {
+        Slot dummySlot = SlotTestFactory.createEmptySmallSlot(new Garage()); 
+        Vehicle existedVehicle = VehicleTestFactory.createTestVehicleForUser(new User());
+        Vehicle newVehicle = VehicleTestFactory.createTestVehicleForUser(new User());
+        dummySlot.setVehicle(existedVehicle);
+
+        when(slotRepository.findById(dummySlot.getId())).thenReturn(Optional.of(dummySlot));
+        when(vehicleRepository.findById(newVehicle.getId())).thenReturn(Optional.of(newVehicle));
+
+        RuntimeException exception = assertThrows(RuntimeException.class, 
+                 () -> slotService.addVehicleToAnEmptySlot(dummySlot.getId(), newVehicle.getId()));
+
+        assertEquals("the slot number " + dummySlot.getId() + " is already busy", exception.getMessage());
+        verify(slotRepository, never()).save(any());
+
+        }
+
 
 }

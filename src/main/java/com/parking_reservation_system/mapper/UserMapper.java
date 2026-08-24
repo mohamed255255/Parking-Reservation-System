@@ -5,6 +5,8 @@ import com.parking_reservation_system.dto.response.RegisterUserResponseDto;
 import com.parking_reservation_system.model.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
+///// TODO : use auto mappers for one class
 public class UserMapper {
 
     public static RegisterUserDto toDto(User user) {
@@ -24,6 +26,7 @@ public class UserMapper {
         if (dto == null) return null;
 
         User user = new User();
+        //// TODO : you should generate the id here instead of putting it in the record 
         user.setId(dto.id());
         user.setName(dto.name());
         user.setEmail(dto.email());

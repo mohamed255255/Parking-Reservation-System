@@ -36,12 +36,18 @@ public class AuthenticationService {
 
     private static SecureRandom RANDOM = new SecureRandom();
 
+    ////TODO : we violate SRP here we are not only saving user to DB but we generate code , set expiration time
+    
+    /// TODO : function names i forgot and made it PASCAL it should be Camel
     public RegisterUserResponseDto RegisterUser(RegisterUserDto userDto) {
+        /// TODO : bad naming it should be discritpitve for its intent
         boolean check = userRepository.existsByEmail(userDto.email());
-        if (check) {
+        /// TODO :  Throwing Spring DB exception from Bussiness layer , throw a custom domain exception with clean HTTP 409 Conflict.
+        if (check) { 
             throw new DataIntegrityViolationException("User already registered");
         }
 
+        ////  TODO : this is not the best practice for generating a code it is vulnurable 
         String code = String.format("%05d", RANDOM.nextInt(100_000));
         User user = UserMapper.toUser(userDto, passwordEncoder);
         user.setVerificationCode(code);
@@ -49,6 +55,7 @@ public class AuthenticationService {
         user.setExpirationTime(LocalDateTime.now().plusMinutes(15));
         userRepository.save(user);
 
+        //// Network calls (like emails) should happen outside database transactions investigate this , consider email exceptions inside registeration process.
         emailService.sendVerificationEmail(userDto.email(), code);
 
         return new RegisterUserResponseDto(

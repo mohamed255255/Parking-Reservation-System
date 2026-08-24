@@ -8,7 +8,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.parking_reservation_system.dto.request.EmailVerificationDto;
 import com.parking_reservation_system.dto.request.LoginUserDto;
@@ -27,8 +29,11 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -53,39 +58,41 @@ class AuthenticationServiceTest {
 
     @Test
     void registerUser_successful() {
-        // Given
-        RegisterUserDto dto =
-                new RegisterUserDto(
-                        null,
-                        "Mido",
-                        "test@gmail.com",
-                        "123",
-                        "01001111111",
-                        List.of(new Role("USER")));
+    RegisterUserDto dto = new RegisterUserDto(
+            null, "Mido", "test@gmail.com", "123", "01001111111", List.of(new Role("USER")));
 
-        when(userRepository.existsByEmail(dto.email())).thenReturn(false);
-        when(passwordEncoder.encode(dto.password())).thenReturn("encodedPassword");
-        when(userRepository.save(any(User.class)))
-                .thenAnswer(
-                        invocation -> {
-                            User u = invocation.getArgument(0);
-                            u.setId(1);
-                            return u;
-                        });
+    when(userRepository.existsByEmail(dto.email())).thenReturn(false);
+    when(passwordEncoder.encode(dto.password())).thenReturn("encodedPassword");
+    when(userRepository.save(any(User.class)))
+            .thenAnswer(invocation -> {
+                User u = invocation.getArgument(0);
+                u.setId(1);
+                return u;
+            });
 
-       
-        RegisterUserResponseDto response = authService.RegisterUser(dto);
+    RegisterUserResponseDto response = authService.RegisterUser(dto);
 
-        assertThat(response).isNotNull();
-        assertThat(response.id()).isEqualTo(1);
-        assertThat(response.email()).isEqualTo(dto.email());
-        assertThat(response.name()).isEqualTo(dto.name());
-      
-        verify(userRepository).existsByEmail(dto.email());
-        verify(passwordEncoder).encode(dto.password());
-        verify(userRepository).save(any(User.class));
-        verify(emailService).sendVerificationEmail(eq(dto.email()), anyString());
-    }
+    // response contract
+    assertThat(response.id()).isEqualTo(1);
+    assertThat(response.email()).isEqualTo(dto.email());
+    assertThat(response.name()).isEqualTo(dto.name());
+    assertThat(response.phone()).isEqualTo(dto.phone());
+    assertThat(response.roles()).isEqualTo(dto.roles());
+
+    // saved user state
+    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+    verify(userRepository).save(userCaptor.capture());
+    User savedUser = userCaptor.getValue();
+
+    assertThat(savedUser.getVerificationCode()).matches("\\d{5}");
+    assertThat(savedUser.isVerified()).isFalse();
+    assertThat(savedUser.getExpirationTime())
+            .isAfter(LocalDateTime.now().plusMinutes(14))
+            .isBefore(LocalDateTime.now().plusMinutes(16));
+
+    // email tied to the actual generated code, not "any string"
+    verify(emailService).sendVerificationEmail(eq(dto.email()), eq(savedUser.getVerificationCode()));
+}
 
     @Test
     void registerUser_emailAlreadyExists_throwsException() {
@@ -100,9 +107,8 @@ class AuthenticationServiceTest {
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(true);
 
-        assertThrows(RuntimeException.class, () -> authService.RegisterUser(dto));
+        assertThrows(DataIntegrityViolationException.class, () -> authService.RegisterUser(dto));
 
-        verify(userRepository).existsByEmail(dto.email());
         verify(userRepository, never()).save(any(User.class));
         verify(emailService, never()).sendVerificationEmail(anyString(), anyString());
     }
