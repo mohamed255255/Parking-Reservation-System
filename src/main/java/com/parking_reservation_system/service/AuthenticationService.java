@@ -1,11 +1,11 @@
 package com.parking_reservation_system.service;
 
-import com.parking_reservation_system.dto.request.EmailVerificationDto;
-import com.parking_reservation_system.dto.request.LoginUserDto;
-import com.parking_reservation_system.dto.request.RegisterUserDto;
-import com.parking_reservation_system.dto.request.ResetPasswordDto;
-import com.parking_reservation_system.dto.response.EmailVerificationResponseDto;
-import com.parking_reservation_system.dto.response.RegisterUserResponseDto;
+import com.parking_reservation_system.dto.request.EmailVerificationRequest;
+import com.parking_reservation_system.dto.request.LoginUserRequest;
+import com.parking_reservation_system.dto.request.RegisterUserRequest;
+import com.parking_reservation_system.dto.request.ResetPasswordRequest;
+import com.parking_reservation_system.dto.response.EmailVerificationResponse;
+import com.parking_reservation_system.dto.response.RegisterUserResponse;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
 import com.parking_reservation_system.mapper.UserMapper;
 import com.parking_reservation_system.model.PasswordResetToken;
@@ -39,7 +39,7 @@ public class AuthenticationService {
     ////TODO : we violate SRP here we are not only saving user to DB but we generate code , set expiration time
     
     /// TODO : function names i forgot and made it PASCAL it should be Camel
-    public RegisterUserResponseDto RegisterUser(RegisterUserDto userDto) {
+    public RegisterUserResponse RegisterUser(RegisterUserRequest userDto) {
         /// TODO : bad naming it should be discritpitve for its intent
         boolean check = userRepository.existsByEmail(userDto.email());
         /// TODO :  Throwing Spring DB exception from Bussiness layer , throw a custom domain exception with clean HTTP 409 Conflict.
@@ -58,11 +58,11 @@ public class AuthenticationService {
         //// Network calls (like emails) should happen outside database transactions investigate this , consider email exceptions inside registeration process.
         emailService.sendVerificationEmail(userDto.email(), code);
 
-        return new RegisterUserResponseDto(
+        return new RegisterUserResponse(
                 user.getId(), user.getName(), user.getEmail(), user.getPhone(), user.getRoles());
     }
 
-    public EmailVerificationResponseDto verifyUser(EmailVerificationDto dto)
+    public EmailVerificationResponse verifyUser(EmailVerificationRequest dto)
             throws RuntimeException {
         User existingUser =
                 userRepository
@@ -79,7 +79,7 @@ public class AuthenticationService {
         } else {
             throw new RuntimeException("Invalid verification code");
         }
-        return new EmailVerificationResponseDto(dto.verificationCode(), dto.email());
+        return new EmailVerificationResponse(dto.verificationCode(), dto.email());
     }
 
     public void resendVerificationCode(String email) throws RuntimeException {
@@ -99,7 +99,7 @@ public class AuthenticationService {
         emailService.sendVerificationEmail(email, code);
     }
 
-    public String loginUser(LoginUserDto userDto) {
+    public String loginUser(LoginUserRequest userDto) {
 
         User registeredUser =
                 userRepository
@@ -146,7 +146,7 @@ public class AuthenticationService {
         return "Password link has been sent to the user's email: " + email;
     }
 
-    public String resetPassword(ResetPasswordDto dto, String Urltoken) {
+    public String resetPassword(ResetPasswordRequest dto, String Urltoken) {
         User user =
                 userRepository
                         .findByEmail(dto.email())

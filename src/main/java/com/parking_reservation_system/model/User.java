@@ -80,8 +80,7 @@ public class User {
     @CreationTimestamp
     private LocalDate createdAt;
 
-    @Column(nullable = false)
-    @UpdateTimestamp
+    @Column(nullable = true)
     private LocalDate updatedAt;
 
     @OneToMany(mappedBy = "user")

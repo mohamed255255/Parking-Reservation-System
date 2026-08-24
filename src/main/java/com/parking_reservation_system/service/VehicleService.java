@@ -1,7 +1,7 @@
 package com.parking_reservation_system.service;
 
-import com.parking_reservation_system.dto.request.VehicleDto;
-import com.parking_reservation_system.dto.response.VehicleResponseDto;
+import com.parking_reservation_system.dto.request.VehicleRequest;
+import com.parking_reservation_system.dto.response.VehicleResponse;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
 import com.parking_reservation_system.mapper.VehicleMapper;
 import com.parking_reservation_system.model.User;
@@ -22,8 +22,8 @@ public class VehicleService {
         this.vehicleRepository = vehicleRepository;
     }
 
-    public VehicleResponseDto addVehicleToTheSystem(VehicleDto vehicleDto) {
-        Vehicle newVehicle = VehicleMapper.toEntity(vehicleDto);
+    public VehicleResponse addVehicleToTheSystem(VehicleRequest VehicleRequest) {
+        Vehicle newVehicle = VehicleMapper.toEntity(VehicleRequest);
 
         User currentAuthUser =
                 ((CustomUserDetails)
@@ -38,14 +38,14 @@ public class VehicleService {
         return response;
     }
 
-    public void updateVehicle(VehicleDto vehicleDto, int id) {
+    public void updateVehicle(VehicleRequest VehicleRequest, int id) {
         vehicleRepository.updateVehicle(
-                vehicleDto.plateNumber(),
-                vehicleDto.modelYear(),
-                vehicleDto.modelName(),
-                vehicleDto.vehicleWidth(),
-                vehicleDto.vehicleDepth(),
-                vehicleDto.type().name(),
+                VehicleRequest.plateNumber(),
+                VehicleRequest.modelYear(),
+                VehicleRequest.modelName(),
+                VehicleRequest.vehicleWidth(),
+                VehicleRequest.vehicleDepth(),
+                VehicleRequest.type().name(),
                 id);
     }
 
@@ -53,11 +53,11 @@ public class VehicleService {
         vehicleRepository.deleteVehicle(id);
     }
 
-    public Page<VehicleResponseDto> getAllVehicles(PageRequest pageRequest) {
+    public Page<VehicleResponse> getAllVehicles(PageRequest pageRequest) {
         return vehicleRepository.findAll(pageRequest).map(VehicleMapper::toResponseDto);
     }
 
-    public VehicleResponseDto getVehicleById(int id) {
+    public VehicleResponse getVehicleById(int id) {
         return vehicleRepository
                 .findById(id)
                 .map(VehicleMapper::toResponseDto)

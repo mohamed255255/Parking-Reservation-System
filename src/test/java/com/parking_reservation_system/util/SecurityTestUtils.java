@@ -11,6 +11,8 @@ import com.parking_reservation_system.model.User;
 import com.parking_reservation_system.security.CustomUserDetails;
 
 public class SecurityTestUtils {
+       private SecurityTestUtils(){}
+       
        public static void mockSecurityContext(User user) {
         CustomUserDetails customUserDetails = mock(CustomUserDetails.class);
         when(customUserDetails.getUser()).thenReturn(user);

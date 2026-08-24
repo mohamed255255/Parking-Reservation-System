@@ -20,8 +20,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.google.zxing.WriterException;
-import com.parking_reservation_system.dto.request.SlotDto;
-import com.parking_reservation_system.dto.response.SlotResponseDto;
+import com.parking_reservation_system.dto.request.SlotRequest;
+import com.parking_reservation_system.dto.response.SlotResponse;
 import com.parking_reservation_system.exception.QRCodeGenerationException;
 import com.parking_reservation_system.model.Garage;
 import com.parking_reservation_system.model.Slot;
@@ -58,7 +58,7 @@ public class SlotServiceTest {
         final int GARAGE_ID   = 1;
         final int VEHICLE_ID  = 123;
 
-        SlotDto dummySlotDto = new SlotDto(SLOT_NUMBER, SLOT_WIDTH, SLOT_DEPTH, GARAGE_ID, VEHICLE_ID);
+        SlotRequest dummySlotRequest = new SlotRequest(SLOT_NUMBER, SLOT_WIDTH, SLOT_DEPTH, GARAGE_ID, VEHICLE_ID);
         Garage dummyGarage = new Garage();
         
        
@@ -66,32 +66,32 @@ public class SlotServiceTest {
         savedSlot.setGarage(dummyGarage);
         savedSlot.setQrCodeImagePath("/images/qr_123.png");
 
-        when(garageRepository.findById(dummySlotDto.garage_id()))
+        when(garageRepository.findById(dummySlotRequest.garage_id()))
                 .thenReturn(Optional.of(dummyGarage));
 
-        when(qrCodeService.saveQRCodeImage(dummySlotDto))
+        when(qrCodeService.saveQRCodeImage(dummySlotRequest))
                 .thenReturn("/images/qr_123.png");
 
         when(slotRepository.save(any(Slot.class)))
                 .thenReturn(savedSlot);
 
-        SlotResponseDto response = slotService.createSlot(dummySlotDto);
+        SlotResponse response = slotService.createSlot(dummySlotRequest);
         assertNotNull(response);
     }
 
     @Test 
     public void should_throw_IOexception_on_create_slot(){
         Garage dummyGarage = new Garage() ;
-        SlotDto slotDto = SlotTestFactory.createSlotDto(dummyGarage);
+        SlotRequest SlotRequest = SlotTestFactory.createSlotRequest(dummyGarage);
 
-        when(garageRepository.findById(slotDto.garage_id()))
+        when(garageRepository.findById(SlotRequest.garage_id()))
                     .thenReturn(Optional.of(dummyGarage));
              
-        when(qrCodeService.saveQRCodeImage(slotDto)).thenThrow(new IOException("Disk I/O failure"));
+        when(qrCodeService.saveQRCodeImage(SlotRequest)).thenThrow(new IOException("Disk I/O failure"));
      
         QRCodeGenerationException exception = assertThrows(
             QRCodeGenerationException.class,
-            () -> slotService.createSlot(slotDto)
+            () -> slotService.createSlot(SlotRequest)
     );
 
     assertEquals("failed to create QR code for the slot ", exception.getMessage());
@@ -111,7 +111,7 @@ public class SlotServiceTest {
         when(slotRepository.getUserSlotsAndVehicles(dummyUser.getId()))
                 .thenReturn(List.of(slotOne));
 
-        List<SlotResponseDto> response = slotService.getUserSlots();
+        List<SlotResponse> response = slotService.getUserSlots();
 
         assertNotNull(response);
         assertEquals(1, response.size());

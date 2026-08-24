@@ -1,7 +1,7 @@
 package com.parking_reservation_system.service;
 
-import com.parking_reservation_system.dto.request.ReservationDto;
-import com.parking_reservation_system.dto.response.ReservationResponseDto;
+import com.parking_reservation_system.dto.request.ReservationUserRequest;
+import com.parking_reservation_system.dto.response.ReservationResponse;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
 import com.parking_reservation_system.mapper.ReservationMapper;
 import com.parking_reservation_system.model.Garage;
@@ -47,7 +47,7 @@ public class ReservationService {
     private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
     /// TODO : avoid magic number , and double values for fees should be int or BigInt
-    public double calculateFees(ReservationResponseDto reservation) {
+    public double calculateFees(ReservationResponse reservation) {
         LocalDateTime start = reservation.startingTime();
         LocalDateTime end = reservation.endingTime();
         long minutes = Duration.between(start, end).toMinutes();
@@ -56,15 +56,15 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponseDto createReservation(
-            CustomUserDetails userDetails, ReservationDto reservationDto, int vehicleId) {
+    public ReservationResponse createReservation(
+            CustomUserDetails userDetails, ReservationUserRequest ReservationUserRequest, int vehicleId) {
 
-        /// TODO : reservationDTO could be null so add constarint @Non null for all fields objects in sys 
+        /// TODO : ReservationUserRequest could be null so add constarint @Non null for all fields objects in sys 
         try {
 
             Slot requiredSlot =
                     slotRepository
-                            .findByIdWithALock(reservationDto.slot_id())
+                            .findByIdWithALock(ReservationUserRequest.slot_id())
                             .orElseThrow(
                                     () ->
                                             new ResourceNotFoundException(
@@ -86,9 +86,9 @@ public class ReservationService {
                 throw new ResourceNotFoundException("the user does not possess this vehicle");
 
             /// if there is a problem here the whole reservation service will rollback
-            slotService.addVehicleToAnEmptySlot(reservationDto.slot_id(), vehicleId);
+            slotService.addVehicleToAnEmptySlot(ReservationUserRequest.slot_id(), vehicleId);
 
-            Reservation newReservation = ReservationMapper.toEntity(reservationDto);
+            Reservation newReservation = ReservationMapper.toEntity(ReservationUserRequest);
 
             requiredSlot.setVehicle(choosenVehicle);
 
@@ -131,7 +131,7 @@ public class ReservationService {
         // Redirect to payment page after Scanning QR code
     }
 
-    public Page<ReservationResponseDto> getUserReservations(
+    public Page<ReservationResponse> getUserReservations(
             Integer userId,
             Integer slotId,
             Integer garageId,
@@ -152,7 +152,7 @@ public class ReservationService {
         return reservationRepository.findAll(spec, pageable).map(ReservationMapper::toResponseDto);
     }
 
-    public Page<ReservationResponseDto> getAllReservations(
+    public Page<ReservationResponse> getAllReservations(
             Integer slotId,
             Integer garageId,
             Reservation.Status status,
@@ -179,7 +179,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponseDto patchReservation(Integer id, ReservationDto dto) {
+    public ReservationResponse patchReservation(Integer id, ReservationUserRequest dto) {
 
         Reservation reservation =
                 reservationRepository

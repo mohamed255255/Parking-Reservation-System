@@ -1,13 +1,17 @@
 package com.parking_reservation_system.mapper;
 
-import com.parking_reservation_system.dto.request.ReservationDto;
-import com.parking_reservation_system.dto.response.ReservationResponseDto;
+import com.parking_reservation_system.dto.request.ReservationUserRequest;
+import com.parking_reservation_system.dto.response.ReservationResponse;
 import com.parking_reservation_system.model.Reservation;
 
-public class ReservationMapper {
+public final class ReservationMapper {
 
-    public static Reservation toEntity(ReservationDto dto) {
-        if (dto == null) return null;
+    private ReservationMapper() {}
+
+    public static Reservation toEntity(ReservationUserRequest dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("ReservationUserRequest must not be null");
+        }
 
         Reservation reservation = new Reservation();
         reservation.setStartingTime(dto.startingTime());
@@ -16,27 +20,41 @@ public class ReservationMapper {
         return reservation;
     }
 
-    public static ReservationDto toDto(Reservation entity) {
-        if (entity == null) return null;
+    public static ReservationUserRequest toDto(Reservation reservation) {
+        if (reservation == null) {
+            throw new IllegalArgumentException("Reservation reservation must not be null");
+        }
 
-        return new ReservationDto(
-                entity.getId(),
-                entity.getStartingTime(),
-                entity.getEndingTime(),
-                entity.getSlot().getId(),
-                entity.getGarage().getId());
+        Integer slotId = (reservation.getSlot() != null) ? reservation.getSlot().getId() : null;
+        Integer garageId = (reservation.getGarage() != null) ? reservation.getGarage().getId() : null;
+
+        return new ReservationUserRequest(
+                reservation.getId(),
+                reservation.getStartingTime(),
+                reservation.getEndingTime(),
+                slotId,
+                garageId
+        );
     }
 
-    public static ReservationResponseDto toResponseDto(Reservation entity) {
-        if (entity == null) return null;
+    public static ReservationResponse toResponseDto(Reservation reservation) {
+        if (reservation == null) {
+            throw new IllegalArgumentException("Reservation reservation must not be null");
+        }
 
-        return new ReservationResponseDto(
-                entity.getId(),
-                entity.getStartingTime(),
-                entity.getEndingTime(),
-                entity.getSlot().getId(),
-                entity.getGarage().getId(),
-                entity.getUser().getId(),
-                entity.getStatus().name());
+        Integer slotId = (reservation.getSlot() != null) ? reservation.getSlot().getId() : null;
+        Integer garageId = (reservation.getGarage() != null) ? reservation.getGarage().getId() : null;
+        Integer userId = (reservation.getUser() != null) ? reservation.getUser().getId() : null;
+        String status = (reservation.getStatus() != null) ? reservation.getStatus().name() : null;
+
+        return new ReservationResponse(
+                reservation.getId(),
+                reservation.getStartingTime(),
+                reservation.getEndingTime(),
+                slotId,
+                garageId,
+                userId,
+                status
+        );
     }
 }

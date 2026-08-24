@@ -1,9 +1,11 @@
 package com.parking_reservation_system.dto.request;
 
+import com.beust.jcommander.internal.Nullable;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-public record SlotDto(
+public record SlotRequest(
         Integer slot_number,
 
         @NotNull
@@ -14,5 +16,8 @@ public record SlotDto(
         @Positive(message = "Slot depth must be positive")
         int slotDepth,
 
-        Integer garage_id,
-        Integer vehicle_id) {}
+        @Nullable
+        Integer garageId,
+        
+        @Nullable
+        Integer vehicleId) {}

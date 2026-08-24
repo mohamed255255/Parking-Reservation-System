@@ -1,6 +1,6 @@
 package com.parking_reservation_system.controller;
 
-import com.parking_reservation_system.dto.request.ReservationDto;
+import com.parking_reservation_system.dto.request.ReservationUserRequest;
 import com.parking_reservation_system.dto.response.ApiResponse;
 import com.parking_reservation_system.model.Reservation;
 import com.parking_reservation_system.security.CustomUserDetails;
@@ -38,15 +38,15 @@ public class ReservationController {
     @PostMapping("/{vehicleId}")
     public ApiResponse<?> createReservation(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody ReservationDto reservationDto,
+            @RequestBody ReservationUserRequest ReservationUserRequest,
             @PathVariable int vehicleId) { //// TODO : what happen if we pass null inspect the exception ?
 
-        var reservationResponseDto =
-                reservationService.createReservation(userDetails, reservationDto, vehicleId);
-        double price = reservationService.calculateFees(reservationResponseDto);
+        var ReservationResponse =
+                reservationService.createReservation(userDetails, ReservationUserRequest, vehicleId);
+        double price = reservationService.calculateFees(ReservationResponse);
 
         Map<String, Object> bill = new HashMap<>();
-        bill.put("reservation", reservationResponseDto);
+        bill.put("reservation", ReservationResponse);
         bill.put("price", price);
         return ApiResponse.success(bill);
     }
@@ -108,7 +108,7 @@ public class ReservationController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PatchMapping("/{id}")
     public ApiResponse<?> updateReservation(
-            @PathVariable Integer id, @RequestBody ReservationDto dto) {
+            @PathVariable Integer id, @RequestBody ReservationUserRequest dto) {
         return ApiResponse.success(reservationService.patchReservation(id, dto));
     }
 }

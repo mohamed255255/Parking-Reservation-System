@@ -8,11 +8,11 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class VehicleTestFactory {
-
+    private VehicleTestFactory(){}
+    
     public static Vehicle createTestVehicleForUser(User user) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         Vehicle vehicle = new Vehicle();
-        vehicle.setId(1);
         vehicle.setPlateNumber("PLATE-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase());
         vehicle.setModelYear(2015 + random.nextInt(10));
         vehicle.setModelName("Model-" + random.nextInt(50));

@@ -6,6 +6,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import com.parking_reservation_system.model.User;
 
 public class UserTestFactory {
+    private UserTestFactory(){}
+    
     public static User createRandomUser() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String uuid = UUID.randomUUID().toString().substring(0, 8);

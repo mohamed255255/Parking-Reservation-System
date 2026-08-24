@@ -1,7 +1,7 @@
 package com.parking_reservation_system.service;
 
-import com.parking_reservation_system.dto.request.SlotDto;
-import com.parking_reservation_system.dto.response.SlotResponseDto;
+import com.parking_reservation_system.dto.request.SlotRequest;
+import com.parking_reservation_system.dto.response.SlotResponse;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
 import com.parking_reservation_system.mapper.SlotMapper;
 import com.parking_reservation_system.model.Garage;
@@ -26,28 +26,28 @@ public class SlotService {
     private final VehicleRepository vehicleRepository;
     private final QRCodeService qrCodeService;
 
-    public SlotResponseDto createSlot(SlotDto slotDto) {
+    public SlotResponse createSlot(SlotRequest SlotRequest) {
 
         Garage existedGarage =
                 garageRepository
-                        .findById(slotDto.garage_id())
+                        .findById(SlotRequest.garage_id())
                         .orElseThrow(
                                 () ->
                                         new ResourceNotFoundException(
                                                 "Garage not found with id: "
-                                                        + slotDto.garage_id()));
+                                                        + SlotRequest.garage_id()));
 
-        Slot newSlot = SlotMapper.toEntity(slotDto);
+        Slot newSlot = SlotMapper.toEntity(SlotRequest);
         newSlot.setGarage(existedGarage);
 
-        String qrCodePath = qrCodeService.saveQRCodeImage(slotDto);
+        String qrCodePath = qrCodeService.saveQRCodeImage(SlotRequest);
         newSlot.setQrCodeImagePath(qrCodePath);
   
      
         return SlotMapper.toResponseDto(slotRepository.save(newSlot));
     }
 
-    public List<SlotResponseDto> getUserSlots(){
+    public List<SlotResponse> getUserSlots(){
 
         User currentAuthUser =
                 ((CustomUserDetails)
@@ -63,7 +63,7 @@ public class SlotService {
                 .toList();
     }
 
-    public SlotResponseDto getSlotById(int id) {
+    public SlotResponse getSlotById(int id) {
         return slotRepository
                 .findById(id)
                 .map(slot -> SlotMapper.toResponseDto(slot))

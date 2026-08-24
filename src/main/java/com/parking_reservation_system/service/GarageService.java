@@ -1,8 +1,8 @@
 package com.parking_reservation_system.service;
 
-import com.parking_reservation_system.dto.request.GarageDto;
-import com.parking_reservation_system.dto.response.GarageResponseDto;
-import com.parking_reservation_system.dto.response.SlotResponseDto;
+import com.parking_reservation_system.dto.request.GarageRequest;
+import com.parking_reservation_system.dto.response.GarageResponse;
+import com.parking_reservation_system.dto.response.SlotResponse;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
 import com.parking_reservation_system.mapper.GarageMapper;
 import com.parking_reservation_system.mapper.SlotMapper;
@@ -20,19 +20,19 @@ public class GarageService {
     private final GarageRepository garageRepository;
     private final SlotRepository slotRepository;
 
-    public GarageResponseDto createGarage(GarageDto garageDto) {
-        Garage garage = GarageMapper.toEntity(garageDto);
+    public GarageResponse createGarage(GarageRequest GarageRequest) {
+        Garage garage = GarageMapper.toEntity(GarageRequest);
         var createdGarage = GarageMapper.toResponseDto(garageRepository.save(garage));
         return createdGarage;
     }
 
-    public List<GarageResponseDto> getAllGaragesList() {
+    public List<GarageResponse> getAllGaragesList() {
         return garageRepository.findAll().stream()
                 .map(garage -> GarageMapper.toResponseDto(garage))
                 .toList();
     }
 
-    public GarageResponseDto getGarageById(int id) {
+    public GarageResponse getGarageById(int id) {
         return garageRepository
                 .findById(id)
                 .map(garage -> GarageMapper.toResponseDto(garage))
@@ -43,15 +43,15 @@ public class GarageService {
                         });
     }
 
-    public GarageResponseDto updateGarage(int id, GarageDto garageDto) {
+    public GarageResponse updateGarage(int id, GarageRequest GarageRequest) {
         Garage updatedGarage =
                 garageRepository
                         .findById(id)
                         .map(
                                 existing -> {
-                                    existing.setName(garageDto.name());
-                                    existing.setLocation(garageDto.location());
-                                    existing.setActive(garageDto.isActive());
+                                    existing.setName(GarageRequest.name());
+                                    existing.setLocation(GarageRequest.location());
+                                    existing.setActive(GarageRequest.isActive());
                                     return garageRepository.save(existing);
                                 })
                         .orElseThrow(
@@ -66,7 +66,7 @@ public class GarageService {
         garageRepository.deleteById(id);
     }
 
-    public List<SlotResponseDto> getSlotsForThatGarage(int garageId) {
+    public List<SlotResponse> getSlotsForThatGarage(int garageId) {
         return slotRepository.findAllSlots(garageId).stream()
                 .map(slot -> SlotMapper.toResponseDto(slot))
                 .toList();

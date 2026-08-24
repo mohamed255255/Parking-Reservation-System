@@ -1,7 +1,7 @@
 package com.parking_reservation_system.controller;
 
-import com.parking_reservation_system.dto.request.VehicleDto;
-import com.parking_reservation_system.dto.response.VehicleResponseDto;
+import com.parking_reservation_system.dto.request.VehicleRequest;
+import com.parking_reservation_system.dto.response.VehicleResponse;
 import com.parking_reservation_system.service.VehicleService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,14 +30,14 @@ public class VehicleController {
     }
 
     @PostMapping
-    public ResponseEntity<VehicleResponseDto> createVehicle(@RequestBody VehicleDto vehicleDto) {
-        VehicleResponseDto createdVehicle = vehicleService.addVehicleToTheSystem(vehicleDto);
+    public ResponseEntity<VehicleResponse> createVehicle(@RequestBody VehicleRequest VehicleRequest) {
+        VehicleResponse createdVehicle = vehicleService.addVehicleToTheSystem(VehicleRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdVehicle);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateVehicle(@RequestBody VehicleDto vehicleDto, @PathVariable int id) {
-        vehicleService.updateVehicle(vehicleDto, id);
+    public ResponseEntity<String> updateVehicle(@RequestBody VehicleRequest VehicleRequest, @PathVariable int id) {
+        vehicleService.updateVehicle(VehicleRequest, id);
         return ResponseEntity.ok("Vehicle is updated successfully");
     }
 
@@ -49,14 +49,14 @@ public class VehicleController {
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<Page<VehicleResponseDto>> getAllVehicles(@RequestParam int pageNo, @RequestParam int pageSize) {
-        Page<VehicleResponseDto> vehicles = vehicleService.getAllVehicles( PageRequest.of(pageNo, pageSize) );
+    public ResponseEntity<Page<VehicleResponse>> getAllVehicles(@RequestParam int pageNo, @RequestParam int pageSize) {
+        Page<VehicleResponse> vehicles = vehicleService.getAllVehicles( PageRequest.of(pageNo, pageSize) );
         return ResponseEntity.ok(vehicles);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VehicleResponseDto> getVehicleById(@PathVariable int id) {
-        VehicleResponseDto vehicle = vehicleService.getVehicleById(id);
+    public ResponseEntity<VehicleResponse> getVehicleById(@PathVariable int id) {
+        VehicleResponse vehicle = vehicleService.getVehicleById(id);
         return ResponseEntity.ok(vehicle);
     }
 }
