@@ -59,7 +59,7 @@ class AuthenticationServiceTest {
     @Test
     void registerUser_successful() {
     RegisterUserRequest dto = new RegisterUserRequest(
-            null, "Mido", "test@gmail.com", "123", "01001111111", List.of(new Role("USER")));
+             "Mido", "test@gmail.com", "123", "01001111111", List.of(new Role("USER")));
 
     when(userRepository.existsByEmail(dto.email())).thenReturn(false);
     when(passwordEncoder.encode(dto.password())).thenReturn("encodedPassword");
@@ -70,7 +70,7 @@ class AuthenticationServiceTest {
                 return u;
             });
 
-    RegisterUserResponse response = authService.RegisterUser(dto);
+    RegisterUserResponse response = authService.registerUser(dto);
 
     // response contract
     assertThat(response.id()).isEqualTo(1);
@@ -98,7 +98,6 @@ class AuthenticationServiceTest {
     void registerUser_emailAlreadyExists_throwsException() {
         RegisterUserRequest dto =
                 new RegisterUserRequest(
-                        null,
                         "Mido",
                         "test@gmail.com",
                         "123",
@@ -107,7 +106,7 @@ class AuthenticationServiceTest {
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(true);
 
-        assertThrows(DataIntegrityViolationException.class, () -> authService.RegisterUser(dto));
+        assertThrows(DataIntegrityViolationException.class, () -> authService.registerUser(dto));
 
         verify(userRepository, never()).save(any(User.class));
         verify(emailService, never()).sendVerificationEmail(anyString(), anyString());
@@ -219,7 +218,7 @@ class AuthenticationServiceTest {
         String email = "test@gmail.com";
         String password = "123";
 
-        LoginUserRequest dto = new LoginUserRequest(null, email, password);
+        LoginUserRequest dto = new LoginUserRequest(email, password);
         User user = new User();
         user.setId(1);
         user.setEmail(email);
@@ -247,7 +246,7 @@ class AuthenticationServiceTest {
         // Given
         String email = "test@gmail.com";
         String password = "123";
-        LoginUserRequest dto = new LoginUserRequest(null, email, password);
+        LoginUserRequest dto = new LoginUserRequest(email, password);
 
         User user = new User();
         user.setEmail(email);
@@ -267,7 +266,7 @@ class AuthenticationServiceTest {
         // Given
         String email = "test@gmail.com";
         String password = "wrongpassword";
-        LoginUserRequest LoginUserRequest = new LoginUserRequest(null, email, password);
+        LoginUserRequest LoginUserRequest = new LoginUserRequest(email, password);
         User user = new User();
         user.setEmail(email);
         user.setVerified(true);
@@ -369,7 +368,6 @@ class AuthenticationServiceTest {
         // Given
         RegisterUserRequest dto =
                 new RegisterUserRequest(
-                        null,
                         "Mido",
                         "test@gmail.com",
                         "123",
@@ -387,7 +385,7 @@ class AuthenticationServiceTest {
                         });
 
         // When
-        authService.RegisterUser(dto);
+        authService.registerUser(dto);
 
         // Then
         verify(emailService).sendVerificationEmail(eq(dto.email()), anyString());

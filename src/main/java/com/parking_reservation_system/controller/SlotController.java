@@ -25,6 +25,7 @@ public class SlotController {
 
     private final SlotService slotService;
 
+    // todo : add nonnull to the fields 
     @PostMapping
     public ResponseEntity<SlotResponse> createSlot(@RequestBody SlotRequest SlotRequest) {
         var SlotResponse = slotService.createSlot(SlotRequest);

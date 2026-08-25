@@ -65,8 +65,8 @@ public class ReservationController {
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) int slot_id,
-            @RequestParam(required = false) int garage_id,
+            @RequestParam(required = false) int slotId,
+            @RequestParam(required = false) int garageId,
             @RequestParam(required = false) Reservation.Status status,
             @RequestParam(required = false) LocalDateTime startingTime,
             @RequestParam(required = false) LocalDateTime endingTime) {
@@ -74,8 +74,8 @@ public class ReservationController {
         return ApiResponse.success(
                 reservationService.getUserReservations(
                         user.getId(),
-                        slot_id,
-                        garage_id,
+                        slotId,
+                        garageId,
                         status,
                         startingTime,
                         endingTime,
@@ -88,14 +88,14 @@ public class ReservationController {
     public ApiResponse<?> getAllReservations(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) Integer slot_id,
-            @RequestParam(required = false) Integer garage_id,
+            @RequestParam(required = false) Integer slotId,
+            @RequestParam(required = false) Integer garageId,
             @RequestParam(required = false) Reservation.Status status,
             @RequestParam(required = false) LocalDateTime startingTime,
             @RequestParam(required = false) LocalDateTime endingTime) {
         return ApiResponse.success(
                 reservationService.getAllReservations(
-                        slot_id, garage_id, status, startingTime, endingTime, page, size));
+                        slotId, garageId, status, startingTime, endingTime, page, size));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")

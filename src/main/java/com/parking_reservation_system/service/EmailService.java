@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService {
 
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")
     private String from;
@@ -26,11 +26,11 @@ public class EmailService {
             message.setText(body);
             mailSender.send(message);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to send email");
+            throw new RuntimeException("Failed to send email" , e);
         }
     }
 
-    public boolean sendVerificationEmail(String to, String code) {
+    public void sendVerificationEmail(String to, String code) {
         /// TODO: should be thymleaf to either wirte the code or just open a dummy page
         String linkToVerification = "frontendUrl/verify-email?email=" + to;
         String subject = "email verification";
@@ -40,14 +40,12 @@ public class EmailService {
                         + "\nplease verify you account using this link : \n "
                         + linkToVerification;
         sendMail(to, subject, body);
-        return true;
     }
 
-    public String sendPasswordResetEmail(String to, String token) {
+    public void sendPasswordResetEmail(String to, String token) {
         String linkToVerification = "frontendUrl/reset-password?token=" + token;
         String subject = "password reset";
         String body = "to reset your password visit this link : \n " + linkToVerification;
         sendMail(to, subject, body);
-        return "Success"; // TODO : return better response ;
     }
 }

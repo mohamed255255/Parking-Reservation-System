@@ -29,7 +29,6 @@ public final class ReservationMapper {
         Integer garageId = (reservation.getGarage() != null) ? reservation.getGarage().getId() : null;
 
         return new ReservationUserRequest(
-                reservation.getId(),
                 reservation.getStartingTime(),
                 reservation.getEndingTime(),
                 slotId,

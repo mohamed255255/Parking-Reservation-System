@@ -66,7 +66,7 @@ public class SlotServiceTest {
         savedSlot.setGarage(dummyGarage);
         savedSlot.setQrCodeImagePath("/images/qr_123.png");
 
-        when(garageRepository.findById(dummySlotRequest.garage_id()))
+        when(garageRepository.findById(dummySlotRequest.garageId()))
                 .thenReturn(Optional.of(dummyGarage));
 
         when(qrCodeService.saveQRCodeImage(dummySlotRequest))
@@ -84,7 +84,7 @@ public class SlotServiceTest {
         Garage dummyGarage = new Garage() ;
         SlotRequest SlotRequest = SlotTestFactory.createSlotRequest(dummyGarage);
 
-        when(garageRepository.findById(SlotRequest.garage_id()))
+        when(garageRepository.findById(SlotRequest.garageId()))
                     .thenReturn(Optional.of(dummyGarage));
              
         when(qrCodeService.saveQRCodeImage(SlotRequest)).thenThrow(new IOException("Disk I/O failure"));

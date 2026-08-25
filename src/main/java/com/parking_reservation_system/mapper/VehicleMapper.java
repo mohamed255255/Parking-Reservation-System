@@ -32,7 +32,6 @@ public final class VehicleMapper {
         Integer userId = (vehicle.getUser() != null) ? vehicle.getUser().getId() : null;
 
         return new VehicleRequest(
-                vehicle.getId(),
                 vehicle.getPlateNumber(),
                 vehicle.getModelYear(),
                 vehicle.getModelName(),

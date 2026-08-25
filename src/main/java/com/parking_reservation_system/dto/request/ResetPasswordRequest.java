@@ -7,6 +7,10 @@ import jakarta.validation.constraints.Size;
 
 @MatchPasswordsValidation
 public record ResetPasswordRequest(
+
+        @NotBlank(message = "Verification code is required") 
+        String resetPasswordcode,
+
         @Email
         @NotBlank(message = "email field is missing")
         String email,

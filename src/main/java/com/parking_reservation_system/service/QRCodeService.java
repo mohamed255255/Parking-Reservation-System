@@ -71,9 +71,9 @@ public class QRCodeService {
     }
 
     public String saveQRCodeImage(SlotRequest SlotRequest) {
-    String toBeEncodedText = "G" + SlotRequest.garage_id() + "_S" + SlotRequest.slot_number();
+    String toBeEncodedText = "G" + SlotRequest.garageId() + "_S" + SlotRequest.slot_number();
     Path qrCodeDir = Paths.get(qrCodeDirectory).toAbsolutePath().normalize();
-    String fileName = "G" + SlotRequest.garage_id() + "_S" + SlotRequest.slot_number() + ".png";
+    String fileName = "G" + SlotRequest.garageId() + "_S" + SlotRequest.slot_number() + ".png";
     Path targetLocation = qrCodeDir.resolve(fileName);
 
     try {

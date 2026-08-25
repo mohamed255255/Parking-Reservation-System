@@ -29,7 +29,6 @@ public final class GarageMapper {
         }
 
         return new GarageRequest(
-                garage.getId(),
                 garage.getName(),
                 garage.getLocation(),
                 garage.isActive(),

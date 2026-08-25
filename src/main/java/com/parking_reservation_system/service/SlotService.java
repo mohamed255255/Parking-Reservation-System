@@ -30,12 +30,12 @@ public class SlotService {
 
         Garage existedGarage =
                 garageRepository
-                        .findById(SlotRequest.garage_id())
+                        .findById(SlotRequest.garageId())
                         .orElseThrow(
                                 () ->
                                         new ResourceNotFoundException(
                                                 "Garage not found with id: "
-                                                        + SlotRequest.garage_id()));
+                                                        + SlotRequest.garageId()));
 
         Slot newSlot = SlotMapper.toEntity(SlotRequest);
         newSlot.setGarage(existedGarage);

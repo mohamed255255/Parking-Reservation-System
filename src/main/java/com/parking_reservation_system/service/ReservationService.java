@@ -64,7 +64,7 @@ public class ReservationService {
 
             Slot requiredSlot =
                     slotRepository
-                            .findByIdWithALock(ReservationUserRequest.slot_id())
+                            .findByIdWithALock(ReservationUserRequest.slotId())
                             .orElseThrow(
                                     () ->
                                             new ResourceNotFoundException(
@@ -86,7 +86,7 @@ public class ReservationService {
                 throw new ResourceNotFoundException("the user does not possess this vehicle");
 
             /// if there is a problem here the whole reservation service will rollback
-            slotService.addVehicleToAnEmptySlot(ReservationUserRequest.slot_id(), vehicleId);
+            slotService.addVehicleToAnEmptySlot(ReservationUserRequest.slotId(), vehicleId);
 
             Reservation newReservation = ReservationMapper.toEntity(ReservationUserRequest);
 
@@ -186,18 +186,18 @@ public class ReservationService {
                         .findById(id)
                         .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
 
-        if (dto.slot_id() != null) {
+        if (dto.slotId() != null) {
             Slot slot =
                     slotRepository
-                            .findById(dto.slot_id())
+                            .findById(dto.slotId())
                             .orElseThrow(() -> new ResourceNotFoundException("Slot not found"));
             reservation.setSlot(slot);
         }
 
-        if (dto.garage_id() != null) {
+        if (dto.garageId() != null) {
             Garage garage =
                     garageRepository
-                            .findById(dto.garage_id())
+                            .findById(dto.garageId())
                             .orElseThrow(() -> new ResourceNotFoundException("Garage not found"));
 
             reservation.setGarage(garage);
