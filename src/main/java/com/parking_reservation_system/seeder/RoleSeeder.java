@@ -15,12 +15,18 @@ class RoleSeeder implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
         Long count =
-                ((Number) entityManager.createNativeQuery("SELECT COUNT(*) FROM roles").getSingleResult())
+                ((Number)
+                                entityManager
+                                        .createNativeQuery("SELECT COUNT(*) FROM roles")
+                                        .getSingleResult())
                         .longValue();
 
         if (count == 0) {
-            entityManager.createNativeQuery("INSERT INTO roles (id, name) VALUES (1, 'USER')").executeUpdate();
-            entityManager.createNativeQuery("INSERT INTO roles (id, name) VALUES (2, 'ADMIN')")
+            entityManager
+                    .createNativeQuery("INSERT INTO roles (id, name) VALUES (1, 'USER')")
+                    .executeUpdate();
+            entityManager
+                    .createNativeQuery("INSERT INTO roles (id, name) VALUES (2, 'ADMIN')")
                     .executeUpdate();
             System.out.println("Roles seeded successfully!");
             System.out.println("USER ---> 1   ,   ADMIN ----> 2");

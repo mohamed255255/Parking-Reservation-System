@@ -1,13 +1,12 @@
 package com.parking_reservation_system.util;
 
+import com.parking_reservation_system.model.User;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-import com.parking_reservation_system.model.User;
-
 public class UserTestFactory {
-    private UserTestFactory(){}
-    
+    private UserTestFactory() {}
+
     public static User createRandomUser() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String uuid = UUID.randomUUID().toString().substring(0, 8);

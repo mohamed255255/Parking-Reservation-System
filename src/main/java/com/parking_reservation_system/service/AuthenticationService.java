@@ -19,7 +19,6 @@ import com.parking_reservation_system.model.User;
 import com.parking_reservation_system.repository.PasswordResetRepository;
 import com.parking_reservation_system.repository.UserRepository;
 import com.parking_reservation_system.utils.HashUtils;
-
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -42,24 +41,23 @@ public class AuthenticationService {
     private final EmailService emailService;
 
     private static final SecureRandom RANDOM = new SecureRandom();
-    
+
     @Transactional
     public RegisterUserResponse registerUser(RegisterUserRequest userDto) {
         boolean isEmailExist = userRepository.existsByEmail(userDto.email());
-        if (isEmailExist) { 
+        if (isEmailExist) {
             throw new UserAlreadyExistedException("User already registered");
         }
 
         String code = String.format("%06d", RANDOM.nextInt(100_000));
-      
+
         User user = UserMapper.toUser(userDto, passwordEncoder);
-        user.setVerificationCode(HashUtils.hashVerificationCode(code)); 
+        user.setVerificationCode(HashUtils.hashVerificationCode(code));
         user.setVerified(false);
         user.setExpirationTime(LocalDateTime.now().plusMinutes(15));
-      
+
         userRepository.save(user);
 
-     
         emailService.sendVerificationEmail(userDto.email(), code);
 
         return new RegisterUserResponse(

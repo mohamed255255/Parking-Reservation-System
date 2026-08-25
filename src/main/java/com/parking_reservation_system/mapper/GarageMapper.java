@@ -6,8 +6,7 @@ import com.parking_reservation_system.model.Garage;
 
 public final class GarageMapper {
 
-    private GarageMapper() { 
-    }
+    private GarageMapper() {}
 
     public static Garage toEntity(GarageRequest dto) {
         if (dto == null) {
@@ -29,11 +28,7 @@ public final class GarageMapper {
         }
 
         return new GarageRequest(
-                garage.getName(),
-                garage.getLocation(),
-                garage.isActive(),
-                garage.getCapactiy()
-        );
+                garage.getName(), garage.getLocation(), garage.isActive(), garage.getCapactiy());
     }
 
     public static GarageResponse toResponseDto(Garage garage) {
@@ -46,7 +41,6 @@ public final class GarageMapper {
                 garage.getName(),
                 garage.getLocation(),
                 garage.isActive(),
-                garage.getCapactiy()
-        );
+                garage.getCapactiy());
     }
 }

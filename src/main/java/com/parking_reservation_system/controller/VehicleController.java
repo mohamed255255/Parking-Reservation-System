@@ -30,13 +30,15 @@ public class VehicleController {
     }
 
     @PostMapping
-    public ResponseEntity<VehicleResponse> createVehicle(@RequestBody VehicleRequest VehicleRequest) {
+    public ResponseEntity<VehicleResponse> createVehicle(
+            @RequestBody VehicleRequest VehicleRequest) {
         VehicleResponse createdVehicle = vehicleService.addVehicleToTheSystem(VehicleRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdVehicle);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateVehicle(@RequestBody VehicleRequest VehicleRequest, @PathVariable int id) {
+    public ResponseEntity<String> updateVehicle(
+            @RequestBody VehicleRequest VehicleRequest, @PathVariable int id) {
         vehicleService.updateVehicle(VehicleRequest, id);
         return ResponseEntity.ok("Vehicle is updated successfully");
     }
@@ -49,8 +51,10 @@ public class VehicleController {
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<Page<VehicleResponse>> getAllVehicles(@RequestParam int pageNo, @RequestParam int pageSize) {
-        Page<VehicleResponse> vehicles = vehicleService.getAllVehicles( PageRequest.of(pageNo, pageSize) );
+    public ResponseEntity<Page<VehicleResponse>> getAllVehicles(
+            @RequestParam int pageNo, @RequestParam int pageSize) {
+        Page<VehicleResponse> vehicles =
+                vehicleService.getAllVehicles(PageRequest.of(pageNo, pageSize));
         return ResponseEntity.ok(vehicles);
     }
 

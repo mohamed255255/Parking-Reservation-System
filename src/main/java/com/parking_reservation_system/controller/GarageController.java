@@ -50,7 +50,8 @@ public class GarageController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateGarage(@PathVariable int id, @RequestBody GarageRequest GarageRequest) {
+    public ResponseEntity<?> updateGarage(
+            @PathVariable int id, @RequestBody GarageRequest GarageRequest) {
         GarageResponse updatedGarage = garageService.updateGarage(id, GarageRequest);
         return ResponseEntity.ok(updatedGarage);
     }

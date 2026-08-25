@@ -57,9 +57,12 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse createReservation(
-            CustomUserDetails userDetails, ReservationUserRequest ReservationUserRequest, int vehicleId) {
+            CustomUserDetails userDetails,
+            ReservationUserRequest ReservationUserRequest,
+            int vehicleId) {
 
-        /// TODO : ReservationUserRequest could be null so add constarint @Non null for all fields objects in sys 
+        /// TODO : ReservationUserRequest could be null so add constarint @Non null for all fields
+        // objects in sys
         try {
 
             Slot requiredSlot =
@@ -79,9 +82,10 @@ public class ReservationService {
                                                     "this vehicle is not found at the vechicles table"));
 
             logger.error(choosenVehicle.getUser().getId() + "\n" + userDetails.getUser().getId());
-          
-            /// TODO : !Objects.equals(choosenVehicle.getUser().getId(), userDetails.getUser().getId()) because
-            /// you compare object addresses not the actual values 
+
+            /// TODO : !Objects.equals(choosenVehicle.getUser().getId(),
+            // userDetails.getUser().getId()) because
+            /// you compare object addresses not the actual values
             if (choosenVehicle.getUser().getId() != userDetails.getUser().getId())
                 throw new ResourceNotFoundException("the user does not possess this vehicle");
 
@@ -97,8 +101,9 @@ public class ReservationService {
             newReservation.setGarage(requiredSlot.getGarage());
             Reservation savedReservation = reservationRepository.save(newReservation);
             return ReservationMapper.toResponseDto(savedReservation);
-      //// TODO : remove it , Redundant Catching an exception ex : ResournceNotFoundExcep to Re-Throwing Runtime exception
-        } catch (Exception ex) { 
+            //// TODO : remove it , Redundant Catching an exception ex : ResournceNotFoundExcep to
+            // Re-Throwing Runtime exception
+        } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
         }
     }

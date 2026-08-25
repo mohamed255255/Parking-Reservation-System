@@ -1,12 +1,12 @@
 package com.parking_reservation_system.exception;
 
-public class AccountNotVerifiedException extends RuntimeException{
+public class AccountNotVerifiedException extends RuntimeException {
 
-     public AccountNotVerifiedException(String message){
+    public AccountNotVerifiedException(String message) {
         super(message);
     }
 
-    public AccountNotVerifiedException(String message , Throwable throwable){
-        super(message , throwable);
-    } 
+    public AccountNotVerifiedException(String message, Throwable throwable) {
+        super(message, throwable);
+    }
 }

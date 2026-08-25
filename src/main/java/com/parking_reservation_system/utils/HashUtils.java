@@ -1,4 +1,4 @@
-package com.parking_reservation_system.utils ;
+package com.parking_reservation_system.utils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -18,7 +18,8 @@ public final class HashUtils {
             byte[] hashBytes = digest.digest(rawCode.getBytes(StandardCharsets.UTF_8));
             return HexFormat.of().formatHex(hashBytes);
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("the selected algorithm is not supported on this platform", e);
+            throw new IllegalStateException(
+                    "the selected algorithm is not supported on this platform", e);
         }
     }
 }

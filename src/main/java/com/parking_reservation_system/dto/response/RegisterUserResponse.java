@@ -4,8 +4,4 @@ import com.parking_reservation_system.model.Role;
 import java.util.List;
 
 public record RegisterUserResponse(
-        int id, 
-        String name,
-        String email, 
-        String phone,
-        List<Role> roles) {}
+        int id, String name, String email, String phone, List<Role> roles) {}

@@ -42,12 +42,11 @@ public class SlotService {
 
         String qrCodePath = qrCodeService.saveQRCodeImage(SlotRequest);
         newSlot.setQrCodeImagePath(qrCodePath);
-  
-     
+
         return SlotMapper.toResponseDto(slotRepository.save(newSlot));
     }
 
-    public List<SlotResponse> getUserSlots(){
+    public List<SlotResponse> getUserSlots() {
 
         User currentAuthUser =
                 ((CustomUserDetails)
@@ -75,7 +74,7 @@ public class SlotService {
         Vehicle vehicle = vehicleRepository.findById(vehicleId).get();
 
         boolean isEmpty = slot.getVehicle() == null;
-        ///TODO : can we remove neseted IFs since we can have isEMpty as short circuit
+        /// TODO : can we remove neseted IFs since we can have isEMpty as short circuit
         if (isEmpty) {
             if (vehicle.getVehicleDepth() <= slot.getSlotDepth()
                     && vehicle.getVehicleWidth() <= slot.getSlotWidth()) {
@@ -95,7 +94,7 @@ public class SlotService {
             }
         }
         /// TODO : investigate best practice here we return RUn time or create Bussiness exception ?
-        /// TODO : return the cause 
+        /// TODO : return the cause
         throw new RuntimeException("the slot number " + slotId + " is already busy");
     }
 }

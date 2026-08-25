@@ -26,14 +26,11 @@ public final class ReservationMapper {
         }
 
         Integer slotId = (reservation.getSlot() != null) ? reservation.getSlot().getId() : null;
-        Integer garageId = (reservation.getGarage() != null) ? reservation.getGarage().getId() : null;
+        Integer garageId =
+                (reservation.getGarage() != null) ? reservation.getGarage().getId() : null;
 
         return new ReservationUserRequest(
-                reservation.getStartingTime(),
-                reservation.getEndingTime(),
-                slotId,
-                garageId
-        );
+                reservation.getStartingTime(), reservation.getEndingTime(), slotId, garageId);
     }
 
     public static ReservationResponse toResponseDto(Reservation reservation) {
@@ -42,7 +39,8 @@ public final class ReservationMapper {
         }
 
         Integer slotId = (reservation.getSlot() != null) ? reservation.getSlot().getId() : null;
-        Integer garageId = (reservation.getGarage() != null) ? reservation.getGarage().getId() : null;
+        Integer garageId =
+                (reservation.getGarage() != null) ? reservation.getGarage().getId() : null;
         Integer userId = (reservation.getUser() != null) ? reservation.getUser().getId() : null;
         String status = (reservation.getStatus() != null) ? reservation.getStatus().name() : null;
 
@@ -53,7 +51,6 @@ public final class ReservationMapper {
                 slotId,
                 garageId,
                 userId,
-                status
-        );
+                status);
     }
 }

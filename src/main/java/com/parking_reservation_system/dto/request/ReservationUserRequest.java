@@ -7,15 +7,8 @@ import java.time.LocalDateTime;
 
 public record ReservationUserRequest(
         @NotNull(message = "Starting time is required")
-        @FutureOrPresent(message = "You can't reserve in a previous date")
-        LocalDateTime startingTime,
-
-        @Nullable 
-        LocalDateTime endingTime,
-
-        @NotNull(message = "Slot ID is required")
-        Integer slotId,
-
-        @NotNull(message = "Garage ID is required")
-        Integer garageId
-) {}
+                @FutureOrPresent(message = "You can't reserve in a previous date")
+                LocalDateTime startingTime,
+        @Nullable LocalDateTime endingTime,
+        @NotNull(message = "Slot ID is required") Integer slotId,
+        @NotNull(message = "Garage ID is required") Integer garageId) {}

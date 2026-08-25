@@ -38,8 +38,7 @@ public final class VehicleMapper {
                 vehicle.getVehicleWidth(),
                 vehicle.getVehicleDepth(),
                 vehicle.getType(),
-                userId
-        );
+                userId);
     }
 
     public static VehicleResponse toResponseDto(Vehicle vehicle) {
@@ -57,7 +56,6 @@ public final class VehicleMapper {
                 vehicle.getVehicleWidth(),
                 vehicle.getVehicleDepth(),
                 vehicle.getType(),
-                userId
-        );
+                userId);
     }
 }

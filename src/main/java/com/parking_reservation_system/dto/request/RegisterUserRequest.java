@@ -12,20 +12,18 @@ import java.util.List;
 
 public record RegisterUserRequest(
         @NotBlank(message = "empty names are not allowed")
-        @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Special characters/numbers are not allowed")
-        String name,
-
-        @NotBlank(message = "Email is required")
-        @Email(message = "Email format is invalid")
-        String email,
-
+                @Pattern(
+                        regexp = "^[a-zA-Z\\s]+$",
+                        message = "Special characters/numbers are not allowed")
+                String name,
+        @NotBlank(message = "Email is required") @Email(message = "Email format is invalid")
+                String email,
         @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-        @NotBlank(message = "password cant be filled with whitespace / null / empty")
-        @Size(
-                min = 6,
-                max = 20,
-                message = "passwords should be greater than 6 and less than 20")
-        String password,
-
+                @NotBlank(message = "password cant be filled with whitespace / null / empty")
+                @Size(
+                        min = 6,
+                        max = 20,
+                        message = "passwords should be greater than 6 and less than 20")
+                String password,
         @PhoneValidation String phone,
         @NotNull(message = "a role must be assigned") List<Role> roles) {}

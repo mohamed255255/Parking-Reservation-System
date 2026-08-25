@@ -5,7 +5,6 @@ import com.parking_reservation_system.dto.response.SlotResponse;
 import com.parking_reservation_system.service.SlotService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +24,6 @@ public class SlotController {
 
     private final SlotService slotService;
 
-    // todo : add nonnull to the fields 
     @PostMapping
     public ResponseEntity<SlotResponse> createSlot(@RequestBody SlotRequest SlotRequest) {
         var SlotResponse = slotService.createSlot(SlotRequest);

@@ -4,7 +4,7 @@ public class ReservationServiceTest {
     /// happy path tests :
 
     /// confirm Reservation is created successfully
-  
+
     /// getUserReservations using dynamic paginated filtered query
 
     /// edge cases tests:
@@ -16,9 +16,9 @@ public class ReservationServiceTest {
     /// slot is not found
 
     /// double Reservation for the same slot from two different users test lock
-   
+
     /// double Reservation for the same slot from the same user
-     
+
     /// double Reservation for the same slot from the same user but with different vehicle
 
 }

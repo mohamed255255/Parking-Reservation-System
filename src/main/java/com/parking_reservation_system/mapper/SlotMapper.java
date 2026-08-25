@@ -33,8 +33,7 @@ public final class SlotMapper {
                 slot.getSlotWidth(),
                 slot.getSlotDepth(),
                 garageId,
-                vehicleId
-        );
+                vehicleId);
     }
 
     public static SlotResponse toResponseDto(Slot slot) {
@@ -50,7 +49,6 @@ public final class SlotMapper {
                 slot.getSlotWidth(),
                 slot.getSlotDepth(),
                 garageId,
-                vehicleId
-        );
+                vehicleId);
     }
 }
