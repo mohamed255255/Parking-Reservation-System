@@ -1,6 +1,6 @@
 package com.parking_reservation_system.exception;
 
-public class EmailSendingException extends RuntimeException {
+final public class EmailSendingException extends RuntimeException {
 
     public EmailSendingException(String message) {
         super(message);

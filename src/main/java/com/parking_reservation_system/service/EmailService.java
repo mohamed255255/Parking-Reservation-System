@@ -18,32 +18,28 @@ public class EmailService {
     }
 
     public void sendMail(String to, String subject, String body) {
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(from);
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(body);
-            mailSender.send(message);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to send email", e);
-        }
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(from);
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(body);
+        mailSender.send(message);
+        
     }
 
     public void sendVerificationEmail(String to, String code) {
-        /// TODO: should be thymleaf to either wirte the code or just open a dummy page
-        String linkToVerification = "frontendUrl/verify-email?email=" + to;
+        String linkToVerification = "frontendUrl/verify-email";
         String subject = "email verification";
         String body =
                 "your verification code is : "
                         + code
-                        + "\nplease verify you account using this link : \n "
+                        + "\nplease verify your account using this link : \n "
                         + linkToVerification;
         sendMail(to, subject, body);
     }
 
     public void sendPasswordResetEmail(String to, String token) {
-        String linkToVerification = "frontendUrl/reset-password?token=" + token;
+        String linkToVerification = "frontendUrl/reset-password" ;
         String subject = "password reset";
         String body = "to reset your password visit this link : \n " + linkToVerification;
         sendMail(to, subject, body);

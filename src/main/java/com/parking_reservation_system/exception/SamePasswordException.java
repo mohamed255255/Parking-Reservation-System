@@ -1,6 +1,6 @@
 package com.parking_reservation_system.exception;
 
-public class SamePasswordException extends RuntimeException {
+final public class SamePasswordException extends RuntimeException {
 
     public SamePasswordException(String message) {
         super(message);

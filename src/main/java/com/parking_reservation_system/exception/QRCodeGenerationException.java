@@ -1,6 +1,6 @@
 package com.parking_reservation_system.exception;
 
-public class QRCodeGenerationException extends RuntimeException {
+final public class QRCodeGenerationException extends RuntimeException {
 
     public QRCodeGenerationException(String message) {
         super(message);

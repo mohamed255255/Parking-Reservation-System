@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import org.jspecify.annotations.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -102,8 +101,7 @@ public class ReservationController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @DeleteMapping(
-            "/{id}") // TODO : investigate if pathvariable is enough for checking nulls and nonnull
+    @DeleteMapping( "/{id}") // TODO : investigate if pathvariable is enough for checking nulls and nonnull
     // in this case is redundant
     public ApiResponse<?> deleteReservation(@PathVariable Integer id) {
         reservationService.deleteReservation(id);
@@ -113,7 +111,7 @@ public class ReservationController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PatchMapping("/{id}")
     public ApiResponse<?> updateReservation(
-            @PathVariable @NonNull Integer id, @RequestBody ReservationUserRequest dto) {
-        return ApiResponse.success(reservationService.patchReservation(id, dto));
+            @PathVariable Integer id, @RequestBody ReservationUserRequest dto) {
+        return ApiResponse.success(reservationService.updateReservation(id, dto));
     }
 }

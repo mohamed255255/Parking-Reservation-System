@@ -62,6 +62,6 @@ public class VehicleService {
                 .findById(id)
                 .map(VehicleMapper::toResponseDto)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("Vehicle not found with ID: " + id));
+                        () -> new ResourceNotFoundException(String.format("Vehicle not found with ID: %d" , id)));
     }
 }

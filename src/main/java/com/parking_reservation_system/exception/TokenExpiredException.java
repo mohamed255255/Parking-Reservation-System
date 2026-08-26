@@ -1,6 +1,6 @@
 package com.parking_reservation_system.exception;
 
-public class TokenExpiredException extends RuntimeException {
+final public class TokenExpiredException extends RuntimeException {
 
     public TokenExpiredException(String message) {
         super(message);

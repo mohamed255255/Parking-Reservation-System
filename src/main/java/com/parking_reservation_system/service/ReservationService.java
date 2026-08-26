@@ -17,6 +17,8 @@ import com.parking_reservation_system.specification.ReservationSpecs;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,10 +63,6 @@ public class ReservationService {
             ReservationUserRequest ReservationUserRequest,
             int vehicleId) {
 
-        /// TODO : ReservationUserRequest could be null so add constarint @Non null for all fields
-        // objects in sys
-        try {
-
             Slot requiredSlot =
                     slotRepository
                             .findByIdWithALock(ReservationUserRequest.slotId())
@@ -83,29 +81,19 @@ public class ReservationService {
 
             logger.error(choosenVehicle.getUser().getId() + "\n" + userDetails.getUser().getId());
 
-            /// TODO : !Objects.equals(choosenVehicle.getUser().getId(),
-            // userDetails.getUser().getId()) because
-            /// you compare object addresses not the actual values
-            if (choosenVehicle.getUser().getId() != userDetails.getUser().getId())
+            if (!Objects.equals(choosenVehicle.getUser().getId(), userDetails.getUser().getId()))
                 throw new ResourceNotFoundException("the user does not possess this vehicle");
 
-            /// if there is a problem here the whole reservation service will rollback
             slotService.addVehicleToAnEmptySlot(ReservationUserRequest.slotId(), vehicleId);
 
             Reservation newReservation = ReservationMapper.toEntity(ReservationUserRequest);
-
             requiredSlot.setVehicle(choosenVehicle);
-
             newReservation.setSlot(requiredSlot);
             newReservation.setUser(userDetails.getUser());
             newReservation.setGarage(requiredSlot.getGarage());
             Reservation savedReservation = reservationRepository.save(newReservation);
             return ReservationMapper.toResponseDto(savedReservation);
-            //// TODO : remove it , Redundant Catching an exception ex : ResournceNotFoundExcep to
-            // Re-Throwing Runtime exception
-        } catch (Exception ex) {
-            throw new RuntimeException(ex.getMessage());
-        }
+      
     }
 
     public void confirmReservation(byte[] imageBytes) throws IOException {
@@ -114,19 +102,19 @@ public class ReservationService {
         // format ex : G1_S2
         String[] parts = text.split("_");
 
-        String garageIdStr = parts[0].substring(1); // skip 'G'
+        String garageIdStr = parts[0].substring(1); // skip 'G' for garage
         int garageId = Integer.parseInt(garageIdStr);
 
-        String slotNumberStr = parts[1].substring(1); // skip 'S'
+        String slotNumberStr = parts[1].substring(1); // skip 'S' for slot
         int slotNumber = Integer.parseInt(slotNumberStr);
 
         Slot slot = slotRepository.findBySlotNumber(slotNumber).get();
 
         // get the tied reservation and check if it is active only it will ignore expired anyways
-        boolean exists =
+        boolean isReservationExist =
                 reservationRepository.findActiveReservation(
                         garageId, slot.getId(), Reservation.Status.PENDING);
-        if (!exists)
+        if (!isReservationExist)
             new ResourceNotFoundException(
                     "there is no reservation active for slot number : "
                             + slotNumber
@@ -176,7 +164,7 @@ public class ReservationService {
         return reservationRepository.findAll(spec, pageable).map(ReservationMapper::toResponseDto);
     }
 
-    public void deleteReservation(Integer id) {
+    public void deleteReservation(int id) {
         if (!reservationRepository.existsById(id)) {
             throw new ResourceNotFoundException("Reservation not found with id " + id);
         }
@@ -184,7 +172,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse patchReservation(Integer id, ReservationUserRequest dto) {
+    public ReservationResponse updateReservation(int id, ReservationUserRequest dto) {
 
         Reservation reservation =
                 reservationRepository
@@ -216,7 +204,7 @@ public class ReservationService {
             reservation.setEndingTime(dto.endingTime());
         }
 
-        Reservation updated = reservationRepository.save(reservation);
-        return ReservationMapper.toResponseDto(updated);
+        Reservation updatedReservation = reservationRepository.save(reservation);
+        return ReservationMapper.toResponseDto(updatedReservation);
     }
 }

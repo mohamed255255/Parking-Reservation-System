@@ -75,7 +75,7 @@ public class AuthenticationService {
             throw new RuntimeException("Verification code has expired");
         }
 
-        if (existingUser.getVerificationCode().equals(dto.verificationCode())) {
+        if (existingUser.getVerificationCode().equals(HashUtils.hashVerificationCode(dto.verificationCode()))) {
             existingUser.setVerified(true);
             userRepository.save(existingUser);
         } else {
@@ -96,7 +96,7 @@ public class AuthenticationService {
         }
         String code = String.format("%06d", RANDOM.nextInt(100_000));
 
-        user.setVerificationCode(code);
+        user.setVerificationCode(HashUtils.hashVerificationCode(code));
         user.setExpirationTime(LocalDateTime.now().plusMinutes(15));
         userRepository.save(user);
         emailService.sendVerificationEmail(email, code);

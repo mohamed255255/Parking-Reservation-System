@@ -39,7 +39,7 @@ public class GarageService {
                 .orElseThrow(
                         () -> {
                             throw new ResourceNotFoundException(
-                                    "garage of id" + id + "is not found");
+                                   String.format(" garage of id %d is not found", id));
                         });
     }
 
@@ -55,9 +55,8 @@ public class GarageService {
                                     return garageRepository.save(existing);
                                 })
                         .orElseThrow(
-                                () ->
-                                        new ResourceNotFoundException(
-                                                "Garage with id " + id + " not found"));
+                                () -> new ResourceNotFoundException(
+                                    String.format(" garage of id %d is not found", id)));
 
         return GarageMapper.toResponseDto(updatedGarage);
     }

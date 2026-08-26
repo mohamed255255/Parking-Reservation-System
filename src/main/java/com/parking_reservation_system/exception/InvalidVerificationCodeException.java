@@ -1,6 +1,6 @@
 package com.parking_reservation_system.exception;
 
-public class InvalidVerificationCodeException extends RuntimeException {
+final public class InvalidVerificationCodeException extends RuntimeException {
 
     public InvalidVerificationCodeException(String message) {
         super(message);

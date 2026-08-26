@@ -1,6 +1,6 @@
 package com.parking_reservation_system.exception;
 
-public class UserAlreadyExistedException extends RuntimeException {
+final public class UserAlreadyExistedException extends RuntimeException {
 
     public UserAlreadyExistedException(String message) {
         super(message);

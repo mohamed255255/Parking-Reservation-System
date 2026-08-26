@@ -2,7 +2,9 @@ package com.parking_reservation_system.service;
 
 import com.parking_reservation_system.dto.request.SlotRequest;
 import com.parking_reservation_system.dto.response.SlotResponse;
+import com.parking_reservation_system.exception.InvalidDimensionsException;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
+import com.parking_reservation_system.exception.SlotBusyException;
 import com.parking_reservation_system.mapper.SlotMapper;
 import com.parking_reservation_system.model.Garage;
 import com.parking_reservation_system.model.Slot;
@@ -32,10 +34,8 @@ public class SlotService {
                 garageRepository
                         .findById(SlotRequest.garageId())
                         .orElseThrow(
-                                () ->
-                                        new ResourceNotFoundException(
-                                                "Garage not found with id: "
-                                                        + SlotRequest.garageId()));
+                                () -> new ResourceNotFoundException(
+                                        String.format("Garage not found with id: %d", SlotRequest.garageId())));
 
         Slot newSlot = SlotMapper.toEntity(SlotRequest);
         newSlot.setGarage(existedGarage);
@@ -66,7 +66,7 @@ public class SlotService {
         return slotRepository
                 .findById(id)
                 .map(slot -> SlotMapper.toResponseDto(slot))
-                .orElseThrow(() -> new ResourceNotFoundException("slot not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Slot not found with id: %d", id)));
     }
 
     public void addVehicleToAnEmptySlot(int slotId, int vehicleId) {
@@ -74,7 +74,6 @@ public class SlotService {
         Vehicle vehicle = vehicleRepository.findById(vehicleId).get();
 
         boolean isEmpty = slot.getVehicle() == null;
-        /// TODO : can we remove neseted IFs since we can have isEMpty as short circuit
         if (isEmpty) {
             if (vehicle.getVehicleDepth() <= slot.getSlotDepth()
                     && vehicle.getVehicleWidth() <= slot.getSlotWidth()) {
@@ -90,11 +89,10 @@ public class SlotService {
                 slotRepository.save(slot);
                 return;
             } else {
-                throw new RuntimeException("the vehicle dimensions don't fit properly");
+                throw new InvalidDimensionsException(String.format("Expected fitting vehicle inside the slot of area (%d * %d) (Width * depth), but got vehicle of width : %d and depth %d "
+                , slot.getSlotWidth() , slot.getSlotDepth() ,vehicle.getVehicleWidth()  , vehicle.getVehicleDepth()));
             }
         }
-        /// TODO : investigate best practice here we return RUn time or create Bussiness exception ?
-        /// TODO : return the cause
-        throw new RuntimeException("the slot number " + slotId + " is already busy");
+        throw new SlotBusyException(String.format("the slot number %d is already busy", slotId));
     }
 }
