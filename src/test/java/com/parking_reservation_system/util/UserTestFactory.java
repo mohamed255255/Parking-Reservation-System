@@ -10,6 +10,7 @@ public class UserTestFactory {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String uuid = UUID.randomUUID().toString().substring(0, 8);
         User user = new User();
+        user.setId(1);
         user.setName("Test User " + uuid);
         user.setEmail("user_" + uuid + "@example.com");
         user.setPassword("$2a$10$e8.mockedHashedPasswordValue123456789"); // Mock BCrypt hash

@@ -79,25 +79,25 @@ public class SlotServiceTest {
         assertNotNull(response);
     }
 
-    @Test 
-    public void should_throw_IOexception_on_create_slot(){
-        Garage dummyGarage = new Garage() ;
-        SlotDto slotDto = SlotTestFactory.createSlotDto(dummyGarage);
+@Test
+public void should_throw_IOexception_on_create_slot() {
+    Garage dummyGarage = new Garage();
+    SlotRequest slotRequest = SlotTestFactory.createSlotRequest(dummyGarage);
 
-        when(garageRepository.findById(slotDto.garage_id()))
-                    .thenReturn(Optional.of(dummyGarage));
-             
-        when(qrCodeService.saveQRCodeImage(slotDto)).thenThrow(new IOException("Disk I/O failure"));
-     
-        QRCodeGenerationException exception = assertThrows(
-            QRCodeGenerationException.class,
-            () -> slotService.createSlot(slotDto)
-    );
+    when(garageRepository.findById(slotRequest.garageId()))
+            .thenReturn(Optional.of(dummyGarage));
+
+    when(qrCodeService.saveQRCodeImage(slotRequest))
+            .thenThrow(new QRCodeGenerationException("failed to create QR code for the slot ", new IOException()));
+
+    QRCodeGenerationException exception =
+            assertThrows(
+                    QRCodeGenerationException.class, () -> slotService.createSlot(slotRequest));
 
     assertEquals("failed to create QR code for the slot ", exception.getMessage());
     assertInstanceOf(IOException.class, exception.getCause());
     verify(slotRepository, never()).save(any(Slot.class));
-    }
+}
 
     @Test
     public void should_get_all_user_slots_successfully() {
@@ -148,9 +148,9 @@ public class SlotServiceTest {
           assertThrows(RuntimeException.class, 
               () -> slotService.addVehicleToAnEmptySlot(smallSlot.getId(), vehicle.getId()));
 
-          // VERIFY SIDE EFFECT (Database shouldn't persist invalid state)
-           verify(slotRepository, never()).save(any());
-         }
+        // VERIFY SIDE EFFECT
+        verify(slotRepository, never()).save(any());
+    }
 
     @Test 
     void should_fail_adding_vehicle_to_busy_slot() {

@@ -12,17 +12,19 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.parking_reservation_system.dto.request.EmailVerificationDto;
-import com.parking_reservation_system.dto.request.LoginUserDto;
-import com.parking_reservation_system.dto.request.RegisterUserDto;
-import com.parking_reservation_system.dto.request.ResetPasswordDto;
-import com.parking_reservation_system.dto.response.EmailVerificationResponseDto;
-import com.parking_reservation_system.dto.response.RegisterUserResponseDto;
+import com.parking_reservation_system.dto.request.EmailVerificationRequest;
+import com.parking_reservation_system.dto.request.LoginUserRequest;
+import com.parking_reservation_system.dto.request.RegisterUserRequest;
+import com.parking_reservation_system.dto.request.ResetPasswordRequest;
+import com.parking_reservation_system.dto.response.EmailVerificationResponse;
+import com.parking_reservation_system.dto.response.RegisterUserResponse;
+import com.parking_reservation_system.exception.UserAlreadyExistedException;
 import com.parking_reservation_system.model.PasswordResetToken;
 import com.parking_reservation_system.model.Role;
 import com.parking_reservation_system.model.User;
 import com.parking_reservation_system.repository.PasswordResetRepository;
 import com.parking_reservation_system.repository.UserRepository;
+import com.parking_reservation_system.utils.HashUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,7 +35,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -79,20 +80,25 @@ class AuthenticationServiceTest {
     assertThat(response.phone()).isEqualTo(dto.phone());
     assertThat(response.roles()).isEqualTo(dto.roles());
 
-    // saved user state
-    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-    verify(userRepository).save(userCaptor.capture());
-    User savedUser = userCaptor.getValue();
+        // saved user state
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        ArgumentCaptor<String> codeCaptor = ArgumentCaptor.forClass(String.class);
 
-    assertThat(savedUser.getVerificationCode()).matches("\\d{5}");
-    assertThat(savedUser.isVerified()).isFalse();
-    assertThat(savedUser.getExpirationTime())
-            .isAfter(LocalDateTime.now().plusMinutes(14))
-            .isBefore(LocalDateTime.now().plusMinutes(16));
+        verify(userRepository).save(userCaptor.capture());
+        User savedUser = userCaptor.getValue();
 
-    // email tied to the actual generated code, not "any string"
-    verify(emailService).sendVerificationEmail(eq(dto.email()), eq(savedUser.getVerificationCode()));
-}
+        assertThat(savedUser.isVerified()).isFalse();
+        assertThat(savedUser.getExpirationTime())
+                .isAfter(LocalDateTime.now().plusMinutes(14))
+                .isBefore(LocalDateTime.now().plusMinutes(16));
+
+        verify(emailService)
+                .sendVerificationEmail(eq(dto.email()) , codeCaptor.capture());
+        String sentCode = codeCaptor.getValue();     
+      
+        assertThat(savedUser.getVerificationCode())
+        .isEqualTo(HashUtils.hashVerificationCode(sentCode));   
+    }
 
     @Test
     void registerUser_emailAlreadyExists_throwsException() {
@@ -107,7 +113,7 @@ class AuthenticationServiceTest {
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(true);
 
-        assertThrows(DataIntegrityViolationException.class, () -> authService.RegisterUser(dto));
+        assertThrows(UserAlreadyExistedException.class, () -> authService.registerUser(dto));
 
         verify(userRepository, never()).save(any(User.class));
         verify(emailService, never()).sendVerificationEmail(anyString(), anyString());
@@ -116,14 +122,14 @@ class AuthenticationServiceTest {
     @Test
     void verifyUser_successful() {
         String email = "test@gmail.com";
-        String ExistedCode = "12345";
+        String ExistedCode = "123456";
 
         EmailVerificationDto dto = new EmailVerificationDto(ExistedCode, email);
 
         User user = new User();
         user.setId(1);
         user.setEmail(email);
-        user.setVerificationCode(ExistedCode);
+        user.setVerificationCode(HashUtils.hashVerificationCode(ExistedCode));
         user.setExpirationTime(LocalDateTime.now().plusMinutes(15));
         user.setVerified(false);
 
@@ -286,17 +292,18 @@ class AuthenticationServiceTest {
     @Test
     void resetPassword_successful() {
         // Given
+        String resetPasswordcode = "123456";
         String email = "test@gmail.com";
-        String token = "reset-token";
         String newPassword = "newPassword123";
-        ResetPasswordDto ResetPasswordDto = new ResetPasswordDto(email, newPassword, newPassword);
+        ResetPasswordRequest ResetPasswordRequest =
+                new ResetPasswordRequest(resetPasswordcode , email, newPassword, newPassword);
 
         User user = new User();
         user.setId(1);
         user.setEmail(email);
 
         PasswordResetToken resetToken = new PasswordResetToken();
-        resetToken.setToken(token);
+        resetToken.setToken(resetPasswordcode);
         resetToken.setUser(user);
         resetToken.setExpiryDate(LocalDateTime.now().plusHours(1));
 
@@ -305,7 +312,7 @@ class AuthenticationServiceTest {
         when(passwordEncoder.encode(newPassword)).thenReturn("encodedNewPassword");
 
         // When
-        authService.resetPassword(ResetPasswordDto, token);
+        authService.resetPassword(ResetPasswordRequest);
 
         // Then
         verify(userRepository).findByEmail(email);
@@ -318,26 +325,28 @@ class AuthenticationServiceTest {
     @Test
     void resetPassword_expiredToken_throwsException() {
         // Given
+        String resetPasswordcode = "123456";
         String email = "test@gmail.com";
-        String token = "expired-token";
         String newPassword = "newPassword123";
-        ResetPasswordDto ResetPasswordDto = new ResetPasswordDto(email, newPassword, newPassword);
+        ResetPasswordRequest ResetPasswordRequest =
+                new ResetPasswordRequest(resetPasswordcode , email, newPassword, newPassword);
 
         User user = new User();
         user.setId(1);
         user.setEmail(email);
 
         PasswordResetToken resetToken = new PasswordResetToken();
-        resetToken.setToken(token);
+        resetToken.setToken(resetPasswordcode);
         resetToken.setUser(user);
         resetToken.setExpiryDate(LocalDateTime.now().minusHours(1)); // Expired
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
-        when(passwordResetRepository.findByToken(token)).thenReturn(Optional.of(resetToken));
+        when(passwordResetRepository.findByToken(resetPasswordcode)).thenReturn(Optional.of(resetToken));
 
         // When & Then
         assertThrows(
-                RuntimeException.class, () -> authService.resetPassword(ResetPasswordDto, token));
+                RuntimeException.class,
+                () -> authService.resetPassword(ResetPasswordRequest));
 
         verify(userRepository, never()).save(any(User.class));
         verify(passwordResetRepository, never()).delete(any());
@@ -346,10 +355,12 @@ class AuthenticationServiceTest {
     @Test
     void resetPassword_invalidToken_throwsException() {
         // Given
+        String resetPasswordcode = "123456";
         String email = "test@gmail.com";
         String token = "invalid-token";
         String newPassword = "newPassword123";
-        ResetPasswordDto ResetPasswordDto = new ResetPasswordDto(email, newPassword, newPassword);
+        ResetPasswordRequest ResetPasswordRequest =
+                new ResetPasswordRequest(resetPasswordcode , email, newPassword, newPassword);
 
         User user = new User();
         user.setEmail(email);
@@ -359,7 +370,8 @@ class AuthenticationServiceTest {
 
         // When & Then
         assertThrows(
-                RuntimeException.class, () -> authService.resetPassword(ResetPasswordDto, token));
+                RuntimeException.class,
+                () -> authService.resetPassword(ResetPasswordRequest));
 
         verify(userRepository, never()).save(any(User.class));
     }
