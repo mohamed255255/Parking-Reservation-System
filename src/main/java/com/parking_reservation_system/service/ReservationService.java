@@ -48,7 +48,6 @@ public class ReservationService {
 
     private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
-    /// TODO : avoid magic number , and double values for fees should be int or BigInt
     public double calculateFees(ReservationResponse reservation) {
         LocalDateTime start = reservation.startingTime();
         LocalDateTime end = reservation.endingTime();
@@ -79,10 +78,10 @@ public class ReservationService {
                                             new ResourceNotFoundException(
                                                     "this vehicle is not found at the vechicles table"));
 
-            logger.error(choosenVehicle.getUser().getId() + "\n" + userDetails.getUser().getId());
+            logger.info(choosenVehicle.getUser().getId() + "\n" + userDetails.getUser().getId());
 
             if (!Objects.equals(choosenVehicle.getUser().getId(), userDetails.getUser().getId()))
-                throw new ResourceNotFoundException("the user does not possess this vehicle");
+                throw new RuntimeException("the user does not possess this vehicle");
 
             slotService.addVehicleToAnEmptySlot(ReservationUserRequest.slotId(), vehicleId);
 
@@ -97,7 +96,6 @@ public class ReservationService {
     }
 
     public void confirmReservation(byte[] imageBytes) throws IOException {
-        /// scan QR code
         String text = qrCodeService.readQRCode(imageBytes);
         // format ex : G1_S2
         String[] parts = text.split("_");
@@ -110,17 +108,15 @@ public class ReservationService {
 
         Slot slot = slotRepository.findBySlotNumber(slotNumber).get();
 
-        // get the tied reservation and check if it is active only it will ignore expired anyways
         boolean isReservationExist =
                 reservationRepository.findActiveReservation(
                         garageId, slot.getId(), Reservation.Status.PENDING);
-        if (!isReservationExist)
-            new ResourceNotFoundException(
-                    "there is no reservation active for slot number : "
-                            + slotNumber
-                            + " garage id : "
-                            + garageId);
-
+        if (!isReservationExist){
+           new ResourceNotFoundException(
+           String.format("There is no active reservation for slot number: %d and garage ID: %d", slotNumber, garageId)
+           );
+        }
+        
         // Redirect to payment page after Scanning QR code
     }
 
@@ -134,7 +130,7 @@ public class ReservationService {
             int page,
             int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-
+       
         Specification<Reservation> spec =
                 Specification.where(ReservationSpecs.hasUser(userId))
                         .and(ReservationSpecs.hasSlotId(slotId))

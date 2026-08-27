@@ -159,7 +159,7 @@ public class AuthenticationService {
                         .findByUserId(user.getId())
                         .orElseThrow(
                                 () -> new ResourceNotFoundException("The token doesn't exist"));
-        ;
+        
         if (!dto.resetPasswordcode().equals(existedToken.getToken())) {
             throw new TokenMismatchException("Token mismatch error");
         }

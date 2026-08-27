@@ -24,8 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/reservation")
-/// TODO : Is this redundant , anyone can reserve as long as he is authenticated ?
-@PreAuthorize("hasAnyRole('USER','ADMIN')")
+
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -101,8 +100,7 @@ public class ReservationController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @DeleteMapping( "/{id}") // TODO : investigate if pathvariable is enough for checking nulls and nonnull
-    // in this case is redundant
+    @DeleteMapping( "/{id}") 
     public ApiResponse<?> deleteReservation(@PathVariable Integer id) {
         reservationService.deleteReservation(id);
         return ApiResponse.success("Reservation deleted successfully");
