@@ -1,22 +1,28 @@
 package com.parking_reservation_system.service;
 
-import com.parking_reservation_system.dto.request.EmailVerificationDto;
-import com.parking_reservation_system.dto.request.LoginUserDto;
-import com.parking_reservation_system.dto.request.RegisterUserDto;
-import com.parking_reservation_system.dto.request.ResetPasswordDto;
-import com.parking_reservation_system.dto.response.EmailVerificationResponseDto;
-import com.parking_reservation_system.dto.response.RegisterUserResponseDto;
+import com.parking_reservation_system.dto.request.EmailVerificationRequest;
+import com.parking_reservation_system.dto.request.LoginUserRequest;
+import com.parking_reservation_system.dto.request.RegisterUserRequest;
+import com.parking_reservation_system.dto.request.ResetPasswordRequest;
+import com.parking_reservation_system.dto.response.EmailVerificationResponse;
+import com.parking_reservation_system.dto.response.RegisterUserResponse;
+import com.parking_reservation_system.exception.AccountNotVerifiedException;
+import com.parking_reservation_system.exception.InvalidVerificationCodeException;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
+import com.parking_reservation_system.exception.SamePasswordException;
+import com.parking_reservation_system.exception.TokenExpiredException;
+import com.parking_reservation_system.exception.TokenMismatchException;
+import com.parking_reservation_system.exception.UserAlreadyExistedException;
 import com.parking_reservation_system.mapper.UserMapper;
 import com.parking_reservation_system.model.PasswordResetToken;
 import com.parking_reservation_system.model.User;
 import com.parking_reservation_system.repository.PasswordResetRepository;
 import com.parking_reservation_system.repository.UserRepository;
+import com.parking_reservation_system.utils.HashUtils;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,28 +40,31 @@ public class AuthenticationService {
     private final PasswordResetRepository passwordResetRepository;
     private final EmailService emailService;
 
-    private static SecureRandom RANDOM = new SecureRandom();
+    private static final SecureRandom RANDOM = new SecureRandom();
 
-    public RegisterUserResponseDto RegisterUser(RegisterUserDto userDto) {
-        boolean check = userRepository.existsByEmail(userDto.email());
-        if (check) {
-            throw new DataIntegrityViolationException("User already registered");
+    @Transactional
+    public RegisterUserResponse registerUser(RegisterUserRequest userDto) {
+        boolean isEmailExist = userRepository.existsByEmail(userDto.email());
+        if (isEmailExist) {
+            throw new UserAlreadyExistedException("User already registered");
         }
 
-        String code = String.format("%05d", RANDOM.nextInt(100_000));
+        String code = String.format("%06d", RANDOM.nextInt(100_000));
+
         User user = UserMapper.toUser(userDto, passwordEncoder);
-        user.setVerificationCode(code);
+        user.setVerificationCode(HashUtils.hashVerificationCode(code));
         user.setVerified(false);
         user.setExpirationTime(LocalDateTime.now().plusMinutes(15));
+
         userRepository.save(user);
 
         emailService.sendVerificationEmail(userDto.email(), code);
 
-        return new RegisterUserResponseDto(
+        return new RegisterUserResponse(
                 user.getId(), user.getName(), user.getEmail(), user.getPhone(), user.getRoles());
     }
 
-    public EmailVerificationResponseDto verifyUser(EmailVerificationDto dto)
+    public EmailVerificationResponse verifyUser(EmailVerificationRequest dto)
             throws RuntimeException {
         User existingUser =
                 userRepository
@@ -66,15 +75,16 @@ public class AuthenticationService {
             throw new RuntimeException("Verification code has expired");
         }
 
-        if (existingUser.getVerificationCode().equals(dto.verificationCode())) {
+        if (existingUser.getVerificationCode().equals(HashUtils.hashVerificationCode(dto.verificationCode()))) {
             existingUser.setVerified(true);
             userRepository.save(existingUser);
         } else {
-            throw new RuntimeException("Invalid verification code");
+            throw new InvalidVerificationCodeException("Invalid verification code");
         }
-        return new EmailVerificationResponseDto(dto.verificationCode(), dto.email());
+        return new EmailVerificationResponse(dto.verificationCode(), dto.email());
     }
 
+    @Transactional
     public void resendVerificationCode(String email) throws RuntimeException {
         User user =
                 userRepository
@@ -84,15 +94,15 @@ public class AuthenticationService {
         if (user.isVerified()) {
             throw new RuntimeException("User is already verified");
         }
-        String code = String.format("%05d", RANDOM.nextInt(100_000));
+        String code = String.format("%06d", RANDOM.nextInt(100_000));
 
-        user.setVerificationCode(code);
+        user.setVerificationCode(HashUtils.hashVerificationCode(code));
         user.setExpirationTime(LocalDateTime.now().plusMinutes(15));
         userRepository.save(user);
         emailService.sendVerificationEmail(email, code);
     }
 
-    public String loginUser(LoginUserDto userDto) {
+    public String loginUser(LoginUserRequest userDto) {
 
         User registeredUser =
                 userRepository
@@ -100,14 +110,13 @@ public class AuthenticationService {
                         .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (!registeredUser.isVerified())
-            throw new RuntimeException("account has not verifiyed yet");
+            throw new AccountNotVerifiedException("account has not verifiyed yet");
 
         authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userDto.email(), userDto.password()));
         return jwtService.generateToken(userDto.email());
     }
 
-    //// key generation and saving should be indeepndent from sening mail
     @Transactional
     public PasswordResetToken createResetToken(User user) {
         var optionalToken = passwordResetRepository.findByUserId(user.getId());
@@ -139,7 +148,8 @@ public class AuthenticationService {
         return "Password link has been sent to the user's email: " + email;
     }
 
-    public String resetPassword(ResetPasswordDto dto, String Urltoken) {
+    @Transactional
+    public void resetPassword(ResetPasswordRequest dto) {
         User user =
                 userRepository
                         .findByEmail(dto.email())
@@ -149,25 +159,20 @@ public class AuthenticationService {
                         .findByUserId(user.getId())
                         .orElseThrow(
                                 () -> new ResourceNotFoundException("The token doesn't exist"));
-        ;
-        /// verifying
-        if (!Urltoken.equals(existedToken.getToken())) {
-            throw new RuntimeException("Token mismatch error");
+        
+        if (!dto.resetPasswordcode().equals(existedToken.getToken())) {
+            throw new TokenMismatchException("Token mismatch error");
         }
-        /// is expired
         if (existedToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Reset password token is expired");
+            throw new TokenExpiredException("Reset password token is expired");
         }
-        /// same as old password
         if (passwordEncoder.matches(dto.newPassword(), user.getPassword())) {
-            throw new RuntimeException("old password must be different from old password");
+            throw new SamePasswordException("new password must be different from old password.");
         }
 
         user.setPassword(passwordEncoder.encode(dto.newPassword()));
-        /// consume after using so it wont be used infinitly
+
         passwordResetRepository.delete(existedToken);
         userRepository.save(user);
-
-        return "password is reset successfully";
     }
 }

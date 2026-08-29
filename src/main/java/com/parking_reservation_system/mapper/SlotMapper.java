@@ -1,13 +1,17 @@
 package com.parking_reservation_system.mapper;
 
-import com.parking_reservation_system.dto.request.SlotDto;
-import com.parking_reservation_system.dto.response.SlotResponseDto;
+import com.parking_reservation_system.dto.request.SlotRequest;
+import com.parking_reservation_system.dto.response.SlotResponse;
 import com.parking_reservation_system.model.Slot;
 
-public class SlotMapper {
+public final class SlotMapper {
 
-    public static Slot toEntity(SlotDto dto) {
-        if (dto == null) return null;
+    private SlotMapper() {}
+
+    public static Slot toEntity(SlotRequest dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("SlotRequest must not be null");
+        }
 
         Slot slot = new Slot();
         slot.setSlotNumber(dto.slot_number());
@@ -16,25 +20,35 @@ public class SlotMapper {
         return slot;
     }
 
-    public static SlotDto toDto(Slot slot) {
-        if (slot == null) return null;
+    public static SlotRequest toDto(Slot slot) {
+        if (slot == null) {
+            throw new IllegalArgumentException("Slot entity must not be null");
+        }
 
-        return new SlotDto(
+        Integer garageId = (slot.getGarage() != null) ? slot.getGarage().getId() : null;
+        Integer vehicleId = (slot.getVehicle() != null) ? slot.getVehicle().getId() : null;
+
+        return new SlotRequest(
                 slot.getSlotNumber(),
                 slot.getSlotWidth(),
                 slot.getSlotDepth(),
-                slot.getGarage().getId(),
-                slot.getVehicle() != null ? slot.getVehicle().getId() : 0);
+                garageId,
+                vehicleId);
     }
 
-    public static SlotResponseDto toResponseDto(Slot slot) {
-        if (slot == null) return null;
+    public static SlotResponse toResponseDto(Slot slot) {
+        if (slot == null) {
+            throw new IllegalArgumentException("Slot entity must not be null");
+        }
 
-        return new SlotResponseDto(
+        Integer garageId = (slot.getGarage() != null) ? slot.getGarage().getId() : null;
+        Integer vehicleId = (slot.getVehicle() != null) ? slot.getVehicle().getId() : null;
+
+        return new SlotResponse(
                 slot.getSlotNumber(),
                 slot.getSlotWidth(),
                 slot.getSlotDepth(),
-                slot.getGarage().getId(),
-                slot.getVehicle() != null ? slot.getVehicle().getId() : null);
+                garageId,
+                vehicleId);
     }
 }

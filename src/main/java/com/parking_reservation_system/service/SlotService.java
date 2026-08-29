@@ -1,10 +1,10 @@
 package com.parking_reservation_system.service;
 
-import com.google.zxing.WriterException;
-import com.parking_reservation_system.dto.request.SlotDto;
-import com.parking_reservation_system.dto.response.SlotResponseDto;
-import com.parking_reservation_system.exception.QRCodeGenerationException;
+import com.parking_reservation_system.dto.request.SlotRequest;
+import com.parking_reservation_system.dto.response.SlotResponse;
+import com.parking_reservation_system.exception.InvalidDimensionsException;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
+import com.parking_reservation_system.exception.SlotBusyException;
 import com.parking_reservation_system.mapper.SlotMapper;
 import com.parking_reservation_system.model.Garage;
 import com.parking_reservation_system.model.Slot;
@@ -14,7 +14,6 @@ import com.parking_reservation_system.repository.GarageRepository;
 import com.parking_reservation_system.repository.SlotRepository;
 import com.parking_reservation_system.repository.VehicleRepository;
 import com.parking_reservation_system.security.CustomUserDetails;
-import java.io.IOException;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,32 +28,25 @@ public class SlotService {
     private final VehicleRepository vehicleRepository;
     private final QRCodeService qrCodeService;
 
-    public SlotResponseDto createSlot(SlotDto slotDto) {
+    public SlotResponse createSlot(SlotRequest SlotRequest) {
 
         Garage existedGarage =
                 garageRepository
-                        .findById(slotDto.garage_id())
+                        .findById(SlotRequest.garageId())
                         .orElseThrow(
-                                () ->
-                                        new ResourceNotFoundException(
-                                                "Garage not found with id: "
-                                                        + slotDto.garage_id()));
+                                () -> new ResourceNotFoundException(
+                                        String.format("Garage not found with id: %d", SlotRequest.garageId())));
 
-        Slot newSlot = SlotMapper.toEntity(slotDto);
+        Slot newSlot = SlotMapper.toEntity(SlotRequest);
         newSlot.setGarage(existedGarage);
 
-        try {
-                String qrCodePath = qrCodeService.saveQRCodeImage(slotDto);
-                newSlot.setQrCodeImagePath(qrCodePath);
-  
-        } catch (IOException | WriterException e) {
-                throw new QRCodeGenerationException( "failed to create QR code for the slot " , e) ;
-        }
-      
+        String qrCodePath = qrCodeService.saveQRCodeImage(SlotRequest);
+        newSlot.setQrCodeImagePath(qrCodePath);
+
         return SlotMapper.toResponseDto(slotRepository.save(newSlot));
     }
 
-    public List<SlotResponseDto> getUserSlots() {
+    public List<SlotResponse> getUserSlots() {
 
         User currentAuthUser =
                 ((CustomUserDetails)
@@ -70,11 +62,11 @@ public class SlotService {
                 .toList();
     }
 
-    public SlotResponseDto getSlotById(int id) {
+    public SlotResponse getSlotById(int id) {
         return slotRepository
                 .findById(id)
                 .map(slot -> SlotMapper.toResponseDto(slot))
-                .orElseThrow(() -> new ResourceNotFoundException("slot not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Slot not found with id: %d", id)));
     }
 
     public void addVehicleToAnEmptySlot(int slotId, int vehicleId) {
@@ -97,9 +89,10 @@ public class SlotService {
                 slotRepository.save(slot);
                 return;
             } else {
-                throw new RuntimeException("the vehicle dimensions don't fit properly");
+                throw new InvalidDimensionsException(String.format("Expected fitting vehicle inside the slot of area (%d * %d) (Width * depth), but got vehicle of width : %d and depth %d "
+                , slot.getSlotWidth() , slot.getSlotDepth() ,vehicle.getVehicleWidth()  , vehicle.getVehicleDepth()));
             }
         }
-        throw new RuntimeException("the slot number " + slotId + " is already busy");
+        throw new SlotBusyException(String.format("the slot number %d is already busy", slotId));
     }
 }

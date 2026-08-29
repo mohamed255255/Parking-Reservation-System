@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService {
 
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")
     private String from;
@@ -18,36 +18,30 @@ public class EmailService {
     }
 
     public void sendMail(String to, String subject, String body) {
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(from);
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(body);
-            mailSender.send(message);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to send email");
-        }
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(from);
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(body);
+        mailSender.send(message);
+        
     }
 
-    public boolean sendVerificationEmail(String to, String code) {
-        /// TODO: should be thymleaf to either wirte the code or just open a dummy page
-        String linkToVerification = "frontendUrl/verify-email?email=" + to;
+    public void sendVerificationEmail(String to, String code) {
+        String linkToVerification = "frontendUrl/verify-email";
         String subject = "email verification";
         String body =
                 "your verification code is : "
                         + code
-                        + "\nplease verify you account using this link : \n "
+                        + "\nplease verify your account using this link : \n "
                         + linkToVerification;
         sendMail(to, subject, body);
-        return true;
     }
 
-    public String sendPasswordResetEmail(String to, String token) {
-        String linkToVerification = "frontendUrl/reset-password?token=" + token;
+    public void sendPasswordResetEmail(String to, String token) {
+        String linkToVerification = "frontendUrl/reset-password" ;
         String subject = "password reset";
         String body = "to reset your password visit this link : \n " + linkToVerification;
         sendMail(to, subject, body);
-        return "Success"; // TODO : return better response ;
     }
 }

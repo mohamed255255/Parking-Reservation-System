@@ -1,7 +1,7 @@
 package com.parking_reservation_system.service;
 
-import com.parking_reservation_system.dto.request.ReservationDto;
-import com.parking_reservation_system.dto.response.ReservationResponseDto;
+import com.parking_reservation_system.dto.request.ReservationUserRequest;
+import com.parking_reservation_system.dto.response.ReservationResponse;
 import com.parking_reservation_system.exception.ResourceNotFoundException;
 import com.parking_reservation_system.mapper.ReservationMapper;
 import com.parking_reservation_system.model.Garage;
@@ -17,6 +17,10 @@ import com.parking_reservation_system.specification.ReservationSpecs;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,23 +50,23 @@ public class ReservationService {
 
     private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
-    public double calculateFees(ReservationResponseDto reservation) {
-        LocalDateTime start = reservation.startingTime();
-        LocalDateTime end = reservation.endingTime();
+    public double calculateFees(Reservation reservation) {
+        LocalDateTime start = reservation.getStartingTime();
+        LocalDateTime end = reservation.getEndingTime();
         long minutes = Duration.between(start, end).toMinutes();
         double hours = Math.ceil((minutes / 60.0) * 100) / 100;
         return hourlyPrice * hours;
     }
 
     @Transactional
-    public ReservationResponseDto createReservation(
-            CustomUserDetails userDetails, ReservationDto reservationDto, int vehicleId) {
-
-        try {
+    public Map<String , Object> createReservation(
+            CustomUserDetails userDetails,
+            ReservationUserRequest ReservationUserRequest,
+            int vehicleId) {
 
             Slot requiredSlot =
                     slotRepository
-                            .findByIdWithALock(reservationDto.slot_id())
+                            .findByIdWithALock(ReservationUserRequest.slotId())
                             .orElseThrow(
                                     () ->
                                             new ResourceNotFoundException(
@@ -76,59 +80,63 @@ public class ReservationService {
                                             new ResourceNotFoundException(
                                                     "this vehicle is not found at the vechicles table"));
 
-            logger.error(choosenVehicle.getUser().getId() + "\n" + userDetails.getUser().getId());
-            /// check vehicle ownership
-            if (choosenVehicle.getUser().getId() != userDetails.getUser().getId())
-                throw new ResourceNotFoundException("the user does not possess this vehicle");
+            logger.info(choosenVehicle.getUser().getId() + "\n" + userDetails.getUser().getId());
 
-            /// if there is a problem here the whole reservation service will rollback
-            slotService.addVehicleToAnEmptySlot(reservationDto.slot_id(), vehicleId);
+            if (!Objects.equals(choosenVehicle.getUser().getId(), userDetails.getUser().getId()))
+                throw new RuntimeException("the user does not possess this vehicle");
 
-            Reservation newReservation = ReservationMapper.toEntity(reservationDto);
+            slotService.addVehicleToAnEmptySlot(ReservationUserRequest.slotId(), vehicleId);
 
+            Reservation newReservation = ReservationMapper.toEntity(ReservationUserRequest);
             requiredSlot.setVehicle(choosenVehicle);
-
             newReservation.setSlot(requiredSlot);
             newReservation.setUser(userDetails.getUser());
             newReservation.setGarage(requiredSlot.getGarage());
             Reservation savedReservation = reservationRepository.save(newReservation);
-            return ReservationMapper.toResponseDto(savedReservation);
 
-        } catch (Exception ex) {
-            throw new RuntimeException(ex.getMessage());
-        }
+            double parkingFee = calculateFees(savedReservation);
+
+           
+            Map<String, Object> reservationBill = new HashMap<>();
+            reservationBill.put("reservation details", ReservationMapper.toResponseDto(savedReservation));
+            reservationBill.put("parking fee", parkingFee);
+
+            
+            return reservationBill ;
+      
     }
 
-    public void confirmReservation(byte[] imageBytes) throws IOException {
-        /// scan QR code
+    public Map<String , Object> confirmReservation(byte[] imageBytes) throws IOException {
         String text = qrCodeService.readQRCode(imageBytes);
         // format ex : G1_S2
         String[] parts = text.split("_");
 
-        String garageIdStr = parts[0].substring(1); // skip 'G'
+        String garageIdStr = parts[0].substring(1); // skip 'G' for garage
         int garageId = Integer.parseInt(garageIdStr);
 
-        String slotNumberStr = parts[1].substring(1); // skip 'S'
+        String slotNumberStr = parts[1].substring(1); // skip 'S' for slot
         int slotNumber = Integer.parseInt(slotNumberStr);
 
-        Slot slot = slotRepository.findBySlotNumber(slotNumber).get();
+        Slot slot = slotRepository.findBySlotNumber(slotNumber)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Slot not found: " + slotNumber));
 
-        // get the tied reservation and check if it is active only it will ignore expired anyways
-        boolean exists =
-                reservationRepository.findActiveReservation(
-                        garageId, slot.getId(), Reservation.Status.PENDING);
-        if (!exists)
-            new ResourceNotFoundException(
-                    "there is no reservation active for slot number : "
-                            + slotNumber
-                            + " garage id : "
-                            + garageId);
+        Reservation pendingReservation = reservationRepository
+            .findActiveReservation(garageId, slot.getId(), Reservation.Status.PENDING)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                    String.format("No active reservation for slot %d in garage %d",
+                            slotNumber, garageId)));
 
-        // Redirect to payment page that has
-        // pay button which will transfer the user to the gateway IFrame
+         Map<String , Object> confirmationInformation = new HashMap<>();   
+         confirmationInformation.put("Reservation", pendingReservation);
+         confirmationInformation.put("Garage Id", garageId);
+         confirmationInformation.put("Slot number", slotNumber);
+
+         return confirmationInformation;
+        
     }
 
-    public Page<ReservationResponseDto> getUserReservations(
+    public Page<ReservationResponse> getUserReservations(
             Integer userId,
             Integer slotId,
             Integer garageId,
@@ -138,7 +146,7 @@ public class ReservationService {
             int page,
             int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-
+       
         Specification<Reservation> spec =
                 Specification.where(ReservationSpecs.hasUser(userId))
                         .and(ReservationSpecs.hasSlotId(slotId))
@@ -149,7 +157,7 @@ public class ReservationService {
         return reservationRepository.findAll(spec, pageable).map(ReservationMapper::toResponseDto);
     }
 
-    public Page<ReservationResponseDto> getAllReservations(
+    public Page<ReservationResponse> getAllReservations(
             Integer slotId,
             Integer garageId,
             Reservation.Status status,
@@ -168,7 +176,7 @@ public class ReservationService {
         return reservationRepository.findAll(spec, pageable).map(ReservationMapper::toResponseDto);
     }
 
-    public void deleteReservation(Integer id) {
+    public void deleteReservation(int id) {
         if (!reservationRepository.existsById(id)) {
             throw new ResourceNotFoundException("Reservation not found with id " + id);
         }
@@ -176,25 +184,25 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponseDto patchReservation(Integer id, ReservationDto dto) {
+    public ReservationResponse updateReservation(int id, ReservationUserRequest dto) {
 
         Reservation reservation =
                 reservationRepository
                         .findById(id)
                         .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
 
-        if (dto.slot_id() != null) {
+        if (dto.slotId() != null) {
             Slot slot =
                     slotRepository
-                            .findById(dto.slot_id())
+                            .findById(dto.slotId())
                             .orElseThrow(() -> new ResourceNotFoundException("Slot not found"));
             reservation.setSlot(slot);
         }
 
-        if (dto.garage_id() != null) {
+        if (dto.garageId() != null) {
             Garage garage =
                     garageRepository
-                            .findById(dto.garage_id())
+                            .findById(dto.garageId())
                             .orElseThrow(() -> new ResourceNotFoundException("Garage not found"));
 
             reservation.setGarage(garage);
@@ -208,7 +216,7 @@ public class ReservationService {
             reservation.setEndingTime(dto.endingTime());
         }
 
-        Reservation updated = reservationRepository.save(reservation);
-        return ReservationMapper.toResponseDto(updated);
+        Reservation updatedReservation = reservationRepository.save(reservation);
+        return ReservationMapper.toResponseDto(updatedReservation);
     }
 }

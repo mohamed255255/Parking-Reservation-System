@@ -8,14 +8,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import com.parking_reservation_system.dto.request.EmailVerificationDto;
-import com.parking_reservation_system.dto.request.LoginUserDto;
-import com.parking_reservation_system.dto.request.RegisterUserDto;
-import com.parking_reservation_system.dto.request.ResetPasswordDto;
-import com.parking_reservation_system.dto.response.EmailVerificationResponseDto;
-import com.parking_reservation_system.dto.response.RegisterUserResponseDto;
+import com.parking_reservation_system.dto.request.EmailVerificationRequest;
+import com.parking_reservation_system.dto.request.LoginUserRequest;
+import com.parking_reservation_system.dto.request.RegisterUserRequest;
+import com.parking_reservation_system.dto.request.ResetPasswordRequest;
+import com.parking_reservation_system.dto.response.EmailVerificationResponse;
+import com.parking_reservation_system.dto.response.RegisterUserResponse;
 import com.parking_reservation_system.model.PasswordResetToken;
 import com.parking_reservation_system.model.Role;
 import com.parking_reservation_system.model.User;
@@ -24,14 +26,19 @@ import com.parking_reservation_system.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+@ExtendWith(MockitoExtension.class)
 class AuthenticationServiceTest {
 
     @InjectMocks private AuthenticationService authService;
@@ -48,28 +55,14 @@ class AuthenticationServiceTest {
 
     @Mock private PasswordResetRepository passwordResetRepository;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
     void registerUser_successful() {
-        // Given
-        RegisterUserDto dto =
-                new RegisterUserDto(
-                        null,
-                        "Mido",
-                        "test@gmail.com",
-                        "123",
-                        "01001111111",
-                        List.of(new Role("USER")));
+        RegisterUserRequest dto =
+                new RegisterUserRequest(
+                        "Mido", "test@gmail.com", "123", "01001111111", List.of(new Role("USER")));
 
-        /// like in math we say let existsByemail = false
         when(userRepository.existsByEmail(dto.email())).thenReturn(false);
-        /// let passwordEncoder.encode() = encodedPassword
         when(passwordEncoder.encode(dto.password())).thenReturn("encodedPassword");
-        /// let userRepository save user u with id = 1 and return the u
         when(userRepository.save(any(User.class)))
                 .thenAnswer(
                         invocation -> {
@@ -78,53 +71,51 @@ class AuthenticationServiceTest {
                             return u;
                         });
 
-        /// When : this logic called mockito will subsitute with the above lines of code
-        /// which  represents a happy path on purpose
-        RegisterUserResponseDto response = authService.RegisterUser(dto);
+        RegisterUserResponse response = authService.registerUser(dto);
 
-        // Then
-        // check the returned values meets the right standards
-        assertThat(response).isNotNull();
+        // response contract
         assertThat(response.id()).isEqualTo(1);
         assertThat(response.email()).isEqualTo(dto.email());
         assertThat(response.name()).isEqualTo(dto.name());
-        /// verify using mockito that every logic every compnent is called without exceptions or
-        // errors
-        verify(userRepository).existsByEmail(dto.email());
-        verify(passwordEncoder).encode(dto.password());
-        verify(userRepository).save(any(User.class));
-        verify(emailService).sendVerificationEmail(eq(dto.email()), anyString());
+        assertThat(response.phone()).isEqualTo(dto.phone());
+        assertThat(response.roles()).isEqualTo(dto.roles());
+
+        // saved user state
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
+        User savedUser = userCaptor.getValue();
+
+        assertThat(savedUser.getVerificationCode()).matches("\\d{5}");
+        assertThat(savedUser.isVerified()).isFalse();
+        assertThat(savedUser.getExpirationTime())
+                .isAfter(LocalDateTime.now().plusMinutes(14))
+                .isBefore(LocalDateTime.now().plusMinutes(16));
+
+        // email tied to the actual generated code, not "any string"
+        verify(emailService)
+                .sendVerificationEmail(eq(dto.email()), eq(savedUser.getVerificationCode()));
     }
 
     @Test
     void registerUser_emailAlreadyExists_throwsException() {
-        // Given
-        RegisterUserDto dto =
-                new RegisterUserDto(
-                        null,
-                        "Mido",
-                        "test@gmail.com",
-                        "123",
-                        "01001111111",
-                        List.of(new Role("USER")));
+        RegisterUserRequest dto =
+                new RegisterUserRequest(
+                        "Mido", "test@gmail.com", "123", "01001111111", List.of(new Role("USER")));
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(true);
 
-        // When & Then
-        assertThrows(RuntimeException.class, () -> authService.RegisterUser(dto));
+        assertThrows(DataIntegrityViolationException.class, () -> authService.registerUser(dto));
 
-        verify(userRepository).existsByEmail(dto.email());
         verify(userRepository, never()).save(any(User.class));
         verify(emailService, never()).sendVerificationEmail(anyString(), anyString());
     }
 
     @Test
     void verifyUser_successful() {
-        // Given
         String email = "test@gmail.com";
         String ExistedCode = "12345";
 
-        EmailVerificationDto dto = new EmailVerificationDto(ExistedCode, email);
+        EmailVerificationRequest dto = new EmailVerificationRequest(ExistedCode, email);
 
         User user = new User();
         user.setId(1);
@@ -137,10 +128,8 @@ class AuthenticationServiceTest {
         when(userRepository.save(any(User.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        // When
-        EmailVerificationResponseDto response = authService.verifyUser(dto);
+        EmailVerificationResponse response = authService.verifyUser(dto);
 
-        // Then
         assertTrue(user.isVerified());
         assertEquals(email, response.email());
         assertEquals(ExistedCode, response.verificationCode());
@@ -150,11 +139,10 @@ class AuthenticationServiceTest {
 
     @Test
     void verifyUser_invalidVerificationCode_throwsException() {
-        // Given
         String email = "test@gmail.com";
         String inputWrongCode = "99999";
 
-        EmailVerificationDto dto = new EmailVerificationDto(inputWrongCode, email);
+        EmailVerificationRequest dto = new EmailVerificationRequest(inputWrongCode, email);
 
         User testUser = new User();
         testUser.setEmail(email);
@@ -163,7 +151,6 @@ class AuthenticationServiceTest {
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(testUser));
 
-        // When & Then
         assertThrows(RuntimeException.class, () -> authService.verifyUser(dto));
 
         verify(userRepository).findByEmail(email);
@@ -172,10 +159,9 @@ class AuthenticationServiceTest {
 
     @Test
     void verifyUser_expiredVerificationCode_throwsException() {
-        // Given
         String email = "test@gmail.com";
         String code = "12345";
-        EmailVerificationDto dto = new EmailVerificationDto(code, email);
+        EmailVerificationRequest dto = new EmailVerificationRequest(code, email);
 
         User testUser = new User();
         testUser.setEmail(email);
@@ -184,7 +170,6 @@ class AuthenticationServiceTest {
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(testUser));
 
-        // When & Then
         assertThrows(RuntimeException.class, () -> authService.verifyUser(dto));
 
         verify(userRepository).findByEmail(email);
@@ -193,16 +178,11 @@ class AuthenticationServiceTest {
 
     @Test
     void verifyUser_userNotFound_throwsException() {
-        // Given
         String email = "notfound@gmail.com";
         String code = "12345";
-        EmailVerificationDto dto = new EmailVerificationDto(code, email);
-
+        EmailVerificationRequest dto = new EmailVerificationRequest(code, email);
         when(userRepository.findByEmail(email)).thenReturn(null);
-
-        // When & Then
         assertThrows(RuntimeException.class, () -> authService.verifyUser(dto));
-
         verify(userRepository).findByEmail(email);
     }
 
@@ -236,7 +216,7 @@ class AuthenticationServiceTest {
         String email = "test@gmail.com";
         String password = "123";
 
-        LoginUserDto dto = new LoginUserDto(null, email, password);
+        LoginUserRequest dto = new LoginUserRequest(email, password);
         User user = new User();
         user.setId(1);
         user.setEmail(email);
@@ -264,7 +244,7 @@ class AuthenticationServiceTest {
         // Given
         String email = "test@gmail.com";
         String password = "123";
-        LoginUserDto dto = new LoginUserDto(null, email, password);
+        LoginUserRequest dto = new LoginUserRequest(email, password);
 
         User user = new User();
         user.setEmail(email);
@@ -284,7 +264,7 @@ class AuthenticationServiceTest {
         // Given
         String email = "test@gmail.com";
         String password = "wrongpassword";
-        LoginUserDto loginUserDto = new LoginUserDto(null, email, password);
+        LoginUserRequest LoginUserRequest = new LoginUserRequest(email, password);
         User user = new User();
         user.setEmail(email);
         user.setVerified(true);
@@ -294,7 +274,7 @@ class AuthenticationServiceTest {
                 .thenThrow(new BadCredentialsException("Invalid credentials"));
 
         // When & Then
-        assertThrows(BadCredentialsException.class, () -> authService.loginUser(loginUserDto));
+        assertThrows(BadCredentialsException.class, () -> authService.loginUser(LoginUserRequest));
 
         verify(authManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(jwtService, never()).generateToken(any());
@@ -306,7 +286,8 @@ class AuthenticationServiceTest {
         String email = "test@gmail.com";
         String token = "reset-token";
         String newPassword = "newPassword123";
-        ResetPasswordDto ResetPasswordDto = new ResetPasswordDto(email, newPassword, newPassword);
+        ResetPasswordRequest ResetPasswordRequest =
+                new ResetPasswordRequest(email, newPassword, newPassword);
 
         User user = new User();
         user.setId(1);
@@ -322,7 +303,7 @@ class AuthenticationServiceTest {
         when(passwordEncoder.encode(newPassword)).thenReturn("encodedNewPassword");
 
         // When
-        authService.resetPassword(ResetPasswordDto, token);
+        authService.resetPassword(ResetPasswordRequest, token);
 
         // Then
         verify(userRepository).findByEmail(email);
@@ -338,7 +319,8 @@ class AuthenticationServiceTest {
         String email = "test@gmail.com";
         String token = "expired-token";
         String newPassword = "newPassword123";
-        ResetPasswordDto ResetPasswordDto = new ResetPasswordDto(email, newPassword, newPassword);
+        ResetPasswordRequest ResetPasswordRequest =
+                new ResetPasswordRequest(email, newPassword, newPassword);
 
         User user = new User();
         user.setId(1);
@@ -354,7 +336,8 @@ class AuthenticationServiceTest {
 
         // When & Then
         assertThrows(
-                RuntimeException.class, () -> authService.resetPassword(ResetPasswordDto, token));
+                RuntimeException.class,
+                () -> authService.resetPassword(ResetPasswordRequest, token));
 
         verify(userRepository, never()).save(any(User.class));
         verify(passwordResetRepository, never()).delete(any());
@@ -366,7 +349,8 @@ class AuthenticationServiceTest {
         String email = "test@gmail.com";
         String token = "invalid-token";
         String newPassword = "newPassword123";
-        ResetPasswordDto ResetPasswordDto = new ResetPasswordDto(email, newPassword, newPassword);
+        ResetPasswordRequest ResetPasswordRequest =
+                new ResetPasswordRequest(email, newPassword, newPassword);
 
         User user = new User();
         user.setEmail(email);
@@ -376,7 +360,8 @@ class AuthenticationServiceTest {
 
         // When & Then
         assertThrows(
-                RuntimeException.class, () -> authService.resetPassword(ResetPasswordDto, token));
+                RuntimeException.class,
+                () -> authService.resetPassword(ResetPasswordRequest, token));
 
         verify(userRepository, never()).save(any(User.class));
     }
@@ -384,14 +369,9 @@ class AuthenticationServiceTest {
     @Test
     void sendVerificationEmail_doesNotSendRealEmail() {
         // Given
-        RegisterUserDto dto =
-                new RegisterUserDto(
-                        null,
-                        "Mido",
-                        "test@gmail.com",
-                        "123",
-                        "01001111111",
-                        List.of(new Role("USER")));
+        RegisterUserRequest dto =
+                new RegisterUserRequest(
+                        "Mido", "test@gmail.com", "123", "01001111111", List.of(new Role("USER")));
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(false);
         when(passwordEncoder.encode(dto.password())).thenReturn("encodedPassword");
@@ -404,14 +384,9 @@ class AuthenticationServiceTest {
                         });
 
         // When
-        authService.RegisterUser(dto);
+        authService.registerUser(dto);
 
         // Then
-        // Verify that emailService.sendVerificationEmail was called
-        // but because emailService is mocked, no real email is sent
         verify(emailService).sendVerificationEmail(eq(dto.email()), anyString());
-
-        // You can also verify it was called exactly once
-        verify(emailService, times(1)).sendVerificationEmail(anyString(), anyString());
     }
 }
