@@ -1,6 +1,6 @@
 package com.parking_reservation_system.controller;
 
-import com.parking_reservation_system.dto.request.ReservationDto;
+import com.parking_reservation_system.dto.request.ReservationUserRequest;
 import com.parking_reservation_system.dto.response.ApiResponse;
 import com.parking_reservation_system.model.Reservation;
 import com.parking_reservation_system.security.CustomUserDetails;
@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,8 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/reservation")
-/// TODO : is this redundant , anyone can reserve as longa as he is authenticated ? 
-@PreAuthorize("hasAnyRole('USER','ADMIN')") 
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -36,79 +37,83 @@ public class ReservationController {
 
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/{vehicleId}")
-    public ApiResponse<?> createReservation(
+    public ResponseEntity<ApiResponse<?>> createReservation(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody ReservationDto reservationDto,
-            @PathVariable int vehicleId) { //// TODO : what happen if we pass null inspect the exception ?
+            @RequestBody ReservationUserRequest reservationUserRequest,
+            @PathVariable int vehicleId) {
 
-        var reservationResponseDto =
-                reservationService.createReservation(userDetails, reservationDto, vehicleId);
-        double price = reservationService.calculateFees(reservationResponseDto);
+        Map<String, Object> reservationBill =
+                reservationService.createReservation(userDetails, reservationUserRequest, vehicleId);
 
-        Map<String, Object> bill = new HashMap<>();
-        bill.put("reservation", reservationResponseDto);
-        bill.put("price", price);
-        return ApiResponse.success(bill);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(reservationBill));
     }
 
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/confirmation")
-    public ApiResponse<?> confirmReservation(@RequestParam("file") MultipartFile file)
-            throws IOException {
-        reservationService.confirmReservation(file.getBytes());
-        return ApiResponse.success("reservation has been confirmed , redirect to the payment page");
+    public ResponseEntity<ApiResponse<?>> confirmReservation(
+            @RequestParam("file") MultipartFile file) throws IOException {
+
+        Map<String, Object> confirmationInformation =
+                reservationService.confirmReservation(file.getBytes());
+
+        return ResponseEntity.ok(ApiResponse.success(confirmationInformation));
     }
 
     @PreAuthorize("hasAnyRole('USER')")
     @GetMapping("/user")
-    public ApiResponse<?> getUserReservations(
+    public ResponseEntity<ApiResponse<?>> getUserReservations(
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) int slot_id,
-            @RequestParam(required = false) int garage_id,
+            @RequestParam(required = false) Integer slotId,
+            @RequestParam(required = false) Integer garageId,
             @RequestParam(required = false) Reservation.Status status,
-            @RequestParam(required = false) LocalDateTime startingTime,
-            @RequestParam(required = false) LocalDateTime endingTime) {
+            @RequestParam(required = false)
+                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startingTime,
+            @RequestParam(required = false)
+                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endingTime) {
 
-        return ApiResponse.success(
+        var result =
                 reservationService.getUserReservations(
-                        user.getId(),
-                        slot_id,
-                        garage_id,
-                        status,
-                        startingTime,
-                        endingTime,
-                        page,
-                        size));
+                        user.getId(), slotId, garageId, status, startingTime, endingTime, page, size);
+
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/all")
-    public ApiResponse<?> getAllReservations(
+    public ResponseEntity<ApiResponse<?>> getAllReservations(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) Integer slot_id,
-            @RequestParam(required = false) Integer garage_id,
+            @RequestParam(required = false) Integer slotId,
+            @RequestParam(required = false) Integer garageId,
             @RequestParam(required = false) Reservation.Status status,
-            @RequestParam(required = false) LocalDateTime startingTime,
-            @RequestParam(required = false) LocalDateTime endingTime) {
-        return ApiResponse.success(
+            @RequestParam(required = false)
+                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startingTime,
+            @RequestParam(required = false)
+                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endingTime) {
+
+        var result =
                 reservationService.getAllReservations(
-                        slot_id, garage_id, status, startingTime, endingTime, page, size));
+                        slotId, garageId, status, startingTime, endingTime, page, size);
+
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ApiResponse<?> deleteReservation(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable Integer id) {
         reservationService.deleteReservation(id);
-        return ApiResponse.success("Reservation deleted successfully");
+        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PatchMapping("/{id}")
-    public ApiResponse<?> updateReservation(
-            @PathVariable Integer id, @RequestBody ReservationDto dto) {
-        return ApiResponse.success(reservationService.patchReservation(id, dto));
+    public ResponseEntity<ApiResponse<?>> updateReservation(
+            @PathVariable Integer id, @RequestBody ReservationUserRequest dto) {
+        var updated = reservationService.updateReservation(id, dto);
+        return ResponseEntity.ok(ApiResponse.success(updated));
     }
 }

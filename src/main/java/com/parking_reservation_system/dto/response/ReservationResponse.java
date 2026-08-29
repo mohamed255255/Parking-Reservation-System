@@ -2,7 +2,7 @@ package com.parking_reservation_system.dto.response;
 
 import java.time.LocalDateTime;
 
-public record ReservationResponseDto(
+public record ReservationResponse(
         int id,
         LocalDateTime startingTime,
         LocalDateTime endingTime,

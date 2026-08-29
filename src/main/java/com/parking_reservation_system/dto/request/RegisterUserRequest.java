@@ -6,17 +6,18 @@ import com.parking_reservation_system.validator.PhoneValidation;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 
-
-///TODO :  @NonNull "Special characters/numbers are not allowed" with regexp
-
-public record RegisterUserDto(
-        Integer id,  //// TODO : remove the id , it is enough you get from DB
-        @NotBlank(message = "empty names are not allowed") String name, /// TODO : add constraint for "Only Latin characters are allowed",
-
-        @Email(message = "Email format is invalid") String email,
+public record RegisterUserRequest(
+        @NotBlank(message = "empty names are not allowed")
+                @Pattern(
+                        regexp = "^[a-zA-Z\\s]+$",
+                        message = "Special characters/numbers are not allowed")
+                String name,
+        @NotBlank(message = "Email is required") @Email(message = "Email format is invalid")
+                String email,
         @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
                 @NotBlank(message = "password cant be filled with whitespace / null / empty")
                 @Size(

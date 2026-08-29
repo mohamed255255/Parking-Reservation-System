@@ -16,51 +16,49 @@ import org.springframework.stereotype.Service;
 public class JWTService {
 
     @Value("${JWT_SECRET}")
-    private String secretKey; // must be Base64 256 or 32Bit
+    private String secretKey; // must be 256-bit (or larger) key
 
-    // Decode Base64 secret key into SecretKey object
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Extract username (subject) from token
     public String extractUserName(String token) {
         return extractAllClaims(token).getSubject();
     }
 
-    // Extract all claims (payload)
     public Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
-    // Extract expiration date from token
     public Date extractExpiration(String token) {
         return extractAllClaims(token).getExpiration();
     }
 
-    // Check if token is expired
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    // Validate token against UserDetails
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUserName(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    // Generate JWT token
     public String generateToken(String username) {
-        Map<String, Object> claims = new HashMap<>(); // optional extra info
+        Map<String, Object> claims = new HashMap<>(); 
+        Date now = new Date(System.currentTimeMillis());
+        Date expiry = new Date(now.getTime() + 1000L * 60 * 60 * 30); 
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(username)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(
-                        new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 30)) // 30 hours
-                .signWith(getSigningKey()) // modern jjwt 0.12.x
+                .claims(claims)
+                .subject(username)
+                .issuedAt(now)
+                .expiration(expiry)
+                .signWith(getSigningKey())
                 .compact();
     }
 }

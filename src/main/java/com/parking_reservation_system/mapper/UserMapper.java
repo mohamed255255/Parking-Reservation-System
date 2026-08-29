@@ -1,19 +1,20 @@
 package com.parking_reservation_system.mapper;
 
-import com.parking_reservation_system.dto.request.RegisterUserDto;
-import com.parking_reservation_system.dto.response.RegisterUserResponseDto;
+import com.parking_reservation_system.dto.request.RegisterUserRequest;
+import com.parking_reservation_system.dto.response.RegisterUserResponse;
 import com.parking_reservation_system.model.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
-///// TODO : use auto mappers for one class
 public class UserMapper {
 
-    public static RegisterUserDto toDto(User user) {
-        if (user == null) return null;
+    private UserMapper() {}
 
-        return new RegisterUserDto(
-                user.getId(),
+    public static RegisterUserRequest toDto(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("the argument passed to this method is null");
+        }
+
+        return new RegisterUserRequest(
                 user.getName(),
                 user.getEmail(),
                 user.getPassword(),
@@ -21,25 +22,26 @@ public class UserMapper {
                 user.getRoles());
     }
 
-    // Request DTO -> Entity
-    public static User toUser(RegisterUserDto dto, PasswordEncoder encoder) {
-        if (dto == null) return null;
+    public static User toUser(RegisterUserRequest dto, PasswordEncoder encoder) {
+        if (dto == null || encoder == null) {
+            throw new IllegalArgumentException("one of the argument passed to this method is null");
+        }
 
         User user = new User();
-        //// TODO : you should generate the id here instead of putting it in the record 
-        user.setId(dto.id());
         user.setName(dto.name());
         user.setEmail(dto.email());
         user.setPassword(encoder.encode(dto.password()));
         user.setPhone(dto.phone());
+        user.setVerified(false);
         user.setRoles(dto.roles());
         return user;
     }
 
-    public static RegisterUserResponseDto toResponseDto(User user) {
-        if (user == null) return null;
-
-        return new RegisterUserResponseDto(
+    public static RegisterUserResponse toResponseDto(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("the argument passed to this method is null");
+        }
+        return new RegisterUserResponse(
                 user.getId(), user.getName(), user.getEmail(), user.getPhone(), user.getRoles());
     }
 }

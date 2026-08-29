@@ -1,11 +1,12 @@
 package com.parking_reservation_system.controller;
 
-import com.parking_reservation_system.dto.request.EmailVerificationDto;
-import com.parking_reservation_system.dto.request.LoginUserDto;
-import com.parking_reservation_system.dto.request.RegisterUserDto;
-import com.parking_reservation_system.dto.request.ResetPasswordDto;
-import com.parking_reservation_system.dto.response.EmailVerificationResponseDto;
-import com.parking_reservation_system.dto.response.RegisterUserResponseDto;
+import com.parking_reservation_system.dto.request.EmailVerificationRequest;
+import com.parking_reservation_system.dto.request.LoginUserRequest;
+import com.parking_reservation_system.dto.request.RegisterUserRequest;
+import com.parking_reservation_system.dto.request.ResetPasswordLinkRequest;
+import com.parking_reservation_system.dto.request.ResetPasswordRequest;
+import com.parking_reservation_system.dto.response.EmailVerificationResponse;
+import com.parking_reservation_system.dto.response.RegisterUserResponse;
 import com.parking_reservation_system.service.AuthenticationService;
 import jakarta.validation.Valid;
 import java.util.Map;
@@ -14,12 +15,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthenticationController {
 
+    /// TODO : add rate limiter
     private final AuthenticationService authenticationService;
 
     public AuthenticationController(AuthenticationService authService) {
@@ -27,34 +30,35 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterUserResponseDto> register(
-            @Valid @RequestBody RegisterUserDto user) {
-        RegisterUserResponseDto dtoResponse = authenticationService.RegisterUser(user);
+    public ResponseEntity<RegisterUserResponse> register(
+            @Valid @RequestBody RegisterUserRequest user) {
+        RegisterUserResponse dtoResponse = authenticationService.registerUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(dtoResponse);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginUserDto userDto) {
-        String JWTtoken = authenticationService.loginUser(userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("token", JWTtoken));
+    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginUserRequest userDto) {
+        String jwtToken = authenticationService.loginUser(userDto);
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("token", jwtToken));
     }
 
     @PostMapping("/verify-user")
-    public ResponseEntity<EmailVerificationResponseDto> verifyUser(
-            @RequestBody EmailVerificationDto dto) {
-        EmailVerificationResponseDto dtoResponse = authenticationService.verifyUser(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(dtoResponse);
+    public ResponseEntity<EmailVerificationResponse> verifyUser(
+            @Valid @RequestBody EmailVerificationRequest dto) {
+        EmailVerificationResponse dtoResponse = authenticationService.verifyUser(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(dtoResponse);
     }
 
-    @PostMapping("/forget-password/{email}")
-    public ResponseEntity<String> sendResetPasswordLink(@PathVariable String email) {
-        String message = authenticationService.sendResetPasswordLink(email);
-        return ResponseEntity.status(HttpStatus.CREATED).body(message);
+    @PostMapping("/forget-password")
+    public ResponseEntity<String> sendResetPasswordLink(
+            @PathVariable @RequestBody ResetPasswordLinkRequest dto) {
+        String message = authenticationService.sendResetPasswordLink(dto.email());
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassowrd(  @RequestBody @Valid ResetPasswordDto dto, @RequestParam("token") String token) {
-        String message = authenticationService.resetPassword(dto, token);
-        return ResponseEntity.status(HttpStatus.CREATED).body(message);
+    public ResponseEntity<String> resetPassword(@RequestBody @Valid ResetPasswordRequest dto) {
+        authenticationService.resetPassword(dto);
+        return ResponseEntity.status(HttpStatus.OK).body("Password is reset successfully");
     }
 }

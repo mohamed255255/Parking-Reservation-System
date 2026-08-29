@@ -5,8 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record LoginUserDto(
-        Integer id,
+public record LoginUserRequest(
         @Email(message = "Email format is invalid") String email,
         @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
                 @NotBlank(message = "password cant be filled with whitespace / null / empty")

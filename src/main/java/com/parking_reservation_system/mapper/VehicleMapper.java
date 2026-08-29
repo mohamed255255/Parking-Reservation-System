@@ -1,13 +1,17 @@
 package com.parking_reservation_system.mapper;
 
-import com.parking_reservation_system.dto.request.VehicleDto;
-import com.parking_reservation_system.dto.response.VehicleResponseDto;
+import com.parking_reservation_system.dto.request.VehicleRequest;
+import com.parking_reservation_system.dto.response.VehicleResponse;
 import com.parking_reservation_system.model.Vehicle;
 
-public class VehicleMapper {
+public final class VehicleMapper {
 
-    public static Vehicle toEntity(VehicleDto dto) {
-        if (dto == null) return null;
+    private VehicleMapper() {}
+
+    public static Vehicle toEntity(VehicleRequest dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("VehicleRequest must not be null");
+        }
 
         Vehicle vehicle = new Vehicle();
         vehicle.setPlateNumber(dto.plateNumber());
@@ -16,27 +20,35 @@ public class VehicleMapper {
         vehicle.setVehicleWidth(dto.vehicleWidth());
         vehicle.setVehicleDepth(dto.vehicleDepth());
         vehicle.setType(dto.type());
+
         return vehicle;
     }
 
-    public static VehicleDto toDto(Vehicle vehicle) {
-        if (vehicle == null) return null;
+    public static VehicleRequest toDto(Vehicle vehicle) {
+        if (vehicle == null) {
+            throw new IllegalArgumentException("Vehicle entity must not be null");
+        }
 
-        return new VehicleDto(
-                vehicle.getId(),
+        Integer userId = (vehicle.getUser() != null) ? vehicle.getUser().getId() : null;
+
+        return new VehicleRequest(
                 vehicle.getPlateNumber(),
                 vehicle.getModelYear(),
                 vehicle.getModelName(),
                 vehicle.getVehicleWidth(),
                 vehicle.getVehicleDepth(),
                 vehicle.getType(),
-                vehicle.getUser() != null ? vehicle.getUser().getId() : 0);
+                userId);
     }
 
-    public static VehicleResponseDto toResponseDto(Vehicle vehicle) {
-        if (vehicle == null) return null;
+    public static VehicleResponse toResponseDto(Vehicle vehicle) {
+        if (vehicle == null) {
+            throw new IllegalArgumentException("Vehicle entity must not be null");
+        }
 
-        return new VehicleResponseDto(
+        Integer userId = (vehicle.getUser() != null) ? vehicle.getUser().getId() : null;
+
+        return new VehicleResponse(
                 vehicle.getId(),
                 vehicle.getPlateNumber(),
                 vehicle.getModelYear(),
@@ -44,6 +56,6 @@ public class VehicleMapper {
                 vehicle.getVehicleWidth(),
                 vehicle.getVehicleDepth(),
                 vehicle.getType(),
-                vehicle.getUser() != null ? vehicle.getUser().getId() : 0);
+                userId);
     }
 }

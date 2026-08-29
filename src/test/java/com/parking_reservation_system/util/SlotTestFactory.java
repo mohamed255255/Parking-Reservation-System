@@ -1,21 +1,21 @@
 package com.parking_reservation_system.util;
 
-import com.parking_reservation_system.dto.request.SlotDto;
+import com.parking_reservation_system.dto.request.SlotRequest;
 import com.parking_reservation_system.model.Garage;
 import com.parking_reservation_system.model.Slot;
 import com.parking_reservation_system.model.Vehicle;
-
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SlotTestFactory {
+
+    private SlotTestFactory() {}
 
     public static Slot createEmptySmallSlot(Garage garage) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String uuid = UUID.randomUUID().toString().substring(0, 8);
 
         Slot slot = new Slot();
-        slot.setId(2);
         slot.setSlotNumber(random.nextInt(1, 500));
         slot.setSlotWidth(10);
         slot.setSlotDepth(20);
@@ -23,12 +23,12 @@ public class SlotTestFactory {
         slot.setGarage(garage != null ? garage : new Garage());
         return slot;
     }
-     public static Slot createEmptyLargeSlot(Garage garage) {
+
+    public static Slot createEmptyLargeSlot(Garage garage) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String uuid = UUID.randomUUID().toString().substring(0, 8);
 
         Slot slot = new Slot();
-        slot.setId(2);
         slot.setSlotNumber(random.nextInt(1, 500));
         slot.setSlotWidth(600);
         slot.setSlotDepth(300);
@@ -43,15 +43,13 @@ public class SlotTestFactory {
         return slot;
     }
 
-    public static SlotDto createSlotDto(Garage garage) {
+    public static SlotRequest createSlotRequest(Garage garage) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-                return new SlotDto(
-                    random.nextInt(1, 500),
-                    random.nextInt(2, 5),  
-                    random.nextInt(5, 10), 
-                    garage.getId(),
-                    null
-                );    
-     }
-
+        return new SlotRequest(
+                random.nextInt(1, 500),
+                random.nextInt(2, 5),
+                random.nextInt(5, 10),
+                garage.getId(),
+                null);
+    }
 }

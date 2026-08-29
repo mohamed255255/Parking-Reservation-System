@@ -59,26 +59,28 @@ class AuthenticationServiceTest {
 
     @Test
     void registerUser_successful() {
-    RegisterUserDto dto = new RegisterUserDto(
-            null, "Mido", "test@gmail.com", "123", "01001111111", List.of(new Role("USER")));
+        RegisterUserRequest dto =
+                new RegisterUserRequest(
+                        "Mido", "test@gmail.com", "123", "01001111111", List.of(new Role("USER")));
 
-    when(userRepository.existsByEmail(dto.email())).thenReturn(false);
-    when(passwordEncoder.encode(dto.password())).thenReturn("encodedPassword");
-    when(userRepository.save(any(User.class)))
-            .thenAnswer(invocation -> {
-                User u = invocation.getArgument(0);
-                u.setId(1);
-                return u;
-            });
+        when(userRepository.existsByEmail(dto.email())).thenReturn(false);
+        when(passwordEncoder.encode(dto.password())).thenReturn("encodedPassword");
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(
+                        invocation -> {
+                            User u = invocation.getArgument(0);
+                            u.setId(1);
+                            return u;
+                        });
 
-    RegisterUserResponseDto response = authService.RegisterUser(dto);
+        RegisterUserResponse response = authService.registerUser(dto);
 
-    // response contract
-    assertThat(response.id()).isEqualTo(1);
-    assertThat(response.email()).isEqualTo(dto.email());
-    assertThat(response.name()).isEqualTo(dto.name());
-    assertThat(response.phone()).isEqualTo(dto.phone());
-    assertThat(response.roles()).isEqualTo(dto.roles());
+        // response contract
+        assertThat(response.id()).isEqualTo(1);
+        assertThat(response.email()).isEqualTo(dto.email());
+        assertThat(response.name()).isEqualTo(dto.name());
+        assertThat(response.phone()).isEqualTo(dto.phone());
+        assertThat(response.roles()).isEqualTo(dto.roles());
 
         // saved user state
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
@@ -102,14 +104,9 @@ class AuthenticationServiceTest {
 
     @Test
     void registerUser_emailAlreadyExists_throwsException() {
-        RegisterUserDto dto =
-                new RegisterUserDto(
-                        null,
-                        "Mido",
-                        "test@gmail.com",
-                        "123",
-                        "01001111111",
-                        List.of(new Role("USER")));
+        RegisterUserRequest dto =
+                new RegisterUserRequest(
+                        "Mido", "test@gmail.com", "123", "01001111111", List.of(new Role("USER")));
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(true);
 
@@ -124,7 +121,7 @@ class AuthenticationServiceTest {
         String email = "test@gmail.com";
         String ExistedCode = "123456";
 
-        EmailVerificationDto dto = new EmailVerificationDto(ExistedCode, email);
+        EmailVerificationRequest dto = new EmailVerificationRequest(ExistedCode, email);
 
         User user = new User();
         user.setId(1);
@@ -137,7 +134,7 @@ class AuthenticationServiceTest {
         when(userRepository.save(any(User.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        EmailVerificationResponseDto response = authService.verifyUser(dto);
+        EmailVerificationResponse response = authService.verifyUser(dto);
 
         assertTrue(user.isVerified());
         assertEquals(email, response.email());
@@ -151,7 +148,7 @@ class AuthenticationServiceTest {
         String email = "test@gmail.com";
         String inputWrongCode = "99999";
 
-        EmailVerificationDto dto = new EmailVerificationDto(inputWrongCode, email);
+        EmailVerificationRequest dto = new EmailVerificationRequest(inputWrongCode, email);
 
         User testUser = new User();
         testUser.setEmail(email);
@@ -170,7 +167,7 @@ class AuthenticationServiceTest {
     void verifyUser_expiredVerificationCode_throwsException() {
         String email = "test@gmail.com";
         String code = "12345";
-        EmailVerificationDto dto = new EmailVerificationDto(code, email);
+        EmailVerificationRequest dto = new EmailVerificationRequest(code, email);
 
         User testUser = new User();
         testUser.setEmail(email);
@@ -189,7 +186,7 @@ class AuthenticationServiceTest {
     void verifyUser_userNotFound_throwsException() {
         String email = "notfound@gmail.com";
         String code = "12345";
-        EmailVerificationDto dto = new EmailVerificationDto(code, email);
+        EmailVerificationRequest dto = new EmailVerificationRequest(code, email);
         when(userRepository.findByEmail(email)).thenReturn(null);
         assertThrows(RuntimeException.class, () -> authService.verifyUser(dto));
         verify(userRepository).findByEmail(email);
@@ -225,7 +222,7 @@ class AuthenticationServiceTest {
         String email = "test@gmail.com";
         String password = "123";
 
-        LoginUserDto dto = new LoginUserDto(null, email, password);
+        LoginUserRequest dto = new LoginUserRequest(email, password);
         User user = new User();
         user.setId(1);
         user.setEmail(email);
@@ -253,7 +250,7 @@ class AuthenticationServiceTest {
         // Given
         String email = "test@gmail.com";
         String password = "123";
-        LoginUserDto dto = new LoginUserDto(null, email, password);
+        LoginUserRequest dto = new LoginUserRequest(email, password);
 
         User user = new User();
         user.setEmail(email);
@@ -273,7 +270,7 @@ class AuthenticationServiceTest {
         // Given
         String email = "test@gmail.com";
         String password = "wrongpassword";
-        LoginUserDto loginUserDto = new LoginUserDto(null, email, password);
+        LoginUserRequest LoginUserRequest = new LoginUserRequest(email, password);
         User user = new User();
         user.setEmail(email);
         user.setVerified(true);
@@ -283,7 +280,7 @@ class AuthenticationServiceTest {
                 .thenThrow(new BadCredentialsException("Invalid credentials"));
 
         // When & Then
-        assertThrows(BadCredentialsException.class, () -> authService.loginUser(loginUserDto));
+        assertThrows(BadCredentialsException.class, () -> authService.loginUser(LoginUserRequest));
 
         verify(authManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(jwtService, never()).generateToken(any());
@@ -379,14 +376,9 @@ class AuthenticationServiceTest {
     @Test
     void sendVerificationEmail_doesNotSendRealEmail() {
         // Given
-        RegisterUserDto dto =
-                new RegisterUserDto(
-                        null,
-                        "Mido",
-                        "test@gmail.com",
-                        "123",
-                        "01001111111",
-                        List.of(new Role("USER")));
+        RegisterUserRequest dto =
+                new RegisterUserRequest(
+                        "Mido", "test@gmail.com", "123", "01001111111", List.of(new Role("USER")));
 
         when(userRepository.existsByEmail(dto.email())).thenReturn(false);
         when(passwordEncoder.encode(dto.password())).thenReturn("encodedPassword");
@@ -399,10 +391,9 @@ class AuthenticationServiceTest {
                         });
 
         // When
-        authService.RegisterUser(dto);
+        authService.registerUser(dto);
 
         // Then
         verify(emailService).sendVerificationEmail(eq(dto.email()), anyString());
-
     }
 }
