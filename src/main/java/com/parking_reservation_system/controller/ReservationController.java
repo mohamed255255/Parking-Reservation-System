@@ -2,15 +2,16 @@ package com.parking_reservation_system.controller;
 
 import com.parking_reservation_system.dto.request.ReservationUserRequest;
 import com.parking_reservation_system.dto.response.ApiResponse;
+import com.parking_reservation_system.dto.response.ReservationResponse;
 import com.parking_reservation_system.model.Reservation;
 import com.parking_reservation_system.security.CustomUserDetails;
 import com.parking_reservation_system.service.ReservationService;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,14 +43,8 @@ public class ReservationController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody ReservationUserRequest ReservationUserRequest) {
 
-        var ReservationResponse =
-                reservationService.createReservation(userDetails, ReservationUserRequest);
-        double price = reservationService.calculateFees(ReservationResponse);
-
-        Map<String, Object> bill = new HashMap<>();
-        bill.put("reservation", ReservationResponse);
-        bill.put("price", price);
-        return ApiResponse.success(bill);
+        var ReservationResponse = reservationService.createReservation(userDetails, ReservationUserRequest);
+        return ApiResponse.success(ReservationResponse);
     }
 
     @PreAuthorize("hasAnyRole('USER')")
@@ -63,46 +58,34 @@ public class ReservationController {
         return ResponseEntity.ok(ApiResponse.success(confirmationInformation));
     }
 
-    @PreAuthorize("hasAnyRole('USER')")
+    ////TODO : the intend of this method is not obvious for passing user case
     @GetMapping("/user")
-    public ResponseEntity<ApiResponse<?>> getUserReservations(
+    public ResponseEntity<ApiResponse<Page<ReservationResponse>>> getReservations(
             @AuthenticationPrincipal CustomUserDetails user,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Integer slotId,
             @RequestParam(required = false) Integer garageId,
             @RequestParam(required = false) Reservation.Status status,
-            @RequestParam(required = false)
-                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startingTime,
-            @RequestParam(required = false)
-                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endingTime) {
+            @RequestParam(required = false) 
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startingTime,
+            @RequestParam(required = false) 
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endingTime,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
-        var result =
-                reservationService.getUserReservations(
-                        user.getId(), slotId, garageId, status, startingTime, endingTime, page, size);
+        Page<ReservationResponse> result = reservationService.getReservations(
+                user.getUser().getId(), 
+                slotId, 
+                garageId, 
+                status, 
+                startingTime, 
+                endingTime, 
+                page, 
+                size
+        );
 
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    @GetMapping("/all")
-    public ResponseEntity<ApiResponse<?>> getAllReservations(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) Integer slotId,
-            @RequestParam(required = false) Integer garageId,
-            @RequestParam(required = false) Reservation.Status status,
-            @RequestParam(required = false)
-                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startingTime,
-            @RequestParam(required = false)
-                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endingTime) {
-
-        var result =
-                reservationService.getAllReservations(
-                        slotId, garageId, status, startingTime, endingTime, page, size);
-
-        return ResponseEntity.ok(ApiResponse.success(result));
-    }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @DeleteMapping("/{id}")

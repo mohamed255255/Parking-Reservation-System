@@ -71,25 +71,25 @@ public class SlotServiceTest {
         assertNotNull(response);
     }
 
-    @Test
-    public void should_throw_IOexception_on_create_slot() {
-        Garage dummyGarage = new Garage();
-        SlotRequest SlotRequest = SlotTestFactory.createSlotRequest(dummyGarage);
+@Test
+public void should_throw_IOexception_on_create_slot() {
+    Garage dummyGarage = new Garage();
+    SlotRequest slotRequest = SlotTestFactory.createSlotRequest(dummyGarage);
 
-        when(garageRepository.findById(SlotRequest.garageId()))
-                .thenReturn(Optional.of(dummyGarage));
+    when(garageRepository.findById(slotRequest.garageId()))
+            .thenReturn(Optional.of(dummyGarage));
 
-        when(qrCodeService.saveQRCodeImage(SlotRequest))
-                .thenThrow(new IOException("Disk I/O failure"));
+    when(qrCodeService.saveQRCodeImage(slotRequest))
+            .thenThrow(new QRCodeGenerationException("failed to create QR code for the slot ", new IOException()));
 
-        QRCodeGenerationException exception =
-                assertThrows(
-                        QRCodeGenerationException.class, () -> slotService.createSlot(SlotRequest));
+    QRCodeGenerationException exception =
+            assertThrows(
+                    QRCodeGenerationException.class, () -> slotService.createSlot(slotRequest));
 
-        assertEquals("failed to create QR code for the slot ", exception.getMessage());
-        assertInstanceOf(IOException.class, exception.getCause());
-        verify(slotRepository, never()).save(any(Slot.class));
-    }
+    assertEquals("failed to create QR code for the slot ", exception.getMessage());
+    assertInstanceOf(IOException.class, exception.getCause());
+    verify(slotRepository, never()).save(any(Slot.class));
+}
 
     @Test
     public void should_get_all_user_slots_successfully() {
@@ -142,7 +142,7 @@ public class SlotServiceTest {
                 RuntimeException.class,
                 () -> slotService.addVehicleToAnEmptySlot(smallSlot.getId(), vehicle.getId()));
 
-        // VERIFY SIDE EFFECT (Database shouldn't persist invalid state)
+        // VERIFY SIDE EFFECT
         verify(slotRepository, never()).save(any());
     }
 

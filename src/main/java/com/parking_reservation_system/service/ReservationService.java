@@ -14,7 +14,6 @@ import com.parking_reservation_system.repository.SlotRepository;
 import com.parking_reservation_system.repository.VehicleRepository;
 import com.parking_reservation_system.security.CustomUserDetails;
 import com.parking_reservation_system.specification.ReservationSpecs;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -79,7 +78,7 @@ public class ReservationService {
                                  () ->
                                   new ResourceNotFoundException( "this vehicle is not found at vehicles table"));
 
-            if(!Objects.equals(choosenVehicle.getUser().getId() , userDetails.getId() )){
+            if(!Objects.equals(choosenVehicle.getUser().getId() , userDetails.getUser().getId() )){
                 logger.error(String.format("AccessDeniedException : the user with id : %d , was trying to access vehicle with plate number %s" ,
                 userDetails.getId() , choosenVehicle.getPlateNumber()));
                 throw new AccessDeniedException("You do not have permission to use this vehicle.");          
@@ -101,15 +100,15 @@ public class ReservationService {
 
            
             Map<String, Object> reservationBill = new HashMap<>();
-            reservationBill.put("reservation details", ReservationMapper.toResponseDto(savedReservation));
-            reservationBill.put("parking fee", parkingFee);
+            reservationBill.put("reservation_details", ReservationMapper.toResponseDto(savedReservation));
+            reservationBill.put("parking_fee", parkingFee);
 
             
             return reservationBill ;
       
     }
 
-    public Map<String , Object> confirmReservation(byte[] imageBytes) throws IOException {
+    public Map<String , Object> confirmReservation(byte[] imageBytes){
         String text = qrCodeService.readQRCode(imageBytes);
         // format ex : G1_S2
         String[] parts = text.split("_");
@@ -139,7 +138,7 @@ public class ReservationService {
         
     }
 
-    public Page<ReservationResponse> getUserReservations(
+    public Page<ReservationResponse> getReservations(
             Integer userId,
             Integer slotId,
             Integer garageId,
@@ -148,33 +147,14 @@ public class ReservationService {
             LocalDateTime end,
             int page,
             int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-       
-        Specification<Reservation> spec =
-                Specification.where(ReservationSpecs.hasUser(userId))
-                        .and(ReservationSpecs.hasSlotId(slotId))
-                        .and(ReservationSpecs.hasGarageId(garageId))
-                        .and(ReservationSpecs.hasStatus(status))
-                        .and(ReservationSpecs.betweenTime(start, end));
 
-        return reservationRepository.findAll(spec, pageable).map(ReservationMapper::toResponseDto);
-    }
-
-    public Page<ReservationResponse> getAllReservations(
-            Integer slotId,
-            Integer garageId,
-            Reservation.Status status,
-            LocalDateTime start,
-            LocalDateTime end,
-            int page,
-            int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
-        Specification<Reservation> spec =
-                Specification.where(ReservationSpecs.hasSlotId(slotId))
-                        .and(ReservationSpecs.hasGarageId(garageId))
-                        .and(ReservationSpecs.hasStatus(status))
-                        .and(ReservationSpecs.betweenTime(start, end));
+        Specification<Reservation> spec = Specification.where(ReservationSpecs.hasUser(userId))
+                .and(ReservationSpecs.hasSlotId(slotId))
+                .and(ReservationSpecs.hasGarageId(garageId))
+                .and(ReservationSpecs.hasStatus(status))
+                .and(ReservationSpecs.betweenTime(start, end));
 
         return reservationRepository.findAll(spec, pageable).map(ReservationMapper::toResponseDto);
     }
