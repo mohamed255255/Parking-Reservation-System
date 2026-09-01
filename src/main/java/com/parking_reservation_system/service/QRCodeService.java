@@ -1,6 +1,8 @@
 package com.parking_reservation_system.service;
 
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.LuminanceSource;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
@@ -55,20 +57,29 @@ public class QRCodeService {
         return baos.toByteArray();
     }
 
-    public String readQRCode(byte[] imageBytes) throws IOException {
+    public String readQRCode(byte[] imageBytes) {
+        if (imageBytes == null || imageBytes.length == 0) {
+            throw new IllegalArgumentException("Image data must not be empty or null.");
+        }
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
-        BufferedImage bufferedImage = ImageIO.read(bais);
+        BufferedImage bufferedImage;
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes)) {
+            bufferedImage = ImageIO.read(bais);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Failed to read image byte stream", e);
+        }
 
-        BufferedImageLuminanceSource source = new BufferedImageLuminanceSource(bufferedImage);
-        HybridBinarizer binarizer = new HybridBinarizer(source);
-        com.google.zxing.BinaryBitmap bitmap = new com.google.zxing.BinaryBitmap(binarizer);
-        MultiFormatReader reader = new MultiFormatReader();
+        if (bufferedImage == null) {
+            throw new IllegalArgumentException("Uploaded file is not a valid or supported image format.");
+        }
+
         try {
-            Result result = reader.decode(bitmap);
+            LuminanceSource source = new BufferedImageLuminanceSource(bufferedImage);
+            BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+            Result result = new MultiFormatReader().decode(bitmap);
             return result.getText();
         } catch (ReaderException e) {
-            return "Error reading QR code";
+            throw new IllegalArgumentException("Could not detect or decode a valid QR code from the image.", e);
         }
     }
 

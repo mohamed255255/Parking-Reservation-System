@@ -16,6 +16,7 @@ public class SlotTestFactory {
         String uuid = UUID.randomUUID().toString().substring(0, 8);
 
         Slot slot = new Slot();
+        slot.setId(1);
         slot.setSlotNumber(random.nextInt(1, 500));
         slot.setSlotWidth(10);
         slot.setSlotDepth(20);
