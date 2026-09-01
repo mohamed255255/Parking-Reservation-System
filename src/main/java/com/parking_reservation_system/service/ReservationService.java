@@ -17,6 +17,8 @@ import com.parking_reservation_system.specification.ReservationSpecs;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
@@ -50,16 +52,16 @@ public class ReservationService {
 
     private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
-    public double calculateFees(ReservationResponse reservation) {
-        LocalDateTime start = reservation.startingTime();
-        LocalDateTime end = reservation.endingTime();
+    public double calculateFees(Reservation reservation) {
+        LocalDateTime start = reservation.getStartingTime();
+        LocalDateTime end = reservation.getEndingTime();
         long minutes = Duration.between(start, end).toMinutes();
         double hours = Math.ceil((minutes / 60.0) * 100) / 100;
         return hourlyPrice * hours;
     }
 
     @Transactional
-    public ReservationResponse createReservation(
+    public Map<String , Object> createReservation(
             CustomUserDetails userDetails,
             ReservationUserRequest ReservationUserRequest) {
 
@@ -94,11 +96,20 @@ public class ReservationService {
             newReservation.setUser(userDetails.getUser());
             newReservation.setGarage(requiredSlot.getGarage());
             Reservation savedReservation = reservationRepository.save(newReservation);
-            return ReservationMapper.toResponseDto(savedReservation);
+
+            double parkingFee = calculateFees(savedReservation);
+
+           
+            Map<String, Object> reservationBill = new HashMap<>();
+            reservationBill.put("reservation details", ReservationMapper.toResponseDto(savedReservation));
+            reservationBill.put("parking fee", parkingFee);
+
+            
+            return reservationBill ;
       
     }
 
-    public void confirmReservation(byte[] imageBytes) throws IOException {
+    public Map<String , Object> confirmReservation(byte[] imageBytes) throws IOException {
         String text = qrCodeService.readQRCode(imageBytes);
         // format ex : G1_S2
         String[] parts = text.split("_");
@@ -109,17 +120,23 @@ public class ReservationService {
         String slotNumberStr = parts[1].substring(1); // skip 'S' for slot
         int slotNumber = Integer.parseInt(slotNumberStr);
 
-        Slot slot = slotRepository.findBySlotNumber(slotNumber).get();
+        Slot slot = slotRepository.findBySlotNumber(slotNumber)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Slot not found: " + slotNumber));
 
-        boolean isReservationExist =
-                reservationRepository.findActiveReservation(
-                        garageId, slot.getId(), Reservation.Status.PENDING);
-        if (!isReservationExist){
-           new ResourceNotFoundException(
-           String.format("There is no active reservation for slot number: %d and garage ID: %d", slotNumber, garageId)
-           );
-        }
-        // Redirect to payment page after Scanning QR code done at the client side 
+        Reservation pendingReservation = reservationRepository
+            .findActiveReservation(garageId, slot.getId(), Reservation.Status.PENDING)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                    String.format("No active reservation for slot %d in garage %d",
+                            slotNumber, garageId)));
+
+         Map<String , Object> confirmationInformation = new HashMap<>();   
+         confirmationInformation.put("Reservation", pendingReservation);
+         confirmationInformation.put("Garage Id", garageId);
+         confirmationInformation.put("Slot number", slotNumber);
+
+         return confirmationInformation;
+        
     }
 
     public Page<ReservationResponse> getUserReservations(

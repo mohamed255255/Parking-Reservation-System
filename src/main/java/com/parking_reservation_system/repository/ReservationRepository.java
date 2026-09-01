@@ -3,6 +3,8 @@ package com.parking_reservation_system.repository;
 import com.parking_reservation_system.model.Reservation;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,7 +16,7 @@ public interface ReservationRepository
     @Query(
             "SELECT r FROM Reservation r WHERE r.garage.id = :garageId "
                     + "AND r.slot.id = :slotId AND r.status = :status")
-    boolean findActiveReservation(int garageId, int slotId, Reservation.Status status);
+    Optional<Reservation> findActiveReservation(int garageId, int slotId, Reservation.Status status);
 
     @Transactional
     @Modifying
