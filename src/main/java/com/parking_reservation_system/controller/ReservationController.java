@@ -33,17 +33,15 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    /// TODO : The Admin operations need new seperate endpoints
     @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/{vehicleId}")
+    @PostMapping
     public ApiResponse<?> createReservation(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody ReservationUserRequest ReservationUserRequest,
-            @PathVariable int vehicleId) { // // TODO : what happen if we pass null inspect the
-        // exception pass null on purpose and see ?
+            @RequestBody ReservationUserRequest ReservationUserRequest) {
 
         var ReservationResponse =
-                reservationService.createReservation(
-                        userDetails, ReservationUserRequest, vehicleId);
+                reservationService.createReservation(userDetails, ReservationUserRequest);
         double price = reservationService.calculateFees(ReservationResponse);
 
         Map<String, Object> bill = new HashMap<>();

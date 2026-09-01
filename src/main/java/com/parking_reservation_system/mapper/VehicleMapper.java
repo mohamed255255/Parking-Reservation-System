@@ -24,23 +24,6 @@ public final class VehicleMapper {
         return vehicle;
     }
 
-    public static VehicleRequest toDto(Vehicle vehicle) {
-        if (vehicle == null) {
-            throw new IllegalArgumentException("Vehicle entity must not be null");
-        }
-
-        Integer userId = (vehicle.getUser() != null) ? vehicle.getUser().getId() : null;
-
-        return new VehicleRequest(
-                vehicle.getPlateNumber(),
-                vehicle.getModelYear(),
-                vehicle.getModelName(),
-                vehicle.getVehicleWidth(),
-                vehicle.getVehicleDepth(),
-                vehicle.getType(),
-                userId);
-    }
-
     public static VehicleResponse toResponseDto(Vehicle vehicle) {
         if (vehicle == null) {
             throw new IllegalArgumentException("Vehicle entity must not be null");
