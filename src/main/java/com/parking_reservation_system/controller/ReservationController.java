@@ -35,19 +35,21 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    /// TODO : The Admin operations need new seperate endpoints
     @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/{vehicleId}")
-    public ResponseEntity<ApiResponse<?>> createReservation(
+    @PostMapping
+    public ApiResponse<?> createReservation(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody ReservationUserRequest reservationUserRequest,
-            @PathVariable int vehicleId) {
+            @RequestBody ReservationUserRequest ReservationUserRequest) {
 
-        Map<String, Object> reservationBill =
-                reservationService.createReservation(userDetails, reservationUserRequest, vehicleId);
+        var ReservationResponse =
+                reservationService.createReservation(userDetails, ReservationUserRequest);
+        double price = reservationService.calculateFees(ReservationResponse);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(ApiResponse.success(reservationBill));
+        Map<String, Object> bill = new HashMap<>();
+        bill.put("reservation", ReservationResponse);
+        bill.put("price", price);
+        return ApiResponse.success(bill);
     }
 
     @PreAuthorize("hasAnyRole('USER')")

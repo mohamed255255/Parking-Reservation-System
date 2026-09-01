@@ -20,22 +20,6 @@ public final class SlotMapper {
         return slot;
     }
 
-    public static SlotRequest toDto(Slot slot) {
-        if (slot == null) {
-            throw new IllegalArgumentException("Slot entity must not be null");
-        }
-
-        Integer garageId = (slot.getGarage() != null) ? slot.getGarage().getId() : null;
-        Integer vehicleId = (slot.getVehicle() != null) ? slot.getVehicle().getId() : null;
-
-        return new SlotRequest(
-                slot.getSlotNumber(),
-                slot.getSlotWidth(),
-                slot.getSlotDepth(),
-                garageId,
-                vehicleId);
-    }
-
     public static SlotResponse toResponseDto(Slot slot) {
         if (slot == null) {
             throw new IllegalArgumentException("Slot entity must not be null");
