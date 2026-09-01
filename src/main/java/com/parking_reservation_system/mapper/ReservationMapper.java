@@ -20,19 +20,6 @@ public final class ReservationMapper {
         return reservation;
     }
 
-    public static ReservationUserRequest toDto(Reservation reservation) {
-        if (reservation == null) {
-            throw new IllegalArgumentException("Reservation reservation must not be null");
-        }
-
-        Integer slotId = (reservation.getSlot() != null) ? reservation.getSlot().getId() : null;
-        Integer garageId =
-                (reservation.getGarage() != null) ? reservation.getGarage().getId() : null;
-
-        return new ReservationUserRequest(
-                reservation.getStartingTime(), reservation.getEndingTime(), slotId, garageId);
-    }
-
     public static ReservationResponse toResponseDto(Reservation reservation) {
         if (reservation == null) {
             throw new IllegalArgumentException("Reservation reservation must not be null");

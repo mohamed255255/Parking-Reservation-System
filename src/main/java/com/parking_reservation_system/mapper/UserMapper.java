@@ -9,19 +9,6 @@ public class UserMapper {
 
     private UserMapper() {}
 
-    public static RegisterUserRequest toDto(User user) {
-        if (user == null) {
-            throw new IllegalArgumentException("the argument passed to this method is null");
-        }
-
-        return new RegisterUserRequest(
-                user.getName(),
-                user.getEmail(),
-                user.getPassword(),
-                user.getPhone(),
-                user.getRoles());
-    }
-
     public static User toUser(RegisterUserRequest dto, PasswordEncoder encoder) {
         if (dto == null || encoder == null) {
             throw new IllegalArgumentException("one of the argument passed to this method is null");

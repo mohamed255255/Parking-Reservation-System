@@ -11,4 +11,7 @@ public record ReservationUserRequest(
                 LocalDateTime startingTime,
         @Nullable LocalDateTime endingTime,
         @NotNull(message = "Slot ID is required") Integer slotId,
-        @NotNull(message = "Garage ID is required") Integer garageId) {}
+        @NotNull(message = "Garage ID is required") Integer garageId,
+        @NotNull(message = "Vehicle ID is required") Integer vehicleId
+
+) {}

@@ -34,4 +34,6 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE FROM Vehicle v WHERE v.id = :id")
     void deleteVehicle(@Param("id") int id);
+
+    void findByUser();
 }

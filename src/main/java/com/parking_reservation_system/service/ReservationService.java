@@ -23,13 +23,15 @@ import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.LoggerFactory
+;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,31 +63,32 @@ public class ReservationService {
     @Transactional
     public Map<String , Object> createReservation(
             CustomUserDetails userDetails,
-            ReservationUserRequest ReservationUserRequest,
-            int vehicleId) {
+            ReservationUserRequest ReservationUserRequest) {
 
             Slot requiredSlot =
                     slotRepository
                             .findByIdWithALock(ReservationUserRequest.slotId())
                             .orElseThrow(
-                                    () ->
-                                            new ResourceNotFoundException(
+                                    () -> new ResourceNotFoundException(
                                                     "this slot is not found in the slots table"));
 
             Vehicle choosenVehicle =
                     vehicleRepository
-                            .findById(vehicleId)
+                            .findById(ReservationUserRequest.vehicleId())
                             .orElseThrow(
-                                    () ->
-                                            new ResourceNotFoundException(
-                                                    "this vehicle is not found at the vechicles table"));
+                                 () ->
+                                  new ResourceNotFoundException( "this vehicle is not found at vehicles table"));
+
+            if(!Objects.equals(choosenVehicle.getUser().getId() , userDetails.getId() )){
+                logger.error(String.format("AccessDeniedException : the user with id : %d , was trying to access vehicle with plate number %s" ,
+                userDetails.getId() , choosenVehicle.getPlateNumber()));
+                throw new AccessDeniedException("You do not have permission to use this vehicle.");          
+            }
 
             logger.info(choosenVehicle.getUser().getId() + "\n" + userDetails.getUser().getId());
 
-            if (!Objects.equals(choosenVehicle.getUser().getId(), userDetails.getUser().getId()))
-                throw new RuntimeException("the user does not possess this vehicle");
-
-            slotService.addVehicleToAnEmptySlot(ReservationUserRequest.slotId(), vehicleId);
+        
+            slotService.addVehicleToAnEmptySlot(ReservationUserRequest.slotId(), ReservationUserRequest.vehicleId());
 
             Reservation newReservation = ReservationMapper.toEntity(ReservationUserRequest);
             requiredSlot.setVehicle(choosenVehicle);

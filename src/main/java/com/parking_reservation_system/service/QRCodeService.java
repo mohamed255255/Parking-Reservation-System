@@ -11,6 +11,7 @@ import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.parking_reservation_system.dto.request.SlotRequest;
 import com.parking_reservation_system.exception.QRCodeGenerationException;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -21,7 +22,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import javax.imageio.ImageIO;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -83,7 +86,7 @@ public class QRCodeService {
             }
             return qrCodeDirectory + fileName;
         } catch (IOException | WriterException e) {
-            throw new QRCodeGenerationException("Failed to create QR code for the slot", e);
+            throw new QRCodeGenerationException("Failed to create QR code for the slot", e.getCause());
         }
     }
 }

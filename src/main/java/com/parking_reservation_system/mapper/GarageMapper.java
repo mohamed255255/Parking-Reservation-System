@@ -22,15 +22,6 @@ public final class GarageMapper {
         return garage;
     }
 
-    public static GarageRequest toDto(Garage garage) {
-        if (garage == null) {
-            throw new IllegalArgumentException("Garage entity must not be null");
-        }
-
-        return new GarageRequest(
-                garage.getName(), garage.getLocation(), garage.isActive(), garage.getCapactiy());
-    }
-
     public static GarageResponse toResponseDto(Garage garage) {
         if (garage == null) {
             throw new IllegalArgumentException("Garage entity must not be null");
