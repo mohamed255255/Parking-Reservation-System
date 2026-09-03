@@ -31,9 +31,11 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(
                         auth ->
                                 auth.requestMatchers(
-                                                "auth/register",
-                                                "auth/login",
-                                                "auth/verify-user",
+                                                "/actuator/**",
+                                                "/error",
+                                                "/auth/register",
+                                                "/auth/login",
+                                                "/auth/verify-user",
                                                 "/v3/api-docs/**",
                                                 "/swagger-ui/**",
                                                 "/swagger-ui.html",
