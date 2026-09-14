@@ -9,5 +9,5 @@ public record GarageRequest(
         @NotBlank(message = "name can not be empty") String name,
         @NotNull(message = "location field is required") String location,
         boolean isActive,
-        @Positive(message = "capacity of the garage should be positive value") @Nullable
+        @Positive(message = "capacity of the garage should be positive value") @NotNull
                 Integer capacity) {}

@@ -36,7 +36,7 @@ public class SecurityConfiguration {
                                                 "/auth/register",
                                                 "/auth/login",
                                                 "/auth/verify-user",
-                                                "/v3/api-docs/**",
+                                                "/api-docs/**",
                                                 "/swagger-ui/**",
                                                 "/swagger-ui.html",
                                                 "/api/webhook/**",
