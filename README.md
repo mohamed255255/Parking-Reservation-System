@@ -51,7 +51,6 @@ Admin have full control over garage and slot creation , user details, reservatio
    - used github actions for CI / CD
    - Unit tested with JUnit5 & Mockito
     
-
 ##  Tech Stack  
 
 - **Backend:** Spring Boot, Spring Security, JWT, REST API  
@@ -61,26 +60,11 @@ Admin have full control over garage and slot creation , user details, reservatio
 - **Testing:** JUnit5, Mockito  
 - **CI/CD:** Github actions
 
-##  System Design & Reliability
-
-- Applied Clean Architecture principles and DTO-based API boundaries
-- Used Strategy Pattern to support multiple payment gateways
-- Implemented global exception handling for consistent API responses
-- Optimized database access using normalization, indexing, join fetch to prevent n + 1 problems, and dynamic specifications 
-- Ensured data integrity using @transactional 
-
-##  Swagger documentation
-
 ## Future features
-
   - Refund support for canceled payments
   - basic notification for monolithic level  
   - add React later for admin dashboard and user UI
   - add "Extend parking duration" with another payment request and update in the current reservation info
-  - scale through :
-     -  Breaking the services into microservicse
-     -  Use a message queue for notifications 
-     -  Add kubernetes
-
+ 
 
 
